@@ -1,0 +1,293 @@
+<div class="layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+       
+
+        <nav>
+            <img src="logo.png" class="logo">
+
+            <a routerLink="/dashboard">
+                Dashboard
+            </a>
+
+            <a href="#">
+                Inventario
+            </a>
+
+            <a href="#">
+                Ventas
+            </a>
+
+            <a href="#">
+                Productos
+            </a>
+
+            <a href="#">
+                Máquinas
+            </a>
+
+            <a href="#">
+                Proveedores
+            </a>
+
+            <a routerLink="/usuarios">
+                Usuarios
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+
+    <!-- MAIN -->
+
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+
+            <div>
+                <h1>DASHBOARD</h1>
+            </div>
+
+            <div class="fecha-box">
+                {{ fechaActual }}
+            </div>
+
+        </div>
+
+
+
+        <!-- CARDS -->
+
+        <div class="cards">
+
+            <div class="card blue">
+
+                <h3>MÁQUINAS ACTIVAS</h3>
+
+                <h1>4</h1>
+
+                <span>de 7 totales</span>
+
+            </div>
+
+            <div class="card green">
+
+                <h3>MÁQUINAS LIBRES</h3>
+
+                <h1>3</h1>
+
+                <span>disponibles ahora</span>
+
+            </div>
+
+            <div class="card cyan">
+
+                <h3>PRODUCTOS EN STOCK</h3>
+
+                <h1>1248</h1>
+
+                <span>unidades totales</span>
+
+            </div>
+
+            <div class="card orange">
+
+                <h3>VENTAS DEL MES</h3>
+
+                <h1>386</h1>
+
+                <span>unidades vendidas</span>
+
+            </div>
+
+            <div class="card red">
+
+                <h3>STOCK BAJO</h3>
+
+                <h1>3</h1>
+
+                <span>productos críticos</span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- TABLES -->
+
+        <div class="tables">
+
+            <!-- MAQUINAS -->
+
+            <div class="table-box">
+
+                <h2>ESTADO DE MÁQUINAS</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>MÁQUINA</th>
+                            <th>OPERARIO</th>
+                            <th>ESTADO</th>
+                            <th>PRODUCCIÓN/DÍA</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                <strong>Troqueladora A</strong>
+                                <p>MAQ-01</p>
+                            </td>
+
+                            <td>Carlos Mendoza</td>
+
+                            <td>
+                                <span class="status occupied">
+                                    Ocupada
+                                </span>
+                            </td>
+
+                            <td>140</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                <strong>Inyectora B</strong>
+                                <p>MAQ-02</p>
+                            </td>
+
+                            <td>Ana Ríos</td>
+
+                            <td>
+                                <span class="status occupied">
+                                    Ocupada
+                                </span>
+                            </td>
+
+                            <td>280</td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>
+                                <strong>Ensambladora C</strong>
+                                <p>MAQ-03</p>
+                            </td>
+
+                            <td>Pedro Gómez</td>
+
+                            <td>
+                                <span class="status free">
+                                    Libre
+                                </span>
+                            </td>
+
+                            <td>95</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+
+
+            <!-- ALERTAS -->
+
+            <div class="table-box">
+
+                <h2>ALERTAS DE INVENTARIO</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>PRODUCTO</th>
+                            <th>STOCK</th>
+                            <th>MÍNIMO</th>
+                            <th>ESTADO</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>Bombillo Xenon D2S</td>
+
+                            <td>8</td>
+
+                            <td>25</td>
+
+                            <td>
+                                <span class="status critical">
+                                    Crítico
+                                </span>
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Kit Xenon H7</td>
+
+                            <td>12</td>
+
+                            <td>20</td>
+
+                            <td>
+                                <span class="status critical">
+                                    Crítico
+                                </span>
+                            </td>
+
+                        </tr>
+
+                        <tr>
+
+                            <td>Cable Arnés</td>
+
+                            <td>5</td>
+
+                            <td>15</td>
+
+                            <td>
+                                <span class="status warning">
+                                    Bajo
+                                </span>
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>

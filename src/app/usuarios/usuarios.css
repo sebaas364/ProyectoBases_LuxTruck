@@ -1,0 +1,248 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body{
+    background: #0f172a;
+}
+
+.layout{
+    display: flex;
+    min-height: 100vh;
+    background: #0f172a;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    width: 260px;
+    background: #111827;
+    padding: 30px;
+    border-right: 1px solid #1e293b;
+}
+
+.logo-area{
+    margin-bottom: 50px;
+}
+
+.logo-area h2{
+    color: white;
+    margin-bottom: 5px;
+}
+
+.logo-area span{
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+.sidebar nav{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.sidebar nav a{
+    text-decoration: none;
+    color: #cbd5e1;
+    padding: 14px;
+    border-radius: 12px;
+    transition: 0.3s;
+}
+
+.sidebar nav a:hover{
+    background: #1e293b;
+}
+
+.sidebar nav .active{
+    background: #2563eb;
+    color: white;
+}
+
+/* MAIN */
+
+.main-content{
+    flex: 1;
+    padding: 30px;
+}
+
+/* TOPBAR */
+
+.topbar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.topbar h1{
+    color: white;
+    font-size: 38px;
+}
+
+.fecha-box{
+    background: #1e293b;
+    padding: 12px 20px;
+    border-radius: 12px;
+    color: white;
+}
+
+/* CARDS */
+
+.cards{
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.card{
+    flex: 1;
+    min-width: 220px;
+    background: linear-gradient(135deg,#1e293b,#334155);
+    padding: 25px;
+    border-radius: 20px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+}
+
+.blue::before{
+    background: #28ffea; 
+}
+.moradita::before{
+    background:  #c73bf6;
+}
+
+.green::before{
+    background: #22c55e;
+}
+
+.cyan::before{
+    background: #06b6d4;
+}
+
+.orange::before{
+    background: #f59e0b;
+}
+
+.red::before{
+    background: #ef4444;
+}
+
+.card h3{
+    color: #cbd5e1;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.card h1{
+    font-size: 48px;
+    margin-bottom: 10px;
+}
+
+/* TABLES */
+
+.tables{
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.table-box{
+    flex: 1;
+    min-width: 500px;
+    background: #1e293b;
+    border-radius: 20px;
+    padding: 25px;
+}
+
+.table-box h2{
+    color: white;
+    margin-bottom: 20px;
+}
+
+/* TABLE */
+
+table{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th{
+    color: #94a3b8;
+    text-align: left;
+    padding: 15px;
+    font-size: 13px;
+}
+
+td{
+    padding: 15px;
+    border-top: 1px solid #334155;
+    color: white;
+}
+
+td p{
+    color: #94a3b8;
+    font-size: 12px;
+    margin-top: 5px;
+}
+
+/* STATUS */
+
+.status{
+    padding: 8px 14px;
+    border-radius: 30px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.occupied{
+    background: rgba(239,68,68,0.2);
+    color: #f87171;
+}
+
+.free{
+    background: rgba(34,197,94,0.2);
+    color: #4ade80;
+}
+
+.critical{
+    background: rgba(239,68,68,0.2);
+    color: #f87171;
+}
+
+.warning{
+    background: rgba(245,158,11,0.2);
+    color: #fbbf24;
+}
+.morado{
+     background: rgba(210, 11, 245, 0.299);
+    color: #d724fb;
+}
+.azulito{
+     background: #28ffea6b;
+    color: #28ffea;
+}
+.azulitoC{
+     background: #06b5d45c;
+    color:#06b6d4;
+}
+
+.logo{
+    width: 150%;
+    height: 150%;
+   position: relative;
+   left: -27%;
+}
