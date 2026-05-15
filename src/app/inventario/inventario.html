@@ -1,1 +1,154 @@
-<p>inventario works!</p>
+<div class="layout">
+    <aside class="sidebar">
+
+       <nav>
+            <img src="logo.png" class="logo">
+
+            <a routerLink="/dashboard">
+                Dashboard
+            </a>
+
+            <a routerLink="/inventario">
+                Inventario
+            </a>
+
+            <a href="#">
+                Ventas
+            </a>
+
+            <a href="#">
+                Productos
+            </a>
+
+            <a href="#">
+                Máquinas
+            </a>
+
+            <a href="#">
+                Proveedores
+            </a>
+
+            <a routerLink="/usuarios">
+                Usuarios
+            </a>
+
+        </nav>
+
+    </aside>
+
+    <main class="main-content">
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+
+            <div>
+                <h1>DASHBOARD</h1>
+            </div>
+
+
+
+        </div>
+
+
+
+        <!-- CARDS -->
+
+        <div class="cards">
+
+            <div class="card blue">
+
+                <h3>REFERENCIAS</h3>
+
+                <h1>     4</h1>
+
+                <span>TOTALES</span>
+
+            </div>
+
+            <div class="card red">
+
+                <h3>PRODUCTOS CRITICOS</h3>
+
+                <h1>0</h1>
+
+                <span>REFERENCIAS POR DEBAJO DEL STOCK MINIMO</span>
+
+            </div>
+
+      
+
+        </div>
+
+
+
+        <!-- TABLES -->
+
+        <div class="tables">
+
+            <!-- MAQUINAS -->
+
+            <div class="table-box">
+
+                <h2>ESTADO DE MÁQUINAS</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+                            <th>CÓDIGO</th>
+                            <th>Nombre</th>
+                            <th>STOCK</th>
+                            <th>CANTIDAD MINIMA</th>
+                            <th>ESTADO</th>
+                            <th>PRECIO UNITARIO</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                <strong>pq3</strong>
+
+                            </td>
+
+                            <td>luz</td>
+
+                            <td>
+                                <strong>5552</strong>
+                            </td>
+
+                            <td>20</td>
+                            <td>
+                               <span class="status free">
+                                    BIEN
+                                </span>    
+                            </td>  
+                            <td>$ 20.300</td>                      
+
+                        </tr>
+
+
+                    </tbody>
+
+                </table>
+
+            </div>
+   
+
+        </div>
+        <div class="acciones">
+            <button (click)="mostrarCrear = true"> Agregar Producto</button>
+            <button (click)="mostrarAgregar = true">Agregar Cantidad</button>
+        </div>
+        <div *ngIf="formularioCrear" class="formulario">
+            <h3> Crear Producto</h3>
+        </div>
+    </main>
+
+</div>

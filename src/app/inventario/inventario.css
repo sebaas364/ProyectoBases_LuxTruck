@@ -60,7 +60,7 @@ body{
 }
 
 .sidebar nav .active{
-    background: #2563eb;
+    background: #2362eb;
     color: white;
 }
 
@@ -215,7 +215,7 @@ td p{
 }
 
 .occupied{
-    background: rgba(239, 68, 68, 0.155);
+    background: rgba(239,68,68,0.2);
     color: #f87171;
 }
 
@@ -286,4 +286,32 @@ td p{
         align-items: flex-start;
         gap: 2vh;
     }
+    .acciones bottom{
+        margin-right: 10px;
+        background: #94a3b8;
+        color: white;
+        padding: 8px 14px ;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+
+    }
+    .formulario { 
+        margin: 15px 0;
+        padding: 15px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        max-width: 400px;
+    }
+
+    input, select {
+        display: block;
+        width: 100%;
+        margin: 8px 0;
+        padding: 6px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+
+    }
+    
 }
