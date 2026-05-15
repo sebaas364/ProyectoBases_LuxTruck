@@ -11,10 +11,8 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "operario")
 public class Operario extends Trabajador {
-	@OneToOne
-	@JoinColumn(name = "vendedor_idPersona", nullable = false)
-	private Trabajador trabajador;
-	@Column(name = "desempenio", nullable = false)
+	
+	@Column(name = "desempenio")
 	private int desempenio;
 
 	public Operario() {
@@ -22,16 +20,14 @@ public class Operario extends Trabajador {
 	}
 
 	
-	public Operario(Trabajador trabajador, int desempenio) {
+	public Operario(int desempenio) {
 		super();
-		this.trabajador = trabajador;
 		this.desempenio = desempenio;
 	}
 
 
-	
 	public Operario(Date fechaIngreso, Double salario, String estado, String contrasenia) {
-		super(fechaIngreso, salario, estado, contrasenia);
+		super(fechaIngreso, salario, contrasenia);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -44,17 +40,6 @@ public class Operario extends Trabajador {
 		// TODO Auto-generated constructor stub
 	}
 
-
-	public Trabajador getTrabajador() {
-		return trabajador;
-	}
-
-
-	public void setTrabajador(Trabajador trabajador) {
-		this.trabajador = trabajador;
-	}
-
-
 	public int getDesempenio() {
 		return desempenio;
 	}
@@ -62,12 +47,5 @@ public class Operario extends Trabajador {
 	public void setDesempenio(int desempenio) {
 		this.desempenio = desempenio;
 	}
-
-
-	@Override
-	public String toString() {
-		return "Operario [trabajador=" + trabajador + ", desempenio=" + desempenio + "]";
-	}
-
 	
 }

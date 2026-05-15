@@ -5,7 +5,7 @@ import java.time.LocalDate;
 public class TrabajadorDTO extends PersonaDTO {
 
 	public LocalDate fechaIngreso;
-	public int salario;
+	public double salario;
 	public String estado;
 	public String contrasenia;
 
@@ -21,7 +21,7 @@ public class TrabajadorDTO extends PersonaDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public TrabajadorDTO(LocalDate fechaIngreso, int salario, String estado, String contrasenia) {
+	public TrabajadorDTO(LocalDate fechaIngreso, double salario, String estado, String contrasenia) {
 		super();
 		this.fechaIngreso = fechaIngreso;
 		this.salario = salario;
@@ -37,11 +37,11 @@ public class TrabajadorDTO extends PersonaDTO {
 		this.fechaIngreso = fechaIngreso;
 	}
 
-	public int getSalario() {
+	public double getSalario() {
 		return salario;
 	}
 
-	public void setSalario(int salario) {
+	public void setSalario(double salario) {
 		this.salario = salario;
 	}
 

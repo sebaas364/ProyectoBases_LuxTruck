@@ -4,20 +4,21 @@ import java.sql.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "TRABAJADOR")
+@Inheritance(strategy = InheritanceType.JOINED)
 public class Trabajador extends Persona {
 
 	@Column(name = "fechaIngreso", nullable = false)
 	private Date fechaIngreso;
 
-	@Column(name = "salario", nullable = false)
+	@Column(name = "salario", nullable = false, columnDefinition = "DECIMAL(10,2)")
 	private Double salario;
 
-	@Column(name = "estado", nullable = false)
-	private String estado;
 
 	@Column(name = "contrasenia", nullable = false)
 	private String contrasenia;
@@ -26,11 +27,10 @@ public class Trabajador extends Persona {
 
 	}
 
-	public Trabajador(Date fechaIngreso, Double salario, String estado, String contrasenia) {
+	public Trabajador(Date fechaIngreso, Double salario, String contrasenia) {
 		super();
 		this.fechaIngreso = fechaIngreso;
 		this.salario = salario;
-		this.estado = estado;
 		this.contrasenia = contrasenia;
 	}
 
@@ -41,7 +41,6 @@ public class Trabajador extends Persona {
 				telefono, correo);
 		this.fechaIngreso = fechaIngreso;
 		this.salario = salario;
-		this.estado = estado;
 		this.contrasenia = contrasenia;
 	}
 
@@ -59,14 +58,6 @@ public class Trabajador extends Persona {
 
 	public void setSalario(Double salario) {
 		this.salario = salario;
-	}
-
-	public String getEstado() {
-		return estado;
-	}
-
-	public void setEstado(String estado) {
-		this.estado = estado;
 	}
 
 	public String getContrasenia() {

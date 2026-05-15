@@ -4,10 +4,10 @@ import java.time.LocalDate;
 
 public class VendedorDTO extends TrabajadorDTO {
 
-	public int comision;
+	public double comision;
 	private String zonaVenta;
 
-	public VendedorDTO(int comision, String zonaVenta) {
+	public VendedorDTO(double comision, String zonaVenta) {
 		super();
 		this.comision = comision;
 		this.zonaVenta = zonaVenta;
@@ -18,7 +18,7 @@ public class VendedorDTO extends TrabajadorDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public VendedorDTO(LocalDate fechaIngreso, int salario, String estado, String contrasenia) {
+	public VendedorDTO(LocalDate fechaIngreso, double salario, String estado, String contrasenia) {
 		super(fechaIngreso, salario, estado, contrasenia);
 		// TODO Auto-generated constructor stub
 	}
@@ -32,7 +32,7 @@ public class VendedorDTO extends TrabajadorDTO {
 		// TODO Auto-generated constructor stub
 	}
 
-	public int getComision() {
+	public double getComision() {
 		return comision;
 	}
 
