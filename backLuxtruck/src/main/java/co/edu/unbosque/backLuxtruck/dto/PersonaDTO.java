@@ -1,7 +1,7 @@
 package co.edu.unbosque.backLuxtruck.dto;
 
 
-public abstract class PersonaDTO {
+public class PersonaDTO {
 	public Integer idPersona;
 	public String primerNombre;
 	public String segundoNombre;
@@ -102,13 +102,6 @@ public abstract class PersonaDTO {
 
 	public void setTipoDocumento(String tipoDocumento) {
 		this.tipoDocumento = tipoDocumento;
-	}
-
-	@Override
-	public String toString() {
-		return "Persona [idPersona=" + idPersona + ", primerNombre=" + primerNombre + ", segundoNombre=" + segundoNombre
-				+ ", primerApellido=" + primerApellido + ", segundoApellido=" + segundoApellido + ", numeroDocumento=" + numeroDocumento + ", telefono=" + telefono + ", correo="
-				+ correo + ", tipoDocumento=" + tipoDocumento + "]";
 	}
 
 }

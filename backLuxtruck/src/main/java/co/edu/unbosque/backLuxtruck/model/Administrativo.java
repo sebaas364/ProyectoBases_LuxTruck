@@ -14,17 +14,17 @@ public class Administrativo extends Trabajador{
 	}
 	
 
-	public Administrativo(Date fechaIngreso, Double salario, String estado, String contrasenia) {
-		super(fechaIngreso, salario, contrasenia);
+	public Administrativo(Date fechaIngreso, Double salario, String estado, String contrasenia,EstadoTrabajador estadoTrabajador) {
+		super(fechaIngreso, salario, contrasenia, estadoTrabajador);
 		// TODO Auto-generated constructor stub
 	}
 
 
 	public Administrativo( Integer idPersona, String numeroDocumento, String tipoDocumento, String primerNombre,
 			String segundoNombre, String primerApellido, String segundoApellido, String telefono, String correo,
-			Date fechaIngreso, Double salario, String estado, String contrasenia) {
+			Date fechaIngreso, Double salario, String estado, String contrasenia, EstadoTrabajador estadoTrabajador) {
 		super(idPersona, numeroDocumento, tipoDocumento, primerNombre, segundoNombre, primerApellido, segundoApellido, telefono,
-				correo, fechaIngreso, salario, estado, contrasenia);
+				correo, fechaIngreso, salario, estado, contrasenia, estadoTrabajador);
 		// TODO Auto-generated constructor stub
 	}
 
