@@ -1,5 +1,6 @@
 package co.edu.unbosque.backLuxtruck.service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -58,7 +59,7 @@ public class VentaService {
         Optional<Venta> found = ventaRepo.findById(idVenta);
         if (found.isPresent()) {
             Venta venta = found.get();
-            venta.setFecha(dto.getFecha());
+            venta.setFecha((Date) dto.getFecha());
             venta.setMetodoPago(dto.getMetodoPago());
             ventaRepo.save(venta);
             return 0;
