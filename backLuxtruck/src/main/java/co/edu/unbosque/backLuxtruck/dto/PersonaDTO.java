@@ -1,34 +1,33 @@
 package co.edu.unbosque.backLuxtruck.dto;
 
-
 public class PersonaDTO {
-	public Integer idPersona;
-	public String primerNombre;
-	public String segundoNombre;
-	public String primerApellido;
-	public String segundoApellido;
-	public int numeroDocumento;
-	public int telefono;
-	public String correo;
-	public String tipoDocumento;
+
+	private Integer idPersona;
+	private String numeroDocumento;
+	private String tipoDocumento;
+	private String primerNombre;
+	private String segundoNombre;
+	private String primerApellido;
+	private String segundoApellido;
+	private String telefono;
+	private String correo;
 
 	public PersonaDTO() {
-		// TODO Auto-generated constructor stub
+
 	}
 
-	public PersonaDTO(Integer idPersona, String primerNombre, String segundoNombre, String primerApellido,
-			String segundoApellido, int numeroDocumento, int telefono, String correo,
-			String tipoDocumento) {
+	public PersonaDTO(Integer idPersona, String numeroDocumento, String tipoDocumento, String primerNombre,
+			String segundoNombre, String primerApellido, String segundoApellido, String telefono, String correo) {
 		super();
 		this.idPersona = idPersona;
+		this.numeroDocumento = numeroDocumento;
+		this.tipoDocumento = tipoDocumento;
 		this.primerNombre = primerNombre;
 		this.segundoNombre = segundoNombre;
 		this.primerApellido = primerApellido;
 		this.segundoApellido = segundoApellido;
-		this.numeroDocumento = numeroDocumento;
 		this.telefono = telefono;
 		this.correo = correo;
-		this.tipoDocumento = tipoDocumento;
 	}
 
 	public Integer getIdPersona() {
@@ -37,6 +36,22 @@ public class PersonaDTO {
 
 	public void setIdPersona(Integer idPersona) {
 		this.idPersona = idPersona;
+	}
+
+	public String getNumeroDocumento() {
+		return numeroDocumento;
+	}
+
+	public void setNumeroDocumento(String numeroDocumento) {
+		this.numeroDocumento = numeroDocumento;
+	}
+
+	public String getTipoDocumento() {
+		return tipoDocumento;
+	}
+
+	public void setTipoDocumento(String tipoDocumento) {
+		this.tipoDocumento = tipoDocumento;
 	}
 
 	public String getPrimerNombre() {
@@ -71,20 +86,11 @@ public class PersonaDTO {
 		this.segundoApellido = segundoApellido;
 	}
 
-
-	public int getNumeroDocumento() {
-		return numeroDocumento;
-	}
-
-	public void setNumeroDocumento(int numeroDocumento) {
-		this.numeroDocumento = numeroDocumento;
-	}
-
-	public int getTelefono() {
+	public String getTelefono() {
 		return telefono;
 	}
 
-	public void setTelefono(int telefono) {
+	public void setTelefono(String telefono) {
 		this.telefono = telefono;
 	}
 
@@ -96,12 +102,12 @@ public class PersonaDTO {
 		this.correo = correo;
 	}
 
-	public String getTipoDocumento() {
-		return tipoDocumento;
-	}
-
-	public void setTipoDocumento(String tipoDocumento) {
-		this.tipoDocumento = tipoDocumento;
+	@Override
+	public String toString() {
+		return "PersonaDTO [idPersona=" + idPersona + ", numeroDocumento=" + numeroDocumento + ", tipoDocumento="
+				+ tipoDocumento + ", primerNombre=" + primerNombre + ", segundoNombre=" + segundoNombre
+				+ ", primerApellido=" + primerApellido + ", segundoApellido=" + segundoApellido + ", telefono="
+				+ telefono + ", correo=" + correo + "]";
 	}
 
 }

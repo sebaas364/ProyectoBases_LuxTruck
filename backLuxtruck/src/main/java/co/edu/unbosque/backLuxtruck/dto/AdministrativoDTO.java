@@ -1,43 +1,32 @@
 package co.edu.unbosque.backLuxtruck.dto;
 
-import java.time.LocalDate;
+import java.util.Date;
 
-public class AdministrativoDTO extends TrabajadorDTO {
-	public TrabajadorDTO trabajadordto;
+public class AdministrativoDTO extends TrabajadorDTO{
 
 	public AdministrativoDTO() {
-		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public AdministrativoDTO(LocalDate fechaIngreso, int salario, String estado, String contrasenia) {
-		super(fechaIngreso, salario, estado, contrasenia);
+	public AdministrativoDTO(Date fechaIngreso, Double salario, String contrasenia,
+			EstadoTrabajadorDTO estadoTrabajadordto) {
+		super(fechaIngreso, salario, contrasenia, estadoTrabajadordto);
 		// TODO Auto-generated constructor stub
 	}
 
-	public AdministrativoDTO(Integer idPersona, String primerNombre, String segundoNombre, String primerApellido,
-			String segundoApellido, int numeroDocumento, int telefono, String correo, String tipoDocumento) {
-		super(idPersona, primerNombre, segundoNombre, primerApellido, segundoApellido, numeroDocumento, telefono,
-				correo, tipoDocumento);
+	public AdministrativoDTO(Integer idPersona, String numeroDocumento, String tipoDocumento, String primerNombre,
+			String segundoNombre, String primerApellido, String segundoApellido, String telefono, String correo,
+			Date fechaIngreso, Double salario, String estado, String contrasenia,
+			EstadoTrabajadorDTO estadoTrabajador) {
+		super(idPersona, numeroDocumento, tipoDocumento, primerNombre, segundoNombre, primerApellido, segundoApellido, telefono,
+				correo, fechaIngreso, salario, estado, contrasenia, estadoTrabajador);
 		// TODO Auto-generated constructor stub
-	}
-
-	public AdministrativoDTO(TrabajadorDTO trabajadordto) {
-		super();
-		this.trabajadordto = trabajadordto;
-	}
-
-	public TrabajadorDTO getTrabajadordto() {
-		return trabajadordto;
-	}
-
-	public void setTrabajadordto(TrabajadorDTO trabajadordto) {
-		this.trabajadordto = trabajadordto;
 	}
 
 	@Override
 	public String toString() {
-		return "AdministrativoDTO [trabajadordto=" + trabajadordto + "]";
+		return "AdministrativoDTO []";
 	}
+
 
 }

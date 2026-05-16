@@ -6,8 +6,8 @@ public class EmpresaDTO {
 	private String NIT;
 	private String nombre;
 	private String telefono;
-	private String correo;
-
+	private String correo; 
+	
 	public EmpresaDTO() {
 		// TODO Auto-generated constructor stub
 	}
@@ -15,7 +15,7 @@ public class EmpresaDTO {
 	public EmpresaDTO(Integer idEmpresa, String nIT, String nombre, String telefono, String correo) {
 		super();
 		this.idEmpresa = idEmpresa;
-		NIT = nIT;
+		this.NIT = nIT;
 		this.nombre = nombre;
 		this.telefono = telefono;
 		this.correo = correo;
@@ -60,4 +60,5 @@ public class EmpresaDTO {
 	public void setCorreo(String correo) {
 		this.correo = correo;
 	}
+	
 }
