@@ -29,27 +29,44 @@ public class AdministrativoService {
 
     public int create(AdministrativoDTO dto) {
         Optional<Administrativo> found = administrativoRepo.findById(dto.getIdPersona());
+
         if (found.isEmpty()) {
             Administrativo entity = modelMapper.map(dto, Administrativo.class);
+
+            if (dto.getFechaIngreso() != null) {
+                entity.setFechaIngreso(new java.sql.Date(dto.getFechaIngreso().getTime()));
+            }
+
             administrativoRepo.save(entity);
             return 0;
         }
+
         return 1;
     }
-    
+
     public List<AdministrativoDTO> getAll() {
         List<AdministrativoDTO> dtoList = new ArrayList<>();
+
         for (Administrativo a : administrativoRepo.findAll()) {
-            dtoList.add(modelMapper.map(a, AdministrativoDTO.class));
+            AdministrativoDTO dto = modelMapper.map(a, AdministrativoDTO.class);
+
+            if (a.getFechaIngreso() != null) {
+                dto.setFechaIngreso(new java.util.Date(a.getFechaIngreso().getTime()));
+            }
+
+            dtoList.add(dto);
         }
+
         return dtoList;
     }
 
     public int update(int idPersona, AdministrativoDTO dto) {
         Optional<Administrativo> found = administrativoRepo.findById(idPersona);
+
         if (found.isPresent()) {
             Administrativo administrativo = found.get();
-            // Campos de Persona
+
+            
             administrativo.setNumeroDocumento(dto.getNumeroDocumento());
             administrativo.setTipoDocumento(dto.getTipoDocumento());
             administrativo.setPrimerNombre(dto.getPrimerNombre());
@@ -58,34 +75,43 @@ public class AdministrativoService {
             administrativo.setSegundoApellido(dto.getSegundoApellido());
             administrativo.setTelefono(dto.getTelefono());
             administrativo.setCorreo(dto.getCorreo());
-            // Campos de Trabajador
-            administrativo.setFechaIngreso((Date) dto.getFechaIngreso());
+
+            if (dto.getFechaIngreso() != null) {
+                administrativo.setFechaIngreso(new Date(dto.getFechaIngreso().getTime()));
+            }
+
             administrativo.setSalario(dto.getSalario());
             administrativo.setContrasenia(dto.getContrasenia());
+
             administrativoRepo.save(administrativo);
             return 0;
         }
+
         return 1;
     }
 
     public int delete(int idPersona) {
         Optional<Administrativo> found = administrativoRepo.findById(idPersona);
+
         if (found.isPresent()) {
             administrativoRepo.deleteById(idPersona);
             return 0;
         }
+
         return 1;
     }
 
     public int addEstadoToAdministrativo(int idPersona, int idEstado) {
         Optional<Administrativo> adminOpt = administrativoRepo.findById(idPersona);
         Optional<EstadoTrabajador> estadoOpt = estadoTrabajadorRepo.findById(idEstado);
+
         if (adminOpt.isPresent() && estadoOpt.isPresent()) {
             Administrativo administrativo = adminOpt.get();
             administrativo.setEstadoTrabajador(estadoOpt.get());
             administrativoRepo.save(administrativo);
             return 0;
         }
+
         return 1;
     }
 }
