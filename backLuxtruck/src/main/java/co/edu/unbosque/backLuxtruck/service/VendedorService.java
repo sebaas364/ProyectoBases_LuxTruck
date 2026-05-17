@@ -35,8 +35,12 @@ public class VendedorService {
     @Autowired
     private ZonaVentaRepository zonaVentaRepo;
     
-    @Autowired
-    private SecurityConfig sec;
+  private SecurityConfig sec;
+    
+    public VendedorService() {
+    	sec = new SecurityConfig();
+    }
+
 
     @Autowired
     private ModelMapper modelMapper;

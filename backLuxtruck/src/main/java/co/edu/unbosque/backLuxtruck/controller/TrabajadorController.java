@@ -42,7 +42,7 @@ public class TrabajadorController {
 	public ResponseEntity<String> create(@RequestParam String numeroDocumento, @RequestParam String tipoDocumento,
 			@RequestParam String primerNombre, @RequestParam(required = false) String segundoNombre,
 			@RequestParam String primerApellido, @RequestParam(required = false) String segundoApellido,
-			@RequestParam String telefono, @RequestParam String correo, @RequestParam Double salario,
+			@RequestParam String telefono, @RequestParam String correo,@RequestParam Date fechaIngreso, @RequestParam Double salario,
 			@RequestParam String contrasenia, @RequestParam Integer idEstadoTrabajador,
 			@RequestParam String estadoNombre) {
 

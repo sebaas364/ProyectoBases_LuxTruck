@@ -45,8 +45,12 @@ public class OperarioService {
     @Autowired
     private UtilizarRepository utilizarRepo;
     
-    @Autowired
-    private SecurityConfig sec;
+  private SecurityConfig sec;
+    
+    public OperarioService() {
+    	sec = new SecurityConfig();
+    }
+
 
     @Autowired
     private ModelMapper modelMapper;

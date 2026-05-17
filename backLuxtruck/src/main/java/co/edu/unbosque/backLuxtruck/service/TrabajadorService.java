@@ -19,8 +19,12 @@ public class TrabajadorService {
     @Autowired
     private TrabajadorRepository trabajadorRepo;
     
-    @Autowired
-    private SecurityConfig sec;
+  private SecurityConfig sec;
+    
+    public TrabajadorService() {
+    	sec = new SecurityConfig();
+    }
+
 
     @Autowired
     private ModelMapper modelMapper;

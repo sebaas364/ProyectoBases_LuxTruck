@@ -28,8 +28,11 @@ public class AdministrativoService {
     @Autowired
     private ModelMapper modelMapper;
     
-    @Autowired
     private SecurityConfig sec;
+    
+    public AdministrativoService() {
+    	sec = new SecurityConfig();
+    }
 
     public int create(AdministrativoDTO dto) {
         Optional<Administrativo> found = administrativoRepo.findById(dto.getIdPersona());
