@@ -1,5 +1,6 @@
 package co.edu.unbosque.backLuxtruck.service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -17,6 +18,7 @@ import co.edu.unbosque.backLuxtruck.repository.EstadoTrabajadorRepository;
 import co.edu.unbosque.backLuxtruck.repository.VendedorRepository;
 import co.edu.unbosque.backLuxtruck.repository.VentaRepository;
 import co.edu.unbosque.backLuxtruck.repository.ZonaVentaRepository;
+import co.edu.unbosque.backLuxtruck.security.SecurityConfig;
 
 @Service
 public class VendedorService {
@@ -32,6 +34,9 @@ public class VendedorService {
 
     @Autowired
     private ZonaVentaRepository zonaVentaRepo;
+    
+    @Autowired
+    private SecurityConfig sec;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -43,9 +48,9 @@ public class VendedorService {
             Vendedor entity = modelMapper.map(dto, Vendedor.class);
 
             if (dto.getFechaIngreso() != null) {
-                entity.setFechaIngreso(new java.sql.Date(dto.getFechaIngreso().getTime()));
+                entity.setFechaIngreso(new Date(dto.getFechaIngreso().getTime()));
             }
-
+            entity.setContrasenia(sec.hashingToSHA256(dto.getContrasenia()));
             vendedorRepo.save(entity);
             return 0;
         }
@@ -89,7 +94,11 @@ public class VendedorService {
             }
 
             vendedor.setSalario(dto.getSalario());
-            vendedor.setContrasenia(dto.getContrasenia());
+            
+            if (dto.getContrasenia() != null && !dto.getContrasenia().isBlank()) {
+                vendedor.setContrasenia(sec.hashingToSHA256(dto.getContrasenia()));
+            }
+            
             vendedor.setComision(dto.getComision());
 
             vendedorRepo.save(vendedor);

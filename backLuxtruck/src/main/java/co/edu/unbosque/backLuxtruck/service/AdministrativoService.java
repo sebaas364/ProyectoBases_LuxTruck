@@ -14,6 +14,7 @@ import co.edu.unbosque.backLuxtruck.model.Administrativo;
 import co.edu.unbosque.backLuxtruck.model.EstadoTrabajador;
 import co.edu.unbosque.backLuxtruck.repository.AdministrativoRepository;
 import co.edu.unbosque.backLuxtruck.repository.EstadoTrabajadorRepository;
+import co.edu.unbosque.backLuxtruck.security.SecurityConfig;
 
 @Service
 public class AdministrativoService {
@@ -26,6 +27,9 @@ public class AdministrativoService {
 
     @Autowired
     private ModelMapper modelMapper;
+    
+    @Autowired
+    private SecurityConfig sec;
 
     public int create(AdministrativoDTO dto) {
         Optional<Administrativo> found = administrativoRepo.findById(dto.getIdPersona());
@@ -34,8 +38,9 @@ public class AdministrativoService {
             Administrativo entity = modelMapper.map(dto, Administrativo.class);
 
             if (dto.getFechaIngreso() != null) {
-                entity.setFechaIngreso(new java.sql.Date(dto.getFechaIngreso().getTime()));
+                entity.setFechaIngreso(new Date(dto.getFechaIngreso().getTime()));
             }
+            entity.setContrasenia(sec.hashingToSHA256(dto.getContrasenia()));
 
             administrativoRepo.save(entity);
             return 0;
@@ -51,7 +56,7 @@ public class AdministrativoService {
             AdministrativoDTO dto = modelMapper.map(a, AdministrativoDTO.class);
 
             if (a.getFechaIngreso() != null) {
-                dto.setFechaIngreso(new java.util.Date(a.getFechaIngreso().getTime()));
+                dto.setFechaIngreso(new Date(a.getFechaIngreso().getTime()));
             }
 
             dtoList.add(dto);
@@ -81,7 +86,9 @@ public class AdministrativoService {
             }
 
             administrativo.setSalario(dto.getSalario());
-            administrativo.setContrasenia(dto.getContrasenia());
+            if (dto.getContrasenia() != null && !dto.getContrasenia().isBlank()) {
+                administrativo.setContrasenia(sec.hashingToSHA256(dto.getContrasenia()));
+            }
 
             administrativoRepo.save(administrativo);
             return 0;

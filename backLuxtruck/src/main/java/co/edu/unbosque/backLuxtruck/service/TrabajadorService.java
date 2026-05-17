@@ -1,5 +1,6 @@
 package co.edu.unbosque.backLuxtruck.service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -10,12 +11,16 @@ import org.springframework.stereotype.Service;
 import co.edu.unbosque.backLuxtruck.dto.TrabajadorDTO;
 import co.edu.unbosque.backLuxtruck.model.Trabajador;
 import co.edu.unbosque.backLuxtruck.repository.TrabajadorRepository;
+import co.edu.unbosque.backLuxtruck.security.SecurityConfig;
 
 @Service
 public class TrabajadorService {
 
     @Autowired
     private TrabajadorRepository trabajadorRepo;
+    
+    @Autowired
+    private SecurityConfig sec;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -25,10 +30,8 @@ public class TrabajadorService {
 
         if (found.isEmpty()) {
             Trabajador entity = modelMapper.map(dto, Trabajador.class);
-
-            if (dto.getFechaIngreso() != null) {
-                entity.setFechaIngreso(new java.sql.Date(dto.getFechaIngreso().getTime()));
-            }
+            entity.setContrasenia(sec.hashingToSHA256(dto.getContrasenia()));
+            entity.setFechaIngreso(new java.sql.Date(dto.getFechaIngreso().getTime()));
 
             trabajadorRepo.save(entity);
             return 0;
@@ -44,7 +47,7 @@ public class TrabajadorService {
             TrabajadorDTO dto = modelMapper.map(t, TrabajadorDTO.class);
 
             if (t.getFechaIngreso() != null) {
-                dto.setFechaIngreso(new java.util.Date(t.getFechaIngreso().getTime()));
+                dto.setFechaIngreso(new Date(t.getFechaIngreso().getTime()));
             }
 
             dtoList.add(dto);
@@ -69,11 +72,13 @@ public class TrabajadorService {
             trabajador.setCorreo(dto.getCorreo());
 
             if (dto.getFechaIngreso() != null) {
-                trabajador.setFechaIngreso(new java.sql.Date(dto.getFechaIngreso().getTime()));
+                trabajador.setFechaIngreso(new Date(dto.getFechaIngreso().getTime()));
             }
 
             trabajador.setSalario(dto.getSalario());
-            trabajador.setContrasenia(dto.getContrasenia());
+            if (dto.getContrasenia() != null && !dto.getContrasenia().isBlank()) {
+                trabajador.setContrasenia(sec.hashingToSHA256(dto.getContrasenia()));
+            }
 
             trabajadorRepo.save(trabajador);
             return 0;

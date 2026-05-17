@@ -22,6 +22,7 @@ import co.edu.unbosque.backLuxtruck.repository.EstadoTrabajadorRepository;
 import co.edu.unbosque.backLuxtruck.repository.MaquinaRepository;
 import co.edu.unbosque.backLuxtruck.repository.OperarioRepository;
 import co.edu.unbosque.backLuxtruck.repository.UtilizarRepository;
+import co.edu.unbosque.backLuxtruck.security.SecurityConfig;
 
 @Service
 public class OperarioService {
@@ -43,6 +44,9 @@ public class OperarioService {
 
     @Autowired
     private UtilizarRepository utilizarRepo;
+    
+    @Autowired
+    private SecurityConfig sec;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -51,6 +55,7 @@ public class OperarioService {
         Optional<Operario> found = operarioRepo.findById(dto.getIdPersona());
         if (found.isEmpty()) {
             Operario entity = modelMapper.map(dto, Operario.class);
+            entity.setContrasenia(sec.hashingToSHA256(dto.getContrasenia()));
             operarioRepo.save(entity);
             return 0;
         }
@@ -82,7 +87,10 @@ public class OperarioService {
             // Campos de Trabajador
             operario.setFechaIngreso((Date) dto.getFechaIngreso());
             operario.setSalario(dto.getSalario());
-            operario.setContrasenia(dto.getContrasenia());
+            
+            if (dto.getContrasenia() != null && !dto.getContrasenia().isBlank()) {
+                operario.setContrasenia(sec.hashingToSHA256(dto.getContrasenia()));
+            }
             // Campos propios de Operario
             operario.setDesempenio(dto.getDesempenio());
             operarioRepo.save(operario);

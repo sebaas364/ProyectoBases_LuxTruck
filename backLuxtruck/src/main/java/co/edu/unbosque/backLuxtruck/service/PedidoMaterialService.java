@@ -1,5 +1,6 @@
 package co.edu.unbosque.backLuxtruck.service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -43,11 +44,11 @@ public class PedidoMaterialService {
             PedidoMaterial entity = modelMapper.map(dto, PedidoMaterial.class);
 
             if (dto.getFechaPedido() != null) {
-                entity.setFechaPedido(new java.sql.Date(dto.getFechaPedido().getTime()));
+                entity.setFechaPedido(new Date(dto.getFechaPedido().getTime()));
             }
 
             if (dto.getFechaEntrega() != null) {
-                entity.setFechaEntrega(new java.sql.Date(dto.getFechaEntrega().getTime()));
+                entity.setFechaEntrega(new Date(dto.getFechaEntrega().getTime()));
             }
 
             pedidoMaterialRepo.save(entity);
