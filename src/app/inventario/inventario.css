@@ -1,6 +1,6 @@
 *{
-    margin: 0%;
-    padding: 0%;
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
     font-family: Arial, Helvetica, sans-serif;
 }
@@ -9,35 +9,23 @@ body{
     background: #0f172a;
 }
 
+/* LAYOUT */
+
 .layout{
     width: 100%;
-    display: flex;
     min-height: 100vh;
+    display: flex;
     background: #0f172a;
 }
 
 /* SIDEBAR */
 
 .sidebar{
-    width: clamp (220px,16%,300px);
+    width: 18%;
+    min-width: 220px;
     background: #111827;
     padding: 2%;
     border-right: 1px solid #1e293b;
-}
-
-.logo-area{
-    margin-bottom: 20%;
-}
-
-.logo-area h2{
-    color: white;
-    font-size: 2vw;
-    margin-bottom: 3%;
-}
-
-.logo-area span{
-    color: #94a3b8;
-    font-size: 0.9vw;
 }
 
 .sidebar nav{
@@ -46,13 +34,20 @@ body{
     gap: 2vh;
 }
 
+.logo{
+    width: 80%;
+    max-width: 180px;
+    margin: 0 auto 10%;
+    display: block;
+}
+
 .sidebar nav a{
     text-decoration: none;
     color: #cbd5e1;
-    padding: 6%;
+    padding: 5%;
     border-radius: 0.8vw;
     transition: 0.3s;
-    font-size: 1vw;
+    font-size: 1rem;
 }
 
 .sidebar nav a:hover{
@@ -60,15 +55,15 @@ body{
 }
 
 .sidebar nav .active{
-    background: #2362eb;
+    background: #2563eb;
     color: white;
 }
 
 /* MAIN */
 
 .main-content{
-   width: 84%;
-   padding: 2%;
+    width: 82%;
+    padding: 2%;
 }
 
 /* TOPBAR */
@@ -83,15 +78,15 @@ body{
 
 .topbar h1{
     color: white;
-    font-size: 2.5vw;
+    font-size: 2rem;
 }
 
 .fecha-box{
     background: #1e293b;
-    padding: 1% 2%;
-    border-radius: 0.8vw;
     color: white;
-    font-size: 1vw;
+    padding: 1% 2%;
+    border-radius: 0.6vw;
+    font-size: 0.95rem;
 }
 
 /* CARDS */
@@ -99,17 +94,17 @@ body{
 .cards{
     width: 100%;
     display: flex;
-    gap: 1.5%;
     flex-wrap: wrap;
+    gap: 2%;
     margin-bottom: 3%;
 }
 
 .card{
-    flex: 1;
-    min-width: 18%;
+    flex: 1 1 18%;
+    min-width: 180px;
     background: linear-gradient(135deg,#1e293b,#334155);
     padding: 2%;
-    border-radius: 1.2vw;
+    border-radius: 1vw;
     color: white;
     position: relative;
     overflow: hidden;
@@ -118,8 +113,8 @@ body{
 .card::before{
     content: "";
     position: absolute;
-    top: 0%;
-    left: 0%;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 0.5vh;
 }
@@ -146,13 +141,18 @@ body{
 
 .card h3{
     color: #cbd5e1;
-    margin-bottom: 5%;
-    font-size: 0.9vw;
+    margin-bottom: 6%;
+    font-size: 0.9rem;
 }
 
 .card h1{
-    font-size: 3vw;
+    font-size: 2rem;
     margin-bottom: 5%;
+}
+
+.card span{
+    color: #cbd5e1;
+    font-size: 0.9rem;
 }
 
 /* TABLES */
@@ -160,22 +160,23 @@ body{
 .tables{
     width: 100%;
     display: flex;
-    gap: 2%;
     flex-wrap: wrap;
+    gap: 2%;
 }
 
 .table-box{
-    flex: 1;
-    min-width: 45%;
+    flex: 1 1 48%;
+    min-width: 320px;
     background: #1e293b;
-    border-radius: 1.2vw;
+    border-radius: 1vw;
     padding: 2%;
+    overflow-x: auto;
 }
 
 .table-box h2{
     color: white;
     margin-bottom: 4%;
-    font-size: 1.3vw;
+    font-size: 1.2rem;
 }
 
 /* TABLE */
@@ -189,20 +190,20 @@ th{
     color: #94a3b8;
     text-align: left;
     padding: 3%;
-    font-size: 0.8vw;
+    font-size: 0.85rem;
 }
 
 td{
     padding: 3%;
-    border-top: 0.1vh solid #334155;
+    border-top: 1px solid #334155;
     color: white;
-    font-size: 0.9vw;
+    font-size: 0.9rem;
 }
 
 td p{
     color: #94a3b8;
-    font-size: clamp(12px,0.9vw,18px);
     margin-top: 2%;
+    font-size: 0.8rem;
 }
 
 /* STATUS */
@@ -210,7 +211,7 @@ td p{
 .status{
     padding: 4% 8%;
     border-radius: 2vw;
-    font-size: clamp(12px,0.9vw,18px);
+    font-size: 0.8rem;
     font-weight: bold;
 }
 
@@ -233,17 +234,54 @@ td p{
     background: rgba(245,158,11,0.2);
     color: #fbbf24;
 }
-.logo{
-    width: 12vw;
-    max-width: 180px;
-    height: auto;
-   position: relative;
-   left: -2vw;
+
+/* BOTONES */
+
+.acciones{
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+    gap: 2%;
+    margin-top: 3%;
+    flex-wrap: wrap;
 }
-@media (max-width: 1000px) {
-    
+
+.btn{
+    border: none;
+    padding: 1% 2%;
+    border-radius: 0.8vw;
+    color: white;
+    font-size: 0.95rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.crear{
+    background: #2563eb;
+}
+
+.crear:hover{
+    background: #1d4ed8;
+    transform: translateY(-2px);
+}
+
+.cantidad{
+    background: #16a34a;
+}
+
+.cantidad:hover{
+    background: #15803d;
+    transform: translateY(-2px);
+}
+
+/* RESPONSIVE TABLET */
+
+@media (max-width: 1000px){
+
     .sidebar{
         width: 25%;
+        min-width: 180px;
     }
 
     .main-content{
@@ -251,34 +289,31 @@ td p{
     }
 
     .card{
-        flex-direction: column;
-    }
-
-    .tables {
-        display: flex;
-        flex-wrap: wrap;
-       gap: 2%;
+        flex: 1 1 45%;
     }
 
     .table-box{
-        flex: 1;
-        min-width: 400px;
-        overflow-x: auto;
+        flex: 1 1 100%;
     }
 
 }
-@media (max-width: 700px) {
-    .layout {
+
+/* RESPONSIVE MOBILE */
+
+@media (max-width: 700px){
+
+    .layout{
         flex-direction: column;
     }
 
     .sidebar{
         width: 100%;
-        min-height: auto;
+        min-width: 100%;
     }
 
     .main-content{
         width: 100%;
+        padding: 4%;
     }
 
     .topbar{
@@ -286,32 +321,41 @@ td p{
         align-items: flex-start;
         gap: 2vh;
     }
-    .acciones bottom{
-        margin-right: 10px;
-        background: #94a3b8;
-        color: white;
-        padding: 8px 14px ;
-        border: none;
-        border-radius: 6px;
-        cursor: pointer;
 
-    }
-    .formulario { 
-        margin: 15px 0;
-        padding: 15px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        max-width: 400px;
+    .topbar h1{
+        font-size: 1.5rem;
     }
 
-    input, select {
-        display: block;
+    .cards{
+        flex-direction: column;
+    }
+
+    .card{
         width: 100%;
-        margin: 8px 0;
-        padding: 6px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-
     }
-    
+
+    .table-box{
+        width: 100%;
+        min-width: 100%;
+    }
+
+    .acciones{
+        flex-direction: column;
+    }
+
+    .btn{
+        width: 100%;
+        padding: 4%;
+    }
+
+    .sidebar nav a{
+        font-size: 0.95rem;
+    }
+
+    th,
+    td{
+        font-size: 0.8rem;
+    }
+
 }
+
