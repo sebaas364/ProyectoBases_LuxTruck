@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import co.edu.unbosque.backLuxtruck.dto.LoginDTO;
 import co.edu.unbosque.backLuxtruck.dto.TrabajadorDTO;
 import co.edu.unbosque.backLuxtruck.model.Trabajador;
 import co.edu.unbosque.backLuxtruck.repository.TrabajadorRepository;
@@ -100,5 +101,19 @@ public class TrabajadorService {
         }
 
         return 1;
+    }
+    
+    public TrabajadorDTO login(LoginDTO dto) {
+        Optional<Trabajador> found = trabajadorRepo.findByCorreo(dto.getCorreo());
+ 
+        if (found.isPresent()) {
+            Trabajador trabajador = found.get();
+            String hashIngresado = sec.hashingToSHA256(dto.getContrasenia());
+ 
+            if (trabajador.getContrasenia().equals(hashIngresado)) {
+                return modelMapper.map(trabajador, TrabajadorDTO.class);
+            }
+        }
+        return null;
     }
 }

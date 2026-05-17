@@ -21,10 +21,10 @@ public class OperarioDTO extends TrabajadorDTO{
 
 	public OperarioDTO(Integer idPersona, String numeroDocumento, String tipoDocumento, String primerNombre,
 			String segundoNombre, String primerApellido, String segundoApellido, String telefono, String correo,
-			Date fechaIngreso, Double salario, String estado, String contrasenia,
+			Date fechaIngreso, Double salario, String contrasenia,
 			EstadoTrabajadorDTO estadoTrabajador) {
 		super(idPersona, numeroDocumento, tipoDocumento, primerNombre, segundoNombre, primerApellido, segundoApellido, telefono,
-				correo, fechaIngreso, salario, estado, contrasenia, estadoTrabajador);
+				correo, fechaIngreso, salario, contrasenia, estadoTrabajador);
 		// TODO Auto-generated constructor stub
 	}
 
