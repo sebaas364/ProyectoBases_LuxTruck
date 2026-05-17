@@ -20,7 +20,7 @@ import co.edu.unbosque.backLuxtruck.service.ProductoService;
 
 @RestController
 @RequestMapping("/producto")
-@CrossOrigin
+@CrossOrigin("*")
 public class ProductoController {
 
 	@Autowired

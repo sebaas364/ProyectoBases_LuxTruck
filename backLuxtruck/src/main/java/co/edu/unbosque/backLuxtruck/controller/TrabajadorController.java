@@ -23,7 +23,7 @@ import co.edu.unbosque.backLuxtruck.service.TrabajadorService;
 
 @RestController
 @RequestMapping("/trabajador")
-@CrossOrigin
+@CrossOrigin("*")
 public class TrabajadorController {
 
 	@Autowired
@@ -31,10 +31,6 @@ public class TrabajadorController {
 
 	@PostMapping(path = "/createjson", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> createWithJSON(@RequestBody TrabajadorDTO nuevoTrabajador) {
-		if (nuevoTrabajador.getPrimerNombre() != null && (nuevoTrabajador.getPrimerNombre().contains("<​")
-				|| nuevoTrabajador.getPrimerNombre().contains(">"))) {
-			return ResponseEntity.badRequest().body("Solicitud con caracteres inválidos");
-		}
 
 		int estado = trabajadorServ.create(nuevoTrabajador);
 		return estado == 0 ? ResponseEntity.status(HttpStatus.CREATED).body("Trabajador creado exitosamente")

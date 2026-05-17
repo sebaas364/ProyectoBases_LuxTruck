@@ -19,7 +19,7 @@ import co.edu.unbosque.backLuxtruck.service.EspecialidadService;
 
 @RestController
 @RequestMapping("/especialidad")
-@CrossOrigin
+@CrossOrigin("*")
 public class EspecialidadController {
 
 	@Autowired

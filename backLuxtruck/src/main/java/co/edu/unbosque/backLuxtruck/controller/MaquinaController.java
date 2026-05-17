@@ -20,7 +20,7 @@ import co.edu.unbosque.backLuxtruck.service.MaquinaService;
 
 @RestController
 @RequestMapping("/maquina")
-@CrossOrigin
+@CrossOrigin("*")
 public class MaquinaController {
 
 	@Autowired

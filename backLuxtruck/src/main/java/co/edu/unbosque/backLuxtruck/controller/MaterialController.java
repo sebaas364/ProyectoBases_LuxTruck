@@ -19,7 +19,7 @@ import co.edu.unbosque.backLuxtruck.service.MaterialService;
 
 @RestController
 @RequestMapping("/material")
-@CrossOrigin
+@CrossOrigin("*")
 public class MaterialController {
 
 	@Autowired

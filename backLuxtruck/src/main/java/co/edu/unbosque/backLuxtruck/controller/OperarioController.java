@@ -20,7 +20,7 @@ import co.edu.unbosque.backLuxtruck.service.OperarioService;
 
 @RestController
 @RequestMapping("/operario")
-@CrossOrigin
+@CrossOrigin("*")
 public class OperarioController {
 
 	@Autowired

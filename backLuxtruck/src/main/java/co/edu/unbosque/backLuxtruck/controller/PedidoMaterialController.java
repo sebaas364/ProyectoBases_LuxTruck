@@ -24,7 +24,7 @@ import co.edu.unbosque.backLuxtruck.service.PedidoMaterialService;
 
 @RestController
 @RequestMapping("/pedidomaterial")
-@CrossOrigin
+@CrossOrigin("*")
 public class PedidoMaterialController {
 
 	@Autowired

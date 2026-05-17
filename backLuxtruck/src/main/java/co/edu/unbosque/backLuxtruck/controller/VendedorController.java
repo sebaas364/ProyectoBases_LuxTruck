@@ -25,7 +25,7 @@ import co.edu.unbosque.backLuxtruck.service.VendedorService;
 
 @RestController
 @RequestMapping("/vendedor")
-@CrossOrigin
+@CrossOrigin("*")
 public class VendedorController {
 
 	@Autowired

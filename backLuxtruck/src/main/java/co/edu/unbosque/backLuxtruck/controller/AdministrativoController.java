@@ -20,7 +20,7 @@ import co.edu.unbosque.backLuxtruck.service.AdministrativoService;
 
 @RestController
 @RequestMapping("/administrativo")
-@CrossOrigin
+@CrossOrigin("*")
 public class AdministrativoController {
 
 	@Autowired
