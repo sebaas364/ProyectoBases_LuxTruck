@@ -109,3 +109,36 @@ p{
 
 
 }
+/* Estados de mensaje */
+p.error {
+  color: #dc2626;
+  margin-top: 4%;
+  font-weight: bold;
+  font-size: 90%;
+  text-align: center;
+}
+
+p.success {
+  color: #16a34a;
+  margin-top: 4%;
+  font-weight: bold;
+  font-size: 90%;
+  text-align: center;
+}
+
+/* Estado cargando en el botón */
+button[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+button.cargando {
+  background: #1e40af;
+  transform: none !important;
+}
+
+input[disabled] {
+  background: #f3f4f6;
+  cursor: not-allowed;
+}

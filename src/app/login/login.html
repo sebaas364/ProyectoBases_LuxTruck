@@ -1,32 +1,37 @@
 <div class="page">
 
-   
+  <div class="login-container">
 
-    <div class="login-container">
-       <img src="logo.png" class="logo">
-        <h2>Bienvenido</h2>
-        <span>Inicia sesión para continuar</span>
+    <img src="logo.png" class="logo" alt="LuxTruck">
 
-        <input
-            type="email"
-            placeholder="Correo electrónico"
-            [(ngModel)]="correo"
-        >
+    <h2>Bienvenido</h2>
+    <span>Inicia sesión para continuar</span>
 
-        <input
-            type="password"
-            placeholder="Contraseña"
-            [(ngModel)]="password"
-        >
+    <input
+      type="email"
+      placeholder="Correo electrónico"
+      [(ngModel)]="correo"
+      (keydown)="onKeyDown($event)"
+      [disabled]="cargando"
+      autocomplete="email"
+    >
 
+    <input
+      type="password"
+      placeholder="Contraseña"
+      [(ngModel)]="password"
+      (keydown)="onKeyDown($event)"
+      [disabled]="cargando"
+      autocomplete="current-password"
+    >
 
+    <button (click)="login()" [disabled]="cargando" [class.cargando]="cargando">
+      <span *ngIf="!cargando">Ingresar</span>
+      <span *ngIf="cargando">Verificando...</span>
+    </button>
 
-        <button (click)="login()">
-            Ingresar
-        </button>
+    <p *ngIf="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</p>
 
-        <p>{{ mensaje }}</p>
-
-    </div>
+  </div>
 
 </div>
