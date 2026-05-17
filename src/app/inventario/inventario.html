@@ -1,30 +1,34 @@
 <div class="layout">
+
+    <!-- SIDEBAR -->
+
     <aside class="sidebar">
 
-       <nav>
+        <nav>
+
             <img src="logo.png" class="logo">
 
             <a routerLink="/dashboard">
                 Dashboard
             </a>
 
-            <a routerLink="/inventario">
+            <a routerLink="/inventario" class="active">
                 Inventario
             </a>
 
-            <a href="#">
+            <a routerLink="/ventas">
                 Ventas
             </a>
 
-            <a href="#">
+            <a routerLink="/productos">
                 Productos
             </a>
 
-            <a href="#">
+            <a routerLink="/maquinas">
                 Máquinas
             </a>
 
-            <a href="#">
+            <a routerLink="/proveedores">
                 Proveedores
             </a>
 
@@ -36,7 +40,12 @@
 
     </aside>
 
+
+    <!-- MAIN -->
+
     <main class="main-content">
+
+        <!-- TOPBAR -->
 
         <div class="topbar">
 
@@ -44,10 +53,7 @@
                 <h1>INVENTARIO</h1>
             </div>
 
-
-
         </div>
-
 
 
         <!-- CARDS -->
@@ -58,7 +64,7 @@
 
                 <h3>REFERENCIAS</h3>
 
-                <h1>     4</h1>
+                <h1>4</h1>
 
                 <span>TOTALES</span>
 
@@ -66,39 +72,35 @@
 
             <div class="card red">
 
-                <h3>PRODUCTOS CRITICOS</h3>
+                <h3>PRODUCTOS CRÍTICOS</h3>
 
                 <h1>0</h1>
 
-                <span>REFERENCIAS POR DEBAJO DEL STOCK MINIMO</span>
+                <span>REFERENCIAS POR DEBAJO DEL STOCK MÍNIMO</span>
 
             </div>
-
-      
 
         </div>
 
 
-
-        <!-- TABLES -->
+        <!-- TABLA -->
 
         <div class="tables">
 
-            <!-- MAQUINAS -->
-
             <div class="table-box">
 
-                <h2>ESTADO DE MÁQUINAS</h2>
+                <h2>PRODUCTOS EN INVENTARIO</h2>
 
                 <table>
 
                     <thead>
 
                         <tr>
+
                             <th>CÓDIGO</th>
-                            <th>Nombre</th>
+                            <th>NOMBRE</th>
                             <th>STOCK</th>
-                            <th>CANTIDAD MINIMA</th>
+                            <th>CANTIDAD MÍNIMA</th>
                             <th>ESTADO</th>
                             <th>PRECIO UNITARIO</th>
 
@@ -111,46 +113,149 @@
                         <tr>
 
                             <td>
-                                <strong>pq3</strong>
-
+                                <strong>PQ3</strong>
                             </td>
 
-                            <td>luz</td>
+                            <td>Luz</td>
 
                             <td>
                                 <strong>5552</strong>
                             </td>
 
                             <td>20</td>
+
                             <td>
-                               <span class="status free">
+
+                                <span class="status free">
                                     BIEN
-                                </span>    
-                            </td>  
-                            <td>$ 20.300</td>                      
+                                </span>
+
+                            </td>
+
+                            <td>$20.300</td>
 
                         </tr>
-
 
                     </tbody>
 
                 </table>
 
             </div>
+
         </div>
-        <!-- ACCIONES INVENTARIO -->
 
-<div class="acciones">
 
-    <button class="btn crear">
-        + Crear Producto
-    </button>
+        <!-- BOTONES -->
 
-    <button class="btn cantidad">
-        # Modificar Cantidad
-    </button>
+        <div class="acciones">
 
-</div>
+            <button class="btn crear" (click)="abrirCrear()">
+                + Crear Producto
+            </button>
+
+            <button class="btn cantidad" (click)="abrirCantidad()">
+                + Agregar Cantidad
+            </button>
+
+        </div>
+
+
+        <!-- MODAL CREAR -->
+
+        <div class="modal" *ngIf="mostrarCrear">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h2>Nueva Referencia</h2>
+
+                    <button class="cerrar" (click)="cerrarModales()">
+                        X
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                  <input type="text" placeholder="Código" required>
+
+                    <input 
+                        type="text"  placeholder="Nombre del producto" required>
+
+                    <input 
+                        type="number" 
+                        placeholder="Cantidad inicial"
+                        min="0">
+
+                    <input 
+                        type="number" 
+                        placeholder="Stock mínimo"
+                        min="0">
+
+                    <input 
+                        type="number" 
+                        placeholder="Precio"
+                        min="0">
+
+                    <select>
+
+                        <option>Categoría</option>
+                        <option>Bombillos</option>
+                        <option>Kits Xenon</option>
+                        <option>Accesorios</option>
+
+                    </select>
+
+                    <button class="guardar">
+                        Guardar Producto
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MODAL AGREGAR CANTIDAD -->
+
+        <div class="modal" *ngIf="mostrarCantidad">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h2>Agregar Cantidad</h2>
+
+                    <button class="cerrar" (click)="cerrarModales()">
+                        X
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <select>
+
+                        <option>Seleccionar referencia</option>
+                        <option>Bombillo Xenon D2S</option>
+                        <option>Kit Xenon H7</option>
+
+                    </select>
+
+                    <input type="number"  placeholder="Cantidad (+ entrada / - salida)">
+
+                    <button class="guardar">
+                        Actualizar Stock
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
     </main>
 
 </div>
