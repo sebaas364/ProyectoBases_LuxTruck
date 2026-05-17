@@ -16,8 +16,6 @@ body{
     background: #0f172a;
 }
 
-/* SIDEBAR */
-
 .sidebar{
     width: clamp (220px,16%,300px);
     background: #111827;
@@ -64,14 +62,10 @@ body{
     color: white;
 }
 
-/* MAIN */
-
 .main-content{
    width: 84%;
    padding: 2%;
 }
-
-/* TOPBAR */
 
 .topbar{
     width: 100%;
@@ -93,8 +87,6 @@ body{
     color: white;
     font-size: 1vw;
 }
-
-/* CARDS */
 
 .cards{
     width: 100%;
@@ -155,8 +147,6 @@ body{
     margin-bottom: 5%;
 }
 
-/* TABLES */
-
 .tables{
     width: 100%;
     display: flex;
@@ -177,8 +167,6 @@ body{
     margin-bottom: 4%;
     font-size: 1.3vw;
 }
-
-/* TABLE */
 
 table{
     width: 100%;
@@ -204,8 +192,6 @@ td p{
     font-size: clamp(12px,0.9vw,18px);
     margin-top: 2%;
 }
-
-/* STATUS */
 
 .status{
     padding: 4% 8%;

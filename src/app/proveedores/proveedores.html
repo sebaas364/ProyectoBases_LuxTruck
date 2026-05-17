@@ -1,0 +1,414 @@
+<div class="layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <nav>
+
+            <img src="logo.png" class="logo">
+
+            <a routerLink="/dashboard">
+                Dashboard
+            </a>
+
+            <a routerLink="/inventario">
+                Inventario
+            </a>
+
+            <a href="#">
+                Ventas
+            </a>
+
+            <a href="#">
+                Productos
+            </a>
+
+            <a href="#">
+                Máquinas
+            </a>
+
+            <a routerLink="/proveedores" class="active">
+                Proveedores
+            </a>
+
+            <a routerLink="/usuarios">
+                Usuarios
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main-content">
+
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+
+            <div>
+                <h1>PROVEEDORES</h1>
+            </div>
+
+        </div>
+
+
+        <!-- CARDS -->
+
+        <div class="cards">
+
+            <div class="card blue">
+
+                <h3>PROVEEDORES ACTIVOS</h3>
+
+                <h1>8</h1>
+
+                <span>Actualmente vinculados</span>
+
+            </div>
+
+            <div class="card red">
+
+                <h3>PROVEEDORES INACTIVOS</h3>
+
+                <h1>2</h1>
+
+                <span>Sin actividad</span>
+
+            </div>
+
+            <div class="card green">
+
+                <h3>MATERIALES REGISTRADOS</h3>
+
+                <h1>54</h1>
+
+                <span>Materiales suministrados</span>
+
+            </div>
+
+        </div>
+
+
+        <!-- BOTONES CRUD -->
+
+        <div class="acciones">
+
+            <button class="btn crear" (click)="abrirCrearProveedor()">
+                + Crear Proveedor
+            </button>
+
+            <button class="btn editarBtn" (click)="abrirPedidoMaterial()">
+                + Registrar Pedido
+            </button>
+
+            <button class="btn inactivarBtn" (click)="abrirEstadoProveedor()">
+                Cambiar Estado
+            </button>
+
+        </div>
+
+
+        <!-- TABLA PROVEEDORES -->
+
+        <div class="tables">
+
+            <div class="table-box">
+
+                <h2>LISTA DE PROVEEDORES</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>PROVEEDOR</th>
+                            <th>TIPO</th>
+                            <th>CALIFICACIÓN</th>
+                            <th>TIEMPO ENTREGA</th>
+                            <th>ESTADO</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                <strong>Autolux SAS</strong>
+                            </td>
+
+                            <td>Nacional</td>
+
+                            <td>4.8</td>
+
+                            <td>3 días</td>
+
+                            <td>
+
+                                <span class="status free">
+                                    Activo
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                <strong>Lumix Import</strong>
+                            </td>
+
+                            <td>Internacional</td>
+
+                            <td>4.2</td>
+
+                            <td>10 días</td>
+
+                            <td>
+
+                                <span class="status critical">
+                                    Inactivo
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <br>
+
+
+        <!-- TABLA PEDIDOS -->
+
+        <div class="table-box">
+
+            <h2>PEDIDOS DE MATERIAL</h2>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>MATERIAL</th>
+                        <th>CANTIDAD</th>
+                        <th>FECHA PEDIDO</th>
+                        <th>FECHA ENTREGA</th>
+                        <th>PROVEEDOR</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>
+                            <strong>Bombillo Xenon</strong>
+                        </td>
+
+                        <td>250</td>
+
+                        <td>10/05/2026</td>
+
+                        <td>14/05/2026</td>
+
+                        <td>Autolux SAS</td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>
+                            <strong>Cable Arnés</strong>
+                        </td>
+
+                        <td>120</td>
+
+                        <td>12/05/2026</td>
+
+                        <td>20/05/2026</td>
+
+                        <td>Lumix Import</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- MODAL CREAR PROVEEDOR -->
+
+        <div class="modal" *ngIf="mostrarCrearProveedor">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h2>Crear Proveedor</h2>
+
+                    <button class="cerrar" (click)="cerrarModales()">
+                        X
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <input 
+                        type="text" 
+                        placeholder="Nombre proveedor"
+                        required>
+
+                    <select>
+
+                        <option>Tipo proveedor</option>
+                        <option>Nacional</option>
+                        <option>Internacional</option>
+
+                    </select>
+
+                    <input 
+                        type="number" 
+                        placeholder="Calificación">
+
+                    <input 
+                        type="text" 
+                        placeholder="Tiempo promedio entrega">
+
+                    <button class="guardar">
+                        Guardar Proveedor
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MODAL PEDIDO MATERIAL -->
+
+        <div class="modal" *ngIf="mostrarPedidoMaterial">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h2>Registrar Pedido</h2>
+
+                    <button class="cerrar" (click)="cerrarModales()">
+                        X
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <select>
+
+                        <option>Proveedor</option>
+                        <option>Autolux SAS</option>
+                        <option>Lumix Import</option>
+
+                    </select>
+
+                    <select>
+
+                        <option>Material</option>
+                        <option>Bombillo Xenon</option>
+                        <option>Cable Arnés</option>
+
+                    </select>
+
+                    <input 
+                        type="number" 
+                        placeholder="Cantidad material">
+
+                    <input 
+                        type="date">
+
+                    <input 
+                        type="date">
+
+                    <button class="guardar">
+                        Registrar Pedido
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MODAL CAMBIAR ESTADO -->
+
+        <div class="modal" *ngIf="mostrarEstadoProveedor">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h2>Cambiar Estado</h2>
+
+                    <button class="cerrar" (click)="cerrarModales()">
+                        X
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <select>
+
+                        <option>Seleccionar proveedor</option>
+                        <option>Autolux SAS</option>
+                        <option>Lumix Import</option>
+
+                    </select>
+
+                    <select>
+
+                        <option>Nuevo estado</option>
+                        <option>Activo</option>
+                        <option>Inactivo</option>
+
+                    </select>
+
+                    <button class="guardar">
+                        Actualizar Estado
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>

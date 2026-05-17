@@ -16,11 +16,11 @@
                 Inventario
             </a>
 
-            <a routerLink="/ventas">
+            <a href="#">
                 Ventas
             </a>
 
-            <a routerLink="/productos">
+            <a href="#">
                 Productos
             </a>
 
@@ -45,6 +45,7 @@
 
     <main class="main-content">
 
+
         <!-- TOPBAR -->
 
         <div class="topbar">
@@ -66,7 +67,17 @@
 
                 <h1>4</h1>
 
-                <span>TOTALES</span>
+                <span>Total registradas</span>
+
+            </div>
+
+            <div class="card green">
+
+                <h3>STOCK TOTAL</h3>
+
+                <h1>5520</h1>
+
+                <span>Unidades disponibles</span>
 
             </div>
 
@@ -76,9 +87,24 @@
 
                 <h1>0</h1>
 
-                <span>REFERENCIAS POR DEBAJO DEL STOCK MÍNIMO</span>
+                <span>Por debajo del mínimo</span>
 
             </div>
+
+        </div>
+
+
+        <!-- BOTONES -->
+
+        <div class="acciones">
+
+            <button class="btn crear" (click)="abrirCrear()">
+                + Crear Referencia
+            </button>
+
+            <button class="btn cantidad" (click)="abrirCantidad()">
+                + Actualizar Cantidad
+            </button>
 
         </div>
 
@@ -89,7 +115,7 @@
 
             <div class="table-box">
 
-                <h2>PRODUCTOS EN INVENTARIO</h2>
+                <h2>INVENTARIO GENERAL</h2>
 
                 <table>
 
@@ -100,7 +126,7 @@
                             <th>CÓDIGO</th>
                             <th>NOMBRE</th>
                             <th>STOCK</th>
-                            <th>CANTIDAD MÍNIMA</th>
+                            <th>STOCK MÍNIMO</th>
                             <th>ESTADO</th>
                             <th>PRECIO UNITARIO</th>
 
@@ -113,26 +139,74 @@
                         <tr>
 
                             <td>
-                                <strong>PQ3</strong>
+                                <strong>MAT-001</strong>
                             </td>
 
-                            <td>Luz</td>
+                            <td>Bombillo Xenon D2S</td>
 
-                            <td>
-                                <strong>5552</strong>
-                            </td>
+                            <td>250</td>
 
                             <td>20</td>
 
                             <td>
 
                                 <span class="status free">
-                                    BIEN
+                                    Disponible
                                 </span>
 
                             </td>
 
-                            <td>$20.300</td>
+                            <td>$20.000</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                <strong>MAT-002</strong>
+                            </td>
+
+                            <td>Cable Arnés</td>
+
+                            <td>8</td>
+
+                            <td>15</td>
+
+                            <td>
+
+                                <span class="status critical">
+                                    Crítico
+                                </span>
+
+                            </td>
+
+                            <td>$8.000</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                <strong>MAT-003</strong>
+                            </td>
+
+                            <td>Kit Xenon H7</td>
+
+                            <td>55</td>
+
+                            <td>10</td>
+
+                            <td>
+
+                                <span class="status free">
+                                    Disponible
+                                </span>
+
+                            </td>
+
+                            <td>$35.000</td>
 
                         </tr>
 
@@ -145,22 +219,7 @@
         </div>
 
 
-        <!-- BOTONES -->
-
-        <div class="acciones">
-
-            <button class="btn crear" (click)="abrirCrear()">
-                + Crear Producto
-            </button>
-
-            <button class="btn cantidad" (click)="abrirCantidad()">
-                + Agregar Cantidad
-            </button>
-
-        </div>
-
-
-        <!-- MODAL CREAR -->
+        <!-- MODAL CREAR REFERENCIA -->
 
         <div class="modal" *ngIf="mostrarCrear">
 
@@ -178,37 +237,40 @@
 
                 <div class="modal-body">
 
-                  <input type="text" placeholder="Código" required>
+                    <input 
+                        type="text" 
+                        placeholder="Código referencia"
+                        required>
 
                     <input 
-                        type="text"  placeholder="Nombre del producto" required>
-
-                    <input 
-                        type="number" 
-                        placeholder="Cantidad inicial"
-                        min="0">
-
-                    <input 
-                        type="number" 
-                        placeholder="Stock mínimo"
-                        min="0">
+                        type="text" 
+                        placeholder="Nombre material"
+                        required>
 
                     <input 
                         type="number" 
-                        placeholder="Precio"
-                        min="0">
+                        placeholder="Precio unitario">
+
+                    <input 
+                        type="number" 
+                        placeholder="Stock mínimo">
 
                     <select>
 
                         <option>Categoría</option>
+
                         <option>Bombillos</option>
+
                         <option>Kits Xenon</option>
+
+                        <option>Cables</option>
+
                         <option>Accesorios</option>
 
                     </select>
 
                     <button class="guardar">
-                        Guardar Producto
+                        Guardar Referencia
                     </button>
 
                 </div>
@@ -218,7 +280,7 @@
         </div>
 
 
-        <!-- MODAL AGREGAR CANTIDAD -->
+        <!-- MODAL ACTUALIZAR CANTIDAD -->
 
         <div class="modal" *ngIf="mostrarCantidad">
 
@@ -226,7 +288,7 @@
 
                 <div class="modal-header">
 
-                    <h2>Agregar Cantidad</h2>
+                    <h2>Actualizar Cantidad</h2>
 
                     <button class="cerrar" (click)="cerrarModales()">
                         X
@@ -239,12 +301,24 @@
                     <select>
 
                         <option>Seleccionar referencia</option>
+
                         <option>Bombillo Xenon D2S</option>
+
+                        <option>Cable Arnés</option>
+
                         <option>Kit Xenon H7</option>
 
                     </select>
 
-                    <input type="number"  placeholder="Cantidad (+ entrada / - salida)">
+                    <input 
+                        type="number" 
+                        placeholder="Cantidad (+ o -)">
+
+                    <p class="info-stock">
+
+                        No se permite dejar el inventario en negativo.
+
+                    </p>
 
                     <button class="guardar">
                         Actualizar Stock

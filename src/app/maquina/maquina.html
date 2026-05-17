@@ -1,0 +1,393 @@
+<div class="layout">
+
+    <!-- SIDEBAR -->
+
+    <aside class="sidebar">
+
+        <nav>
+
+            <img src="logo.png" class="logo">
+
+            <a routerLink="/dashboard">
+                Dashboard
+            </a>
+
+            <a routerLink="/inventario">
+                Inventario
+            </a>
+
+            <a href="#">
+                Ventas
+            </a>
+
+            <a href="#">
+                Productos
+            </a>
+
+            <a routerLink="/maquinas" class="active">
+                Máquinas
+            </a>
+
+            <a routerLink="/proveedores">
+                Proveedores
+            </a>
+
+            <a routerLink="/usuarios">
+                Usuarios
+            </a>
+
+        </nav>
+
+    </aside>
+
+
+    <!-- MAIN -->
+
+    <main class="main-content">
+
+
+        <!-- TOPBAR -->
+
+        <div class="topbar">
+
+            <div>
+                <h1>MÁQUINAS</h1>
+            </div>
+
+        </div>
+
+
+        <!-- CARDS -->
+
+        <div class="cards">
+
+            <div class="card blue">
+
+                <h3>MÁQUINAS ACTIVAS</h3>
+
+                <h1>4</h1>
+
+                <span>Actualmente operando</span>
+
+            </div>
+
+            <div class="card red">
+
+                <h3>MÁQUINAS INACTIVAS</h3>
+
+                <h1>1</h1>
+
+                <span>Fuera de servicio</span>
+
+            </div>
+
+            <div class="card green">
+
+                <h3>PRODUCCIÓN TOTAL</h3>
+
+                <h1>820</h1>
+
+                <span>Productos fabricados</span>
+
+            </div>
+
+        </div>
+
+
+        <!-- BOTONES -->
+
+        <div class="acciones">
+
+            <button class="btn crear" (click)="abrirCrearMaquina()">
+                + Crear Máquina
+            </button>
+
+            <button class="btn editarBtn" (click)="abrirAsignarMaterial()">
+                + Asignar Material
+            </button>
+
+            <button class="btn inactivarBtn" (click)="abrirEstadoMaquina()">
+                Cambiar Estado
+            </button>
+
+        </div>
+
+
+        <!-- TABLA MAQUINAS -->
+
+        <div class="tables">
+
+            <div class="table-box">
+
+                <h2>LISTA DE MÁQUINAS</h2>
+
+                <table>
+
+                    <thead>
+
+                        <tr>
+
+                            <th>ID</th>
+                            <th>NÚMERO SERIE</th>
+                            <th>TIPO</th>
+                            <th>ESTADO</th>
+                            <th>MATERIAL USADO</th>
+
+                        </tr>
+
+                    </thead>
+
+                    <tbody>
+
+                        <tr>
+
+                            <td>
+                                <strong>MAQ-01</strong>
+                            </td>
+
+                            <td>SN-XENON-001</td>
+
+                            <td>Inyectora</td>
+
+                            <td>
+
+                                <span class="status free">
+                                    Activa
+                                </span>
+
+                            </td>
+
+                            <td>Bombillo Xenon</td>
+
+                        </tr>
+
+
+                        <tr>
+
+                            <td>
+                                <strong>MAQ-02</strong>
+                            </td>
+
+                            <td>SN-XENON-002</td>
+
+                            <td>Troqueladora</td>
+
+                            <td>
+
+                                <span class="status critical">
+                                    Inactiva
+                                </span>
+
+                            </td>
+
+                            <td>Cable Arnés</td>
+
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+
+        <br>
+
+
+        <!-- TABLA PRODUCCIÓN -->
+
+        <div class="table-box">
+
+            <h2>PRODUCCIÓN</h2>
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>MÁQUINA</th>
+                        <th>PRODUCTO</th>
+                        <th>TIEMPO PRODUCCIÓN</th>
+                        <th>PRECIO UNITARIO</th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    <tr>
+
+                        <td>MAQ-01</td>
+
+                        <td>Kit Xenon H7</td>
+
+                        <td>20 min</td>
+
+                        <td>$20.000</td>
+
+                    </tr>
+
+
+                    <tr>
+
+                        <td>MAQ-02</td>
+
+                        <td>Bombillo D2S</td>
+
+                        <td>15 min</td>
+
+                        <td>$15.000</td>
+
+                    </tr>
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- MODAL CREAR -->
+
+        <div class="modal" *ngIf="mostrarCrearMaquina">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h2>Crear Máquina</h2>
+
+                    <button class="cerrar" (click)="cerrarModales()">
+                        X
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <input 
+                        type="text"
+                        placeholder="ID Máquina"
+                        required>
+
+                    <input 
+                        type="text"
+                        placeholder="Número serie"
+                        required>
+
+                    <select>
+
+                        <option>Tipo máquina</option>
+                        <option>Inyectora</option>
+                        <option>Troqueladora</option>
+                        <option>Ensambladora</option>
+
+                    </select>
+
+                    <button class="guardar">
+                        Guardar Máquina
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MODAL ASIGNAR MATERIAL -->
+
+        <div class="modal" *ngIf="mostrarAsignarMaterial">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h2>Asignar Material</h2>
+
+                    <button class="cerrar" (click)="cerrarModales()">
+                        X
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <select>
+
+                        <option>Seleccionar máquina</option>
+                        <option>MAQ-01</option>
+                        <option>MAQ-02</option>
+
+                    </select>
+
+                    <select>
+
+                        <option>Seleccionar material</option>
+                        <option>Bombillo Xenon</option>
+                        <option>Cable Arnés</option>
+
+                    </select>
+
+                    <button class="guardar">
+                        Asignar Material
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- MODAL ESTADO -->
+
+        <div class="modal" *ngIf="mostrarEstadoMaquina">
+
+            <div class="modal-content">
+
+                <div class="modal-header">
+
+                    <h2>Cambiar Estado</h2>
+
+                    <button class="cerrar" (click)="cerrarModales()">
+                        X
+                    </button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <select>
+
+                        <option>Seleccionar máquina</option>
+                        <option>MAQ-01</option>
+                        <option>MAQ-02</option>
+
+                    </select>
+
+                    <select>
+
+                        <option>Nuevo estado</option>
+                        <option>Activa</option>
+                        <option>Inactiva</option>
+
+                    </select>
+
+                    <button class="guardar">
+                        Actualizar Estado
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+</div>
