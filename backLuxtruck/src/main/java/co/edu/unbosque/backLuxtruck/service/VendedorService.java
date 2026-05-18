@@ -46,7 +46,7 @@ public class VendedorService {
     private ModelMapper modelMapper;
 
     public int create(VendedorDTO dto) {
-        Optional<Vendedor> found = vendedorRepo.findById(dto.getIdPersona());
+        Optional<Vendedor> found = vendedorRepo.findByNumeroDocumento(dto.getNumeroDocumento());
 
         if (found.isEmpty()) {
             Vendedor entity = modelMapper.map(dto, Vendedor.class);

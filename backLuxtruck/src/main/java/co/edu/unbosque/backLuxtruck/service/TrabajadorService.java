@@ -43,12 +43,12 @@ public class TrabajadorService {
     private ModelMapper modelMapper;
 
     public int create(TrabajadorDTO dto) {
-        Optional<Trabajador> found = trabajadorRepo.findById(dto.getIdPersona());
+        Optional<Trabajador> found = trabajadorRepo.findByNumeroDocumento(dto.getNumeroDocumento());
 
         if (found.isEmpty()) {
             Trabajador entity = modelMapper.map(dto, Trabajador.class);
             entity.setContrasenia(sec.hashingToSHA256(dto.getContrasenia()));
-            entity.setFechaIngreso(new java.sql.Date(dto.getFechaIngreso().getTime()));
+            entity.setFechaIngreso(new Date(dto.getFechaIngreso().getTime()));
 
             trabajadorRepo.save(entity);
             return 0;
