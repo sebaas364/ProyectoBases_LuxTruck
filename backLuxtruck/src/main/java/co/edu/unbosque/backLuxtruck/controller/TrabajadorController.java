@@ -29,48 +29,33 @@ public class TrabajadorController {
 
 	@Autowired
 	private TrabajadorService trabajadorServ;
-	
+
 	@PostMapping(path = "/createjson", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> createWithJSON(@RequestBody TrabajadorDTO newTrabajador) {
-		
-		
-	    int status = trabajadorServ.create(newTrabajador);
-	    return status == 0
-	        ? ResponseEntity.status(HttpStatus.CREATED).body("Trabajador creado exitosamente")
-	        : ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
-	              .body("Error al crear el trabajador, posiblemente el ID ya está registrado");
+
+		int status = trabajadorServ.create(newTrabajador);
+		return status == 0 ? ResponseEntity.status(HttpStatus.CREATED).body("Trabajador creado exitosamente")
+				: ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+						.body("Error al crear el trabajador, posiblemente el ID ya está registrado");
 	}
-	
+
 	@PostMapping("/create")
-	public ResponseEntity<String> create(
-	        @RequestParam String numeroDocumento,
-	        @RequestParam String tipoDocumento,
-	        @RequestParam String primerNombre,
-	        @RequestParam(required = false) String segundoNombre,
-	        @RequestParam String primerApellido,
-	        @RequestParam(required = false) String segundoApellido,
-	        @RequestParam String telefono,
-	        @RequestParam String correo,
-	        @RequestParam Double salario,
-	        @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaIngreso,
-	        @RequestParam String contrasenia,
-	        @RequestParam Integer idEstadoTrabajador,
-	        @RequestParam String estadoNombre) {
+	public ResponseEntity<String> create(@RequestParam String numeroDocumento, @RequestParam String tipoDocumento,
+			@RequestParam String primerNombre, @RequestParam(required = false) String segundoNombre,
+			@RequestParam String primerApellido, @RequestParam(required = false) String segundoApellido,
+			@RequestParam String telefono, @RequestParam String correo, @RequestParam Double salario,
+			@RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaIngreso, @RequestParam String contrasenia,
+			@RequestParam Integer idEstadoTrabajador, @RequestParam String estadoNombre) {
 
-	    EstadoTrabajadorDTO estadoDTO = new EstadoTrabajadorDTO(idEstadoTrabajador, estadoNombre);
-	    TrabajadorDTO newTrabajador = new TrabajadorDTO(
-	            null, numeroDocumento, tipoDocumento,
-	            primerNombre, segundoNombre,
-	            primerApellido, segundoApellido,
-	            telefono, correo,
-	            fechaIngreso, salario, contrasenia, estadoDTO
-	    );
+		EstadoTrabajadorDTO estadoDTO = new EstadoTrabajadorDTO(idEstadoTrabajador, estadoNombre);
+		TrabajadorDTO newTrabajador = new TrabajadorDTO(null, numeroDocumento, tipoDocumento, primerNombre,
+				segundoNombre, primerApellido, segundoApellido, telefono, correo, fechaIngreso, salario, contrasenia,
+				estadoDTO);
 
-	    int status = trabajadorServ.create(newTrabajador);
-	    return status == 0
-	        ? ResponseEntity.status(HttpStatus.CREATED).body("Trabajador creado exitosamente")
-	        : ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
-	              .body("Error al crear el trabajador, posiblemente el ID ya está registrado");
+		int status = trabajadorServ.create(newTrabajador);
+		return status == 0 ? ResponseEntity.status(HttpStatus.CREATED).body("Trabajador creado exitosamente")
+				: ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
+						.body("Error al crear el trabajador, posiblemente el ID ya está registrado");
 	}
 
 	@GetMapping("/getall")

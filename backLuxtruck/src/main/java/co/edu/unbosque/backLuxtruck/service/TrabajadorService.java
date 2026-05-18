@@ -11,7 +11,10 @@ import org.springframework.stereotype.Service;
 import co.edu.unbosque.backLuxtruck.dto.LoginDTO;
 import co.edu.unbosque.backLuxtruck.dto.TrabajadorDTO;
 import co.edu.unbosque.backLuxtruck.model.Trabajador;
+import co.edu.unbosque.backLuxtruck.repository.AdministrativoRepository;
+import co.edu.unbosque.backLuxtruck.repository.OperarioRepository;
 import co.edu.unbosque.backLuxtruck.repository.TrabajadorRepository;
+import co.edu.unbosque.backLuxtruck.repository.VendedorRepository;
 import co.edu.unbosque.backLuxtruck.security.SecurityConfig;
 
 @Service
@@ -19,6 +22,15 @@ public class TrabajadorService {
 
     @Autowired
     private TrabajadorRepository trabajadorRepo;
+    
+    @Autowired
+    private VendedorRepository vendedorRepo;
+
+    @Autowired
+    private OperarioRepository operarioRepo;
+
+    @Autowired
+    private AdministrativoRepository administrativoRepo;
     
   private SecurityConfig sec;
     
@@ -104,16 +116,30 @@ public class TrabajadorService {
     }
     
     public TrabajadorDTO login(LoginDTO dto) {
-        Optional<Trabajador> found = trabajadorRepo.findByCorreo(dto.getCorreo());
- 
+    	Optional<Trabajador> found = trabajadorRepo.findByCorreo(dto.getCorreo());
+
         if (found.isPresent()) {
             Trabajador trabajador = found.get();
             String hashIngresado = sec.hashingToSHA256(dto.getContrasenia());
- 
+
             if (trabajador.getContrasenia().equals(hashIngresado)) {
-                return modelMapper.map(trabajador, TrabajadorDTO.class);
+                TrabajadorDTO resultado = modelMapper.map(trabajador, TrabajadorDTO.class);
+
+                int id = trabajador.getIdPersona();
+
+                if (vendedorRepo.existsById(id)) {
+                    resultado.setRol("VENDEDOR");
+                } else if (operarioRepo.existsById(id)) {
+                    resultado.setRol("OPERARIO");
+                } else if (administrativoRepo.existsById(id)) {
+                    resultado.setRol("ADMINISTRATIVO");
+                } else {
+                    resultado.setRol("TRABAJADOR");
+                }
+
+                return resultado;
             }
-        }
-        return null;
+        }	
+		return null;
     }
 }

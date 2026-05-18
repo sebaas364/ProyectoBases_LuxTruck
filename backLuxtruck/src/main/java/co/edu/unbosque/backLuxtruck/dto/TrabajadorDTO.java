@@ -8,6 +8,7 @@ public class TrabajadorDTO extends PersonaDTO {
 	private Double salario;
 	private String contrasenia;
 	private EstadoTrabajadorDTO estadoTrabajadordto;
+	private String rol;
 
 	public TrabajadorDTO() {
 
@@ -64,11 +65,12 @@ public class TrabajadorDTO extends PersonaDTO {
 		this.estadoTrabajadordto = estadoTrabajadordto;
 	}
 
-	@Override
-	public String toString() {
-		return "TrabajadorDTO [fechaIngreso=" + fechaIngreso + ", salario=" + salario + ", contrasenia=" + contrasenia
-				+ ", estadoTrabajador=" + estadoTrabajadordto + "]";
+	public String getRol() {
+		return rol;
 	}
 
-	
+	public void setRol(String rol) {
+		this.rol = rol;
+	}
+
 }
