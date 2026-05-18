@@ -8,8 +8,10 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import co.edu.unbosque.backLuxtruck.dto.EstadoTrabajadorDTO;
 import co.edu.unbosque.backLuxtruck.dto.LoginDTO;
 import co.edu.unbosque.backLuxtruck.dto.TrabajadorDTO;
+import co.edu.unbosque.backLuxtruck.model.EstadoTrabajador;
 import co.edu.unbosque.backLuxtruck.model.Trabajador;
 import co.edu.unbosque.backLuxtruck.repository.AdministrativoRepository;
 import co.edu.unbosque.backLuxtruck.repository.OperarioRepository;
@@ -62,11 +64,9 @@ public class TrabajadorService {
 
         for (Trabajador t : trabajadorRepo.findAll()) {
             TrabajadorDTO dto = modelMapper.map(t, TrabajadorDTO.class);
-
             if (t.getFechaIngreso() != null) {
                 dto.setFechaIngreso(new Date(t.getFechaIngreso().getTime()));
             }
-
             dtoList.add(dto);
         }
 

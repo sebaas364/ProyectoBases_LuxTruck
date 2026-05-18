@@ -7,19 +7,19 @@ public class TrabajadorDTO extends PersonaDTO {
 	private Date fechaIngreso;
 	private Double salario;
 	private String contrasenia;
-	private EstadoTrabajadorDTO estadoTrabajadordto;
+	private EstadoTrabajadorDTO estadoTrabajador;
 	private String rol;
 
 	public TrabajadorDTO() {
 
 	}
 
-	public TrabajadorDTO(Date fechaIngreso, Double salario, String contrasenia, EstadoTrabajadorDTO estadoTrabajadordto) {
+	public TrabajadorDTO(Date fechaIngreso, Double salario, String contrasenia, EstadoTrabajadorDTO estadoTrabajador) {
 		super();
 		this.fechaIngreso = fechaIngreso;
 		this.salario = salario;
 		this.contrasenia = contrasenia;
-		this.estadoTrabajadordto = estadoTrabajadordto;
+		this.estadoTrabajador = estadoTrabajador;
 	}
 
 	public TrabajadorDTO(Integer idPersona, String numeroDocumento, String tipoDocumento, String primerNombre,
@@ -30,7 +30,7 @@ public class TrabajadorDTO extends PersonaDTO {
 		this.fechaIngreso = fechaIngreso;
 		this.salario = salario;
 		this.contrasenia = contrasenia;
-		this.estadoTrabajadordto = estadoTrabajador;
+		this.estadoTrabajador = estadoTrabajador;
 	}
 
 	public Date getFechaIngreso() {
@@ -57,12 +57,12 @@ public class TrabajadorDTO extends PersonaDTO {
 		this.contrasenia = contrasenia;
 	}
 
-	public EstadoTrabajadorDTO getEstadoTrabajadordto() {
-		return estadoTrabajadordto;
+	public EstadoTrabajadorDTO getEstadoTrabajador() {
+		return estadoTrabajador;
 	}
 
-	public void setEstadoTrabajadordto(EstadoTrabajadorDTO estadoTrabajadordto) {
-		this.estadoTrabajadordto = estadoTrabajadordto;
+	public void setEstadoTrabajador(EstadoTrabajadorDTO estadoTrabajador) {
+		this.estadoTrabajador = estadoTrabajador;
 	}
 
 	public String getRol() {
@@ -73,4 +73,7 @@ public class TrabajadorDTO extends PersonaDTO {
 		this.rol = rol;
 	}
 
+	
+
+	
 }

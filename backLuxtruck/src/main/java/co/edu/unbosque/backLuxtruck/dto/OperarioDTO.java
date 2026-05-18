@@ -14,8 +14,8 @@ public class OperarioDTO extends TrabajadorDTO{
 		this.desempenio = desempenio;
 	}
 
-	public OperarioDTO(Date fechaIngreso, Double salario, String contrasenia, EstadoTrabajadorDTO estadoTrabajadordto) {
-		super(fechaIngreso, salario, contrasenia, estadoTrabajadordto);
+	public OperarioDTO(Date fechaIngreso, Double salario, String contrasenia, EstadoTrabajadorDTO estadoTrabajador) {
+		super(fechaIngreso, salario, contrasenia, estadoTrabajador);
 		// TODO Auto-generated constructor stub
 	}
 

@@ -9,8 +9,8 @@ public class AdministrativoDTO extends TrabajadorDTO{
 	}
 
 	public AdministrativoDTO(Date fechaIngreso, Double salario, String contrasenia,
-			EstadoTrabajadorDTO estadoTrabajadordto) {
-		super(fechaIngreso, salario, contrasenia, estadoTrabajadordto);
+			EstadoTrabajadorDTO estadoTrabajador) {
+		super(fechaIngreso, salario, contrasenia, estadoTrabajador);
 		// TODO Auto-generated constructor stub
 	}
 
@@ -21,11 +21,6 @@ public class AdministrativoDTO extends TrabajadorDTO{
 		super(idPersona, numeroDocumento, tipoDocumento, primerNombre, segundoNombre, primerApellido, segundoApellido, telefono,
 				correo, fechaIngreso, salario, contrasenia, estadoTrabajador);
 		// TODO Auto-generated constructor stub
-	}
-
-	@Override
-	public String toString() {
-		return "AdministrativoDTO []";
 	}
 
 

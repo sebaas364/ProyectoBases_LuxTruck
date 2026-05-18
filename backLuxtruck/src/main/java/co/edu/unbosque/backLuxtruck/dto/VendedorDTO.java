@@ -10,8 +10,8 @@ public class VendedorDTO extends TrabajadorDTO {
 
 	}
 
-	public VendedorDTO(Date fechaIngreso, Double salario, String contrasenia, EstadoTrabajadorDTO estadoTrabajadordto) {
-		super(fechaIngreso, salario, contrasenia, estadoTrabajadordto);
+	public VendedorDTO(Date fechaIngreso, Double salario, String contrasenia, EstadoTrabajadorDTO estadoTrabajador) {
+		super(fechaIngreso, salario, contrasenia, estadoTrabajador);
 		// TODO Auto-generated constructor stub
 	}
 
