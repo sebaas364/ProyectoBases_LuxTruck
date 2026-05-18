@@ -7,4 +7,6 @@ import co.edu.unbosque.backLuxtruck.model.Maquina;
 public interface MaquinaRepository extends CrudRepository<Maquina, Integer> {
 	boolean existsByNumeroSerie(String numeroSerie);
 	boolean existsByTipo(String tipo);
+	
+	long countByEstadoMaquinaEstado(String estado);
 }

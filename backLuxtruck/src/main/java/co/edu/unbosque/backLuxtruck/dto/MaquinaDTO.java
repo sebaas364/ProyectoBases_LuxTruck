@@ -5,16 +5,16 @@ public class MaquinaDTO {
 	private Integer idMaquina;
 	private String numeroSerie;
 	private String tipo;
-	private EstadoMaquinaDTO estadoMaquinadto;
+	private EstadoMaquinaDTO estadoMaquina;
 
 	public MaquinaDTO() {
 	}
 
-	public MaquinaDTO(Integer idMaquina, String numeroSerie, String tipo, EstadoMaquinaDTO estadoMaquinadto) {
+	public MaquinaDTO(Integer idMaquina, String numeroSerie, String tipo, EstadoMaquinaDTO estadoMaquina) {
 		this.idMaquina = idMaquina;
 		this.numeroSerie = numeroSerie;
 		this.tipo = tipo;
-		this.estadoMaquinadto = estadoMaquinadto;
+		this.estadoMaquina = estadoMaquina;
 	}
 
 	public Integer getIdMaquina() {
@@ -41,12 +41,12 @@ public class MaquinaDTO {
 		this.tipo = tipo;
 	}
 
-	public EstadoMaquinaDTO getEstadoMaquinadto() {
-		return estadoMaquinadto;
+	public EstadoMaquinaDTO getEstadoMaquina() {
+		return estadoMaquina;
 	}
 
-	public void setEstadoMaquinadto(EstadoMaquinaDTO estadoMaquinadto) {
-		this.estadoMaquinadto = estadoMaquinadto;
+	public void setEstadoMaquina(EstadoMaquinaDTO estadoMaquina) {
+		this.estadoMaquina = estadoMaquina;
 	}
 
 	@Override

@@ -8,6 +8,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import co.edu.unbosque.backLuxtruck.dto.DashboardDTO;
 import co.edu.unbosque.backLuxtruck.dto.MaquinaDTO;
 import co.edu.unbosque.backLuxtruck.model.EstadoMaquina;
 import co.edu.unbosque.backLuxtruck.model.Maquina;
@@ -46,9 +47,6 @@ public class MaquinaService {
     @Autowired
     private ModelMapper modelMapper;
 
-    // ----------------------------------------------------
-    // CREATE
-    // ----------------------------------------------------
     public int create(MaquinaDTO dto) {
         Optional<Maquina> found = maquinaRepo.findById(dto.getIdMaquina());
         if (found.isEmpty()) {
@@ -122,4 +120,5 @@ public class MaquinaService {
         }
         return 1;
     }
+    
 }

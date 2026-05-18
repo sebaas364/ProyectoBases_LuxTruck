@@ -8,10 +8,8 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import co.edu.unbosque.backLuxtruck.dto.EstadoTrabajadorDTO;
 import co.edu.unbosque.backLuxtruck.dto.LoginDTO;
 import co.edu.unbosque.backLuxtruck.dto.TrabajadorDTO;
-import co.edu.unbosque.backLuxtruck.model.EstadoTrabajador;
 import co.edu.unbosque.backLuxtruck.model.Trabajador;
 import co.edu.unbosque.backLuxtruck.repository.AdministrativoRepository;
 import co.edu.unbosque.backLuxtruck.repository.OperarioRepository;
