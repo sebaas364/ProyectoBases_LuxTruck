@@ -1,6 +1,5 @@
 <div class="layout">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <nav>
       <img src="logo.png" class="logo">
@@ -14,15 +13,12 @@
     </nav>
   </aside>
 
-  <!-- MAIN -->
   <main class="main-content">
 
-    <!-- TOPBAR -->
     <div class="topbar">
       <h1>USUARIOS</h1>
     </div>
 
-    <!-- CARDS con datos reales -->
     <div class="cards">
       <div class="card green">
         <h3>ADMINISTRATIVOS</h3>
@@ -46,23 +42,19 @@
       </div>
     </div>
 
-    <!-- ACCIONES -->
     <div class="acciones">
       <button class="btn crear" (click)="abrirCrearTrabajador()">+ Crear Trabajador</button>
       <button class="btn editarBtn" (click)="abrirEditarTrabajador()">Editar Trabajador</button>
       <button class="btn inactivarBtn" (click)="abrirEstadoTrabajador()">Cambiar Estado</button>
     </div>
 
-    <!-- MENSAJE GLOBAL -->
     <div *ngIf="mensaje && !mostrarCrearTrabajador && !mostrarEditarTrabajador && !mostrarEstadoTrabajador"
          class="mensaje" [ngClass]="tipoMensaje">
       {{ mensaje }}
     </div>
 
-    <!-- CARGANDO -->
     <div *ngIf="cargando" class="cargando-msg">Cargando datos...</div>
 
-    <!-- ===== TABLA ADMINISTRATIVOS ===== -->
     <div class="table-box" *ngIf="!cargando">
       <h2>Administrativos</h2>
       <table>
@@ -81,7 +73,7 @@
             <td>{{ a.tipoDocumento }} {{ a.numeroDocumento }}</td>
             <td><span class="status free">{{ a.correo }}</span></td>
             <td>{{ a.telefono }}</td>
-            <td><span class="status" [ngClass]="estadoClase(a)">{{ a.estadoTrabajadordto?.estado }}</span></td>
+            <td><span class="status" [ngClass]="estadoClase(a)">{{ a.estadoTrabajadordto?.estado || $any(a).estadoTrabajador?.estado || 'Desconocido' }}</span></td>
           </tr>
           <tr *ngIf="administrativos.length === 0">
             <td colspan="5" class="empty">Sin administrativos registrados</td>
@@ -92,7 +84,6 @@
 
     <br>
 
-    <!-- ===== TABLA OPERARIOS ===== -->
     <div class="table-box" *ngIf="!cargando">
       <h2>Operarios</h2>
       <table>
@@ -111,7 +102,7 @@
             <td>{{ o.tipoDocumento }} {{ o.numeroDocumento }}</td>
             <td><span class="status azulitoC">{{ o.correo }}</span></td>
             <td>{{ o.desempenio }}</td>
-            <td><span class="status" [ngClass]="estadoClase(o)">{{ o.estadoTrabajadordto?.estado }}</span></td>
+            <td><span class="status" [ngClass]="estadoClase(o)">{{ o.estadoTrabajadordto?.estado || $any(o).estadoTrabajador?.estado || 'Desconocido' }}</span></td>
           </tr>
           <tr *ngIf="operarios.length === 0">
             <td colspan="5" class="empty">Sin operarios registrados</td>
@@ -122,7 +113,6 @@
 
     <br>
 
-    <!-- ===== TABLA VENDEDORES ===== -->
     <div class="table-box" *ngIf="!cargando">
       <h2>Vendedores</h2>
       <table>
@@ -141,7 +131,7 @@
             <td>{{ v.tipoDocumento }} {{ v.numeroDocumento }}</td>
             <td><span class="status warning">{{ v.correo }}</span></td>
             <td>{{ v.comision | currency:'COP':'symbol':'1.0-0' }}</td>
-            <td><span class="status" [ngClass]="estadoClase(v)">{{ v.estadoTrabajadordto?.estado }}</span></td>
+            <td><span class="status" [ngClass]="estadoClase(v)">{{ v.estadoTrabajadordto?.estado || $any(v).estadoTrabajador?.estado || 'Desconocido' }}</span></td>
           </tr>
           <tr *ngIf="vendedores.length === 0">
             <td colspan="5" class="empty">Sin vendedores registrados</td>
@@ -151,7 +141,6 @@
     </div>
 
 
-    <!-- ========================= MODAL CREAR ========================= -->
     <div class="modal" *ngIf="mostrarCrearTrabajador">
       <div class="modal-content">
 
@@ -202,17 +191,15 @@
 
           <input type="password" placeholder="Contraseña *" [(ngModel)]="contrasenia">
 
-          <!-- Campo exclusivo operario -->
           <input *ngIf="tipoTrabajador === 'operario'"
                  type="number" placeholder="Desempeño (0-100) *"
                  [(ngModel)]="desempenio" min="0" max="100">
 
-          <!-- Campo exclusivo vendedor -->
           <input *ngIf="tipoTrabajador === 'vendedor'"
                  type="number" placeholder="Comisión (%) *"
                  [(ngModel)]="comision" min="0">
 
-          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
+          <div class="mensaje" *ngIf="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
 
           <button class="guardar" (click)="guardarTrabajador()" [disabled]="guardando">
             {{ guardando ? 'Guardando...' : 'Guardar Trabajador' }}
@@ -223,7 +210,6 @@
     </div>
 
 
-    <!-- ========================= MODAL EDITAR ========================= -->
     <div class="modal" *ngIf="mostrarEditarTrabajador">
       <div class="modal-content">
 
@@ -264,7 +250,7 @@
           <input *ngIf="trabajadorSeleccionadoId"
                  type="number" placeholder="Salario" [(ngModel)]="editSalario">
 
-          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
+          <div class="mensaje" *ngIf="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
 
           <button class="guardar" (click)="guardarEdicion()" [disabled]="guardando">
             {{ guardando ? 'Actualizando...' : 'Actualizar Trabajador' }}
@@ -275,7 +261,6 @@
     </div>
 
 
-    <!-- ========================= MODAL ESTADO ========================= -->
     <div class="modal" *ngIf="mostrarEstadoTrabajador">
       <div class="modal-content">
 
@@ -290,17 +275,17 @@
             <option [ngValue]="null">Seleccionar trabajador *</option>
             <optgroup label="Administrativos">
               <option *ngFor="let a of administrativos" [ngValue]="a.idPersona">
-                {{ nombreCompleto(a) }} — {{ a.estadoTrabajadordto?.estado }}
+                {{ nombreCompleto(a) }} — {{ a.estadoTrabajadordto?.estado || $any(a).estadoTrabajador?.estado || 'Sin estado' }}
               </option>
             </optgroup>
             <optgroup label="Operarios">
               <option *ngFor="let o of operarios" [ngValue]="o.idPersona">
-                {{ nombreCompleto(o) }} — {{ o.estadoTrabajadordto?.estado }}
+                {{ nombreCompleto(o) }} — {{ o.estadoTrabajadordto?.estado || $any(o).estadoTrabajador?.estado || 'Sin estado' }}
               </option>
             </optgroup>
             <optgroup label="Vendedores">
               <option *ngFor="let v of vendedores" [ngValue]="v.idPersona">
-                {{ nombreCompleto(v) }} — {{ v.estadoTrabajadordto?.estado }}
+                {{ nombreCompleto(v) }} — {{ v.estadoTrabajadordto?.estado || $any(v).estadoTrabajador?.estado || 'Sin estado' }}
               </option>
             </optgroup>
           </select>
@@ -311,7 +296,7 @@
             <option [ngValue]="2">Inactivo</option>
           </select>
 
-          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
+          <div class="mensaje" *ngIf="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
 
           <button class="guardar" (click)="guardarEstado()" [disabled]="guardando">
             {{ guardando ? 'Actualizando...' : 'Actualizar Estado' }}

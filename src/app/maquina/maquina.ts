@@ -2,26 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-
-// ── Interfaces alineadas con el MER ──────────────────
-export type EstadoMaquina = 'Activa' | 'Inactiva' | 'Mantenimiento';
-
-export interface MaquinaItem {
-  idMaquina: number;
-  numeroSerie: string;
-  tipo: string;
-  estado: EstadoMaquina;
-  materialUsado?: string;   // relación usar (M:N)
-}
-
-export interface ProduccionItem {
-  idMaquina: number;
-  nombreMaquina: string;
-  idProducto: number;
-  nombreProducto: string;
-  tiempoProduccion: string;  // campo del MER en la rel. producir
-  precioUnitario: number;
-}
+import { ApiService, MaquinaDTO, CrearMaquinaPayload } from '../services/api.service';
 
 @Component({
   selector: 'app-maquina',
@@ -32,75 +13,58 @@ export interface ProduccionItem {
 })
 export class Maquina implements OnInit {
 
-  // ── Datos de muestra (se reemplazan al conectar el back) ──
-  maquinas: MaquinaItem[] = [
-    { idMaquina: 1, numeroSerie: 'SN-XENON-001', tipo: 'Inyectora',     estado: 'Activa',    materialUsado: 'Bombillo Xenon D2S' },
-    { idMaquina: 2, numeroSerie: 'SN-XENON-002', tipo: 'Troqueladora',  estado: 'Inactiva',  materialUsado: 'Cable Arnés' },
-    { idMaquina: 3, numeroSerie: 'SN-XENON-003', tipo: 'Ensambladora',  estado: 'Activa',    materialUsado: '' },
-  ];
+  maquinas: MaquinaDTO[] = [];
+  cargando = true;
 
-  produccion: ProduccionItem[] = [
-    { idMaquina: 1, nombreMaquina: 'MAQ-01', idProducto: 1, nombreProducto: 'Kit Xenon H7',  tiempoProduccion: '20 min', precioUnitario: 20000 },
-    { idMaquina: 2, nombreMaquina: 'MAQ-02', idProducto: 2, nombreProducto: 'Bombillo D2S',  tiempoProduccion: '15 min', precioUnitario: 15000 },
-  ];
-
-  // Materiales disponibles para asignación (del módulo Inventario)
-  // TODO: cargar desde /material/getall
-  materialesDisponibles = [
-    { idMaterial: 1, nombre: 'Bombillo Xenon D2S' },
-    { idMaterial: 2, nombre: 'Cable Arnés' },
-    { idMaterial: 3, nombre: 'Kit Xenon H7' },
-  ];
-
-  // ── Modales ──────────────────────────────────────────
+  // Modales
   mostrarCrearMaquina    = false;
   mostrarAsignarMaterial = false;
   mostrarEstadoMaquina   = false;
   mostrarEditarMaquina   = false;
 
-  // ── Formulario Crear ──────────────────────────────────
+  // Formulario Crear
   nuevoNumeroSerie = '';
   nuevoTipo        = '';
 
-  // ── Formulario Editar ─────────────────────────────────
-  editId: number | null  = null;
+  // Formulario Editar
+  editId: number | null = null;
   editNumeroSerie  = '';
   editTipo         = '';
 
-  // ── Formulario Asignar Material ───────────────────────
-  asignarMaquinaId: number | null   = null;
-  asignarMaterialId: number | null  = null;
+  // Formulario Asignar Material (llama al endpoint addmaterial del backend)
+  asignarMaquinaId: number | null  = null;
+  asignarMaterialId: number | null = null;
   asignarDescripcion = '';
 
-  // ── Formulario Estado ─────────────────────────────────
-  estadoMaquinaId: number | null    = null;
-  nuevoEstado: EstadoMaquina | ''   = '';
+  // Formulario Estado
+  estadoMaquinaId: number | null = null;
+  // 1=OPERATIVA, 2=MANTENIMIENTO, 3=FUERA_SERVICIO
+  nuevoEstadoId: number | null   = null;
 
-  // ── Mensajes ──────────────────────────────────────────
   mensaje     = '';
   tipoMensaje: 'error' | 'success' | '' = '';
   guardando   = false;
 
-  // ── Getters para cards ────────────────────────────────
-  get activas():      number { return this.maquinas.filter(m => m.estado === 'Activa').length; }
-  get inactivas():    number { return this.maquinas.filter(m => m.estado !== 'Activa').length; }
-  get totalProductos(): number { return this.produccion.length; }
+  get activas():   number { return this.maquinas.filter(m => m.estadoMaquinadto?.estado?.toUpperCase() === 'OPERATIVA').length; }
+  get inactivas(): number { return this.maquinas.length - this.activas; }
 
-  ngOnInit(): void {
-    // TODO: this.api.getMaquinas().subscribe(data => this.maquinas = data)
-    // TODO: this.api.getProduccion().subscribe(data => this.produccion = data)
+  constructor(private api: ApiService) {}
+
+  ngOnInit(): void { this.cargar(); }
+
+  cargar(): void {
+    this.cargando = true;
+    this.api.getMaquinas().subscribe({
+      next: data => { this.maquinas = data; this.cargando = false; },
+      error: () => { this.mostrarMsg('Error al cargar máquinas.', 'error'); this.cargando = false; }
+    });
   }
 
-  // ── Helpers ───────────────────────────────────────────
-  estadoClase(m: MaquinaItem): string {
-    if (m.estado === 'Activa') return 'free';
-    if (m.estado === 'Mantenimiento') return 'warning';
+  estadoClase(m: MaquinaDTO): string {
+    const e = m.estadoMaquinadto?.estado?.toUpperCase() ?? '';
+    if (e === 'OPERATIVA')     return 'free';
+    if (e === 'MANTENIMIENTO') return 'warning';
     return 'critical';
-  }
-
-  maquinaLabel(id: number): string {
-    const m = this.maquinas.find(x => x.idMaquina === id);
-    return m ? `MAQ-0${m.idMaquina} — ${m.tipo}` : '';
   }
 
   mostrarMsg(texto: string, tipo: 'error' | 'success'): void {
@@ -108,7 +72,6 @@ export class Maquina implements OnInit {
     if (tipo === 'success') setTimeout(() => { this.mensaje = ''; this.tipoMensaje = ''; }, 3000);
   }
 
-  // ── Abrir modales ─────────────────────────────────────
   abrirCrearMaquina(): void {
     this.cerrarModales();
     this.nuevoNumeroSerie = ''; this.nuevoTipo = '';
@@ -123,11 +86,11 @@ export class Maquina implements OnInit {
 
   abrirEstadoMaquina(): void {
     this.cerrarModales();
-    this.estadoMaquinaId = null; this.nuevoEstado = '';
+    this.estadoMaquinaId = null; this.nuevoEstadoId = null;
     this.mostrarEstadoMaquina = true;
   }
 
-  abrirEditarMaquina(m: MaquinaItem): void {
+  abrirEditarMaquina(m: MaquinaDTO): void {
     this.cerrarModales();
     this.editId = m.idMaquina;
     this.editNumeroSerie = m.numeroSerie;
@@ -141,62 +104,90 @@ export class Maquina implements OnInit {
     this.mensaje = ''; this.tipoMensaje = '';
   }
 
-  // ── CRUD ──────────────────────────────────────────────
   guardarMaquina(): void {
     if (!this.nuevoNumeroSerie.trim()) { this.mostrarMsg('El número de serie es obligatorio.', 'error'); return; }
     if (!this.nuevoTipo)               { this.mostrarMsg('Selecciona el tipo de máquina.', 'error'); return; }
 
-    const existe = this.maquinas.find(m => m.numeroSerie.toLowerCase() === this.nuevoNumeroSerie.toLowerCase());
-    if (existe) { this.mostrarMsg('Ya existe una máquina con ese número de serie.', 'error'); return; }
+    const payload: CrearMaquinaPayload = {
+      numeroSerie: this.nuevoNumeroSerie,
+      tipo: this.nuevoTipo,
+      estadoMaquinadto: { idEstadoMaquina: 1, estado: 'OPERATIVA' }
+    };
 
-    // TODO: this.api.crearMaquina({...}).subscribe(...)
-    this.maquinas.push({
-      idMaquina:    this.maquinas.length + 1,
-      numeroSerie:  this.nuevoNumeroSerie,
-      tipo:         this.nuevoTipo,
-      estado:       'Activa',
-      materialUsado: '',
+    this.guardando = true;
+    this.api.crearMaquina(payload).subscribe({
+      next: () => {
+        this.guardando = false;
+        this.mostrarMsg('Máquina creada correctamente.', 'success');
+        this.cargar();
+        setTimeout(() => this.cerrarModales(), 1800);
+      },
+      error: () => { this.guardando = false; this.mostrarMsg('Error al crear. ¿El número de serie ya existe?', 'error'); }
     });
-    this.mostrarMsg('Máquina creada correctamente.', 'success');
-    setTimeout(() => this.cerrarModales(), 1800);
   }
 
   guardarEdicion(): void {
     if (!this.editNumeroSerie.trim()) { this.mostrarMsg('El número de serie es obligatorio.', 'error'); return; }
 
-    // TODO: this.api.editarMaquina(this.editId!, {...}).subscribe(...)
-    const m = this.maquinas.find(x => x.idMaquina === this.editId);
-    if (m) { m.numeroSerie = this.editNumeroSerie; m.tipo = this.editTipo || m.tipo; }
-    this.mostrarMsg('Máquina actualizada.', 'success');
-    setTimeout(() => this.cerrarModales(), 1800);
-  }
-
-  guardarAsignacion(): void {
-    if (!this.asignarMaquinaId)   { this.mostrarMsg('Selecciona una máquina.', 'error'); return; }
-    if (!this.asignarMaterialId)  { this.mostrarMsg('Selecciona un material.', 'error'); return; }
-
-    // TODO: this.api.asignarMaterialMaquina(asignarMaquinaId, asignarMaterialId, descripcion).subscribe(...)
-    const m   = this.maquinas.find(x => x.idMaquina === Number(this.asignarMaquinaId));
-    const mat = this.materialesDisponibles.find(x => x.idMaterial === Number(this.asignarMaterialId));
-    if (m && mat) m.materialUsado = mat.nombre;
-    this.mostrarMsg('Material asignado correctamente.', 'success');
-    setTimeout(() => this.cerrarModales(), 1800);
+    this.guardando = true;
+    this.api.editarMaquina(this.editId!, {
+      numeroSerie: this.editNumeroSerie,
+      tipo: this.editTipo
+    }).subscribe({
+      next: () => {
+        this.guardando = false;
+        this.mostrarMsg('Máquina actualizada.', 'success');
+        this.cargar();
+        setTimeout(() => this.cerrarModales(), 1800);
+      },
+      error: () => { this.guardando = false; this.mostrarMsg('Error al actualizar.', 'error'); }
+    });
   }
 
   guardarEstado(): void {
     if (!this.estadoMaquinaId) { this.mostrarMsg('Selecciona una máquina.', 'error'); return; }
-    if (!this.nuevoEstado)     { this.mostrarMsg('Selecciona el nuevo estado.', 'error'); return; }
+    if (!this.nuevoEstadoId)   { this.mostrarMsg('Selecciona el nuevo estado.', 'error'); return; }
 
-    // TODO: this.api.cambiarEstadoMaquina(estadoMaquinaId, idEstado).subscribe(...)
-    const m = this.maquinas.find(x => x.idMaquina === Number(this.estadoMaquinaId));
-    if (m) m.estado = this.nuevoEstado as EstadoMaquina;
-    this.mostrarMsg('Estado actualizado.', 'success');
-    setTimeout(() => this.cerrarModales(), 1800);
+    this.guardando = true;
+    this.api.cambiarEstadoMaquina(Number(this.estadoMaquinaId), Number(this.nuevoEstadoId)).subscribe({
+      next: () => {
+        this.guardando = false;
+        this.mostrarMsg('Estado actualizado.', 'success');
+        this.cargar();
+        setTimeout(() => this.cerrarModales(), 1800);
+      },
+      error: () => { this.guardando = false; this.mostrarMsg('Error al cambiar el estado.', 'error'); }
+    });
+  }
+
+  // Asignar material usa el endpoint addmaterial del backend
+  guardarAsignacion(): void {
+    if (!this.asignarMaquinaId)  { this.mostrarMsg('Selecciona una máquina.', 'error'); return; }
+    if (!this.asignarMaterialId) { this.mostrarMsg('Selecciona un material.', 'error'); return; }
+
+    this.guardando = true;
+    // El backend espera: /maquina/addmaterial?idMaquina=X&idMaterial=Y&materialUsado=Z
+    const url = `http://localhost:8084/maquina/addmaterial?idMaquina=${this.asignarMaquinaId}&idMaterial=${this.asignarMaterialId}&materialUsado=${encodeURIComponent(this.asignarDescripcion || 'Asignado')}`;
+    // Usamos HttpClient directamente a través del servicio no expuesto — llamada directa
+    fetch(url, { method: 'POST' })
+      .then(r => {
+        this.guardando = false;
+        if (r.ok) {
+          this.mostrarMsg('Material asignado correctamente.', 'success');
+          this.cargar();
+          setTimeout(() => this.cerrarModales(), 1800);
+        } else {
+          this.mostrarMsg('Error al asignar el material.', 'error');
+        }
+      })
+      .catch(() => { this.guardando = false; this.mostrarMsg('Error de conexión.', 'error'); });
   }
 
   eliminarMaquina(id: number): void {
     if (!confirm('¿Seguro que deseas eliminar esta máquina?')) return;
-    // TODO: this.api.eliminarMaquina(id).subscribe(...)
-    this.maquinas = this.maquinas.filter(m => m.idMaquina !== id);
+    this.api.eliminarMaquina(id).subscribe({
+      next: () => { this.mostrarMsg('Máquina eliminada.', 'success'); this.cargar(); },
+      error: () => this.mostrarMsg('Error al eliminar. Puede tener relaciones activas.', 'error')
+    });
   }
 }

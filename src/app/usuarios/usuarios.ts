@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -56,13 +56,13 @@ export class Usuarios implements OnInit {
 
   tipoEstado = '';
   trabajadorEstadoId: number | null = null;
-  nuevoEstadoId: number | null = null;   // 1 = Activo, 2 = Inactivo (según tu DB)
+  nuevoEstadoId: number | null = null;   // 1 = Activo, 2 = Inactivo
 
   mensaje = '';
   tipoMensaje: 'error' | 'success' | '' = '';
   guardando = false;
 
-  constructor(private api: ApiService) {}
+  constructor(private api: ApiService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit(): void {
     this.cargarTodos();
@@ -76,14 +76,16 @@ export class Usuarios implements OnInit {
       vendedores: this.api.getVendedores()
     }).subscribe({
       next: ({ administrativos, operarios, vendedores }) => {
-        this.administrativos = administrativos;
-        this.operarios = operarios;
-        this.vendedores = vendedores;
+        this.administrativos = administrativos || [];
+        this.operarios = operarios || [];
+        this.vendedores = vendedores || [];
         this.cargando = false;
+        this.cdr.detectChanges(); 
       },
       error: () => {
         this.mostrarMensaje('Error al cargar los datos. ¿Está corriendo el backend?', 'error');
         this.cargando = false;
+        this.cdr.detectChanges();
       }
     });
   }
@@ -93,14 +95,19 @@ export class Usuarios implements OnInit {
     return partes.filter(Boolean).join(' ');
   }
 
-  estadoClase(t: AdministrativoDTO | OperarioDTO | VendedorDTO): string {
-    const estado = t.estadoTrabajadordto?.estado?.toLowerCase() ?? '';
-    return estado === 'activo' ? 'free' : 'critical';
+  estadoClase(t: any): string {
+    if (!t) return 'critical';
+    const objEstado = t.estadoTrabajador || t.estadoTrabajadordto;
+    if (!objEstado || !objEstado.estado) return 'critical'; 
+    return objEstado.estado.toLowerCase() === 'activo' ? 'free' : 'critical';
   }
 
-  // Lista unificada para modales de editar y estado
   get todosLosTrabajadores(): (AdministrativoDTO | OperarioDTO | VendedorDTO)[] {
     return [...this.administrativos, ...this.operarios, ...this.vendedores];
+  }
+
+  get fechaMaximaHoy(): string {
+    return new Date().toISOString().split('T')[0];
   }
 
   tipoDeWorker(id: number): 'administrativo' | 'operario' | 'vendedor' | null {
@@ -164,7 +171,6 @@ export class Usuarios implements OnInit {
     this.editSalario = null;
   }
 
-  // Al seleccionar un trabajador en el modal editar, prellenamos los campos
   onSeleccionarParaEditar(): void {
     if (!this.trabajadorSeleccionadoId) return;
     const id = Number(this.trabajadorSeleccionadoId);
@@ -181,13 +187,29 @@ export class Usuarios implements OnInit {
     if (!this.tipoTrabajador) return 'Selecciona el tipo de trabajador.';
     if (!this.primerNombre.trim()) return 'El primer nombre es obligatorio.';
     if (!this.primerApellido.trim()) return 'El primer apellido es obligatorio.';
+    
+    const soloLetrasRx = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    if (!soloLetrasRx.test(this.primerNombre) || (this.segundoNombre.trim() && !soloLetrasRx.test(this.segundoNombre))) {
+      return 'Los nombres no pueden contener números ni caracteres especiales.';
+    }
+    if (!soloLetrasRx.test(this.primerApellido) || (this.segundoApellido.trim() && !soloLetrasRx.test(this.segundoApellido))) {
+      return 'Los apellidos no pueden contener números ni caracteres especiales.';
+    }
+
     if (!this.tipoDocumento) return 'Selecciona el tipo de documento.';
     if (!this.numeroDocumento.trim()) return 'El número de documento es obligatorio.';
     if (!this.telefono.trim()) return 'El teléfono es obligatorio.';
+    
     const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRx.test(this.correo)) return 'Ingresa un correo válido.';
     if (!this.salario || this.salario <= 0) return 'El salario debe ser mayor a 0.';
+    
     if (!this.fechaIngreso) return 'La fecha de ingreso es obligatoria.';
+    const fechaSeleccionada = new Date(this.fechaIngreso + 'T00:00:00');
+    const fechaActual = new Date();
+    fechaActual.setHours(23, 59, 59, 999);
+    if (fechaSeleccionada > fechaActual) return 'La fecha de ingreso no puede ser una fecha futura.';
+
     if (!this.contrasenia || this.contrasenia.length < 4) return 'La contraseña debe tener al menos 4 caracteres.';
     if (this.tipoTrabajador === 'operario' && (this.desempenio === null || this.desempenio < 0)) return 'El desempeño es obligatorio.';
     if (this.tipoTrabajador === 'vendedor' && (this.comision === null || this.comision < 0)) return 'La comisión es obligatoria.';
@@ -198,41 +220,48 @@ export class Usuarios implements OnInit {
     this.mensaje = texto;
     this.tipoMensaje = tipo;
     if (tipo === 'success') {
-      setTimeout(() => { this.mensaje = ''; this.tipoMensaje = ''; }, 3000);
+      setTimeout(() => { this.mensaje = ''; this.tipoMensaje = ''; this.cdr.detectChanges(); }, 3000);
     }
+    this.cdr.detectChanges();
   }
+
   async guardarTrabajador(): Promise<void> {
     const error = this.validarCrear();
     if (error) { this.mostrarMensaje(error, 'error'); return; }
 
     this.guardando = true;
     this.mensaje = '';
-    const encoder = new TextEncoder();
-    const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(this.contrasenia));
-    const contraseniaHash = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
 
-    const base = {
+    // CLAVE: idPersona viaja en 0 idéntico a Swagger para evadir el findById() obligatorio del Service en Java
+    const basePayload = {
+      idPersona: 0,
       numeroDocumento: this.numeroDocumento,
       tipoDocumento: this.tipoDocumento,
-      primerNombre: this.primerNombre,
-      segundoNombre: this.segundoNombre || undefined,
-      primerApellido: this.primerApellido,
-      segundoApellido: this.segundoApellido || undefined,
+      primerNombre: this.primerNombre.trim(),
+      segundoNombre: this.segundoNombre.trim() || undefined,
+      primerApellido: this.primerApellido.trim(),
+      segundoApellido: this.segundoApellido.trim() || undefined,
       telefono: this.telefono,
       correo: this.correo,
       salario: this.salario!,
       fechaIngreso: this.fechaIngreso,
-      contrasenia: contraseniaHash,
+      contrasenia: this.contrasenia,
       estadoTrabajadordto: { idEstadoTrabajador: 1, estado: 'Activo' }
     };
 
     let obs$;
-    if (this.tipoTrabajador === 'administrativo') {
-      obs$ = this.api.crearAdministrativo(base);
-    } else if (this.tipoTrabajador === 'operario') {
-      obs$ = this.api.crearOperario({ ...base, desempenio: this.desempenio! });
+    if (this.tipoTrabajador === 'vendedor') {
+      obs$ = this.api.crearVendedor({
+        ...basePayload,
+        comision: this.comision ?? 0
+      });
+    } else if (this.tipoTrabajador === 'administrativo') {
+      obs$ = this.api.crearAdministrativo(basePayload);
     } else {
-      obs$ = this.api.crearVendedor({ ...base, comision: this.comision! });
+      obs$ = this.api.crearOperario({
+        ...basePayload,
+        desempenio: this.desempenio ?? 0
+      });
     }
 
     obs$.subscribe({
@@ -245,7 +274,8 @@ export class Usuarios implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
         this.guardando = false;
-        this.mostrarMensaje(err.status === 406 ? 'Ya existe un trabajador con ese documento.' : 'Error al guardar. Intenta de nuevo.', 'error');
+        console.error('Error devuelto por el servidor:', err);
+        this.mostrarMensaje('Error al guardar el trabajador. Verifica los datos en consola.', 'error');
       }
     });
   }
@@ -286,9 +316,6 @@ export class Usuarios implements OnInit {
     });
   }
 
-  // ──────────────────────────────────────────
-  // CAMBIAR ESTADO
-  // ──────────────────────────────────────────
   guardarEstado(): void {
     if (!this.trabajadorEstadoId) { this.mostrarMensaje('Selecciona un trabajador.', 'error'); return; }
     if (!this.nuevoEstadoId) { this.mostrarMensaje('Selecciona el nuevo estado.', 'error'); return; }
@@ -305,14 +332,23 @@ export class Usuarios implements OnInit {
 
     obs$.subscribe({
       next: () => {
-        this.guardando = false;
-        this.mostrarMensaje('Estado actualizado.', 'success');
+        this.mostrarMensaje('Estado actualizado con éxito.', 'success');
         this.cargarTodos();
         setTimeout(() => this.cerrarModales(), 2000);
       },
-      error: () => {
+      error: (err) => {
+        console.error('Error al cambiar estado:', err);
+        if (err.status === 200 || err.status === 204) {
+          this.mostrarMensaje('Estado actualizado.', 'success');
+          this.cargarTodos();
+          setTimeout(() => this.cerrarModales(), 2000);
+        } else {
+          this.mostrarMensaje('Error al cambiar el estado del trabajador.', 'error');
+        }
+      },
+      complete: () => {
         this.guardando = false;
-        this.mostrarMensaje('Error al cambiar el estado.', 'error');
+        this.cdr.detectChanges();
       }
     });
   }

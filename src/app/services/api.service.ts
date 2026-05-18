@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 // ──────────────────────────────────────────
-// INTERFACES
+// INTERFACES — AUTH / TRABAJADORES
 // ──────────────────────────────────────────
 
 export interface LoginDTO {
@@ -43,6 +43,7 @@ export interface VendedorDTO extends TrabajadorDTO {
 }
 
 export interface CrearAdministrativoPayload {
+  idPersona: number; 
   numeroDocumento: string;
   tipoDocumento: string;
   primerNombre: string;
@@ -63,6 +64,103 @@ export interface CrearOperarioPayload extends CrearAdministrativoPayload {
 
 export interface CrearVendedorPayload extends CrearAdministrativoPayload {
   comision: number;
+}
+
+// ──────────────────────────────────────────
+// INTERFACES — INVENTARIO / PRODUCTO
+// ──────────────────────────────────────────
+
+export interface ProductoDTO {
+  idProducto: number;
+  nombre: string;
+  precioUnitario: number;
+  tipo: string;
+}
+
+export interface InventarioDTO {
+  idProducto: number;
+  stockMinimo: number;
+  cantidadProducto: number;
+  producto: ProductoDTO;
+}
+
+export interface CrearInventarioPayload {
+  stockMinimo: number;
+  cantidadProducto: number;
+  productodto: {
+    nombre: string;
+    precioUnitario: number;
+    tipo: string;
+  };
+}
+
+export interface ActualizarInventarioPayload {
+  stockMinimo: number;
+  cantidadProducto: number;
+}
+
+// ──────────────────────────────────────────
+// INTERFACES — PROVEEDOR
+// ──────────────────────────────────────────
+
+export interface ProveedorDTO {
+  idEmpresa: number;
+  nIT: string;
+  nombre: string;
+  telefono: string;
+  correo: string;
+  calificacion: number;
+  tipoProveedor: string;
+}
+
+export interface CrearProveedorPayload {
+  nIT: string;
+  nombre: string;
+  telefono: string;
+  correo: string;
+  calificacion: number;
+  tipoProveedor: string;
+}
+
+// ──────────────────────────────────────────
+// INTERFACES — MÁQUINA
+// ──────────────────────────────────────────
+
+export interface EstadoMaquinaDTO {
+  idEstadoMaquina: number;
+  estado: string;
+}
+
+export interface MaquinaDTO {
+  idMaquina: number;
+  numeroSerie: string;
+  tipo: string;
+  estadoMaquinadto: EstadoMaquinaDTO;
+}
+
+export interface CrearMaquinaPayload {
+  numeroSerie: string;
+  tipo: string;
+  estadoMaquinadto: EstadoMaquinaDTO;
+}
+
+// ──────────────────────────────────────────
+// INTERFACES — PEDIDO MATERIAL
+// ──────────────────────────────────────────
+
+export interface PedidoMaterialDTO {
+  idPedido: number;
+  cantidadMaterial: string;
+  fechaPedido: string;
+  fechaEntrega: string;
+  proveedordto: ProveedorDTO;
+}
+
+export interface CrearPedidoPayload {
+  cantidadMaterial: string;
+  fechaPedido: string;
+  fechaEntrega: string;
+  proveedordto: { idEmpresa: number };
 }
 
 @Injectable({
@@ -136,5 +234,73 @@ export class ApiService {
 
   cambiarEstadoVendedor(idPersona: number, idEstado: number): Observable<string> {
     return this.http.post(`${this.BASE_URL}/vendedor/addestado?idPersona=${idPersona}&idEstado=${idEstado}`, null, { responseType: 'text' });
+  }
+
+  // ──────────────────────────────────────────
+  // INVENTARIO
+  // ──────────────────────────────────────────
+  getInventario(): Observable<InventarioDTO[]> {
+    return this.http.get<InventarioDTO[]>(`${this.BASE_URL}/inventario/getall`);
+  }
+
+  crearInventario(datos: CrearInventarioPayload): Observable<string> {
+    return this.http.post(`${this.BASE_URL}/producto/addinventario`, datos, { responseType: 'text' });
+  }
+
+  actualizarInventario(idProducto: number, datos: ActualizarInventarioPayload): Observable<string> {
+    return this.http.put(`${this.BASE_URL}/inventario/update/${idProducto}`, datos, { responseType: 'text' });
+  }
+
+  // ──────────────────────────────────────────
+  // PROVEEDORES
+  // ──────────────────────────────────────────
+  getProveedores(): Observable<ProveedorDTO[]> {
+    return this.http.get<ProveedorDTO[]>(`${this.BASE_URL}/proveedor/getall`);
+  }
+
+  crearProveedor(datos: CrearProveedorPayload): Observable<string> {
+    return this.http.post(`${this.BASE_URL}/proveedor/createjson`, datos, { responseType: 'text' });
+  }
+
+  editarProveedor(id: number, datos: Partial<CrearProveedorPayload>): Observable<string> {
+    return this.http.put(`${this.BASE_URL}/proveedor/update/${id}`, datos, { responseType: 'text' });
+  }
+
+  eliminarProveedor(id: number): Observable<string> {
+    return this.http.delete(`${this.BASE_URL}/proveedor/delete/${id}`, { responseType: 'text' });
+  }
+
+  // ──────────────────────────────────────────
+  // PEDIDOS DE MATERIAL
+  // ──────────────────────────────────────────
+  getPedidos(): Observable<PedidoMaterialDTO[]> {
+    return this.http.get<PedidoMaterialDTO[]>(`${this.BASE_URL}/pedidomaterial/getall`);
+  }
+
+  crearPedido(datos: CrearPedidoPayload): Observable<string> {
+    return this.http.post(`${this.BASE_URL}/pedidomaterial/createjson`, datos, { responseType: 'text' });
+  }
+
+  // ──────────────────────────────────────────
+  // MÁQUINAS
+  // ──────────────────────────────────────────
+  getMaquinas(): Observable<MaquinaDTO[]> {
+    return this.http.get<MaquinaDTO[]>(`${this.BASE_URL}/maquina/getall`);
+  }
+
+  crearMaquina(datos: CrearMaquinaPayload): Observable<string> {
+    return this.http.post(`${this.BASE_URL}/maquina/createjson`, datos, { responseType: 'text' });
+  }
+
+  editarMaquina(id: number, datos: Partial<CrearMaquinaPayload>): Observable<string> {
+    return this.http.put(`${this.BASE_URL}/maquina/update/${id}`, datos, { responseType: 'text' });
+  }
+
+  cambiarEstadoMaquina(idMaquina: number, idEstado: number): Observable<string> {
+    return this.http.post(`${this.BASE_URL}/maquina/addestado?idMaquina=${idMaquina}&idEstado=${idEstado}`, null, { responseType: 'text' });
+  }
+
+  eliminarMaquina(id: number): Observable<string> {
+    return this.http.delete(`${this.BASE_URL}/maquina/delete/${id}`, { responseType: 'text' });
   }
 }

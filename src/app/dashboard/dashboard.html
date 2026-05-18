@@ -1,269 +1,131 @@
 <div class="layout">
 
-    <aside class="sidebar">
+  <aside class="sidebar">
+    <nav>
+      <img src="logo.png" class="logo">
+      <a routerLink="/dashboard">Dashboard</a>
+      <a routerLink="/inventario">Inventario</a>
+      <a href="#">Ventas</a>
+      <a href="#">Productos</a>
+      <a routerLink="/maquinas">Máquinas</a>
+      <a routerLink="/proveedores">Proveedores</a>
+      <a routerLink="/usuarios">Usuarios</a>
+    </nav>
+  </aside>
 
-        <nav>
-            <img src="logo.png" class="logo">
+  <main class="main-content">
 
-            <a routerLink="/dashboard">
-                Dashboard
-            </a>
+    <div class="topbar">
+      <div>
+        <h1>DASHBOARD</h1>
+        <span *ngIf="nombreUsuario" style="font-size:0.85rem;color:#888">{{ nombreUsuario }}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:1rem">
+        <div class="fecha-box">{{ fechaActual }}</div>
+        <button (click)="cerrarSesion()" style="padding:0.4rem 0.9rem;background:#ef4444;color:white;border:none;border-radius:8px;cursor:pointer;font-size:0.8rem">Salir</button>
+      </div>
+    </div>
 
-            <a routerLink="/inventario">
-                Inventario
-            </a>
+    <div *ngIf="cargando" style="padding:2rem;color:#888">Cargando datos...</div>
 
-            <a href="#">
-                Ventas
-            </a>
+    <ng-container *ngIf="!cargando">
 
-            <a href="#">
-                Productos
-            </a>
+      <div class="cards">
 
-            <a routerLink="/maquinas">
-                Máquinas
-            </a>
-
-            <a routerLink="/proveedores">
-                Proveedores
-            </a>
-
-            <a routerLink="/usuarios">
-                Usuarios
-            </a>
-
-        </nav>
-
-    </aside>
-
-    <main class="main-content">
-
-        <div class="topbar">
-
-            <div>
-                <h1>DASHBOARD</h1>
-            </div>
-
-            <div class="fecha-box">
-                {{ fechaActual }}
-            </div>
-
+        <div class="card blue">
+          <h3>MÁQUINAS ACTIVAS</h3>
+          <h1>{{ maquinasActivas }}</h1>
+          <span>de {{ totalMaquinas }} totales</span>
         </div>
 
-        <div class="cards">
-
-            <div class="card blue">
-
-                <h3>MÁQUINAS ACTIVAS</h3>
-
-                <h1>4</h1>
-
-                <span>de 7 totales</span>
-
-            </div>
-
-            <div class="card green">
-
-                <h3>MÁQUINAS LIBRES</h3>
-
-                <h1>3</h1>
-
-                <span>disponibles ahora</span>
-
-            </div>
-
-            <div class="card cyan">
-
-                <h3>PRODUCTOS EN STOCK</h3>
-
-                <h1>1248</h1>
-
-                <span>unidades totales</span>
-
-            </div>
-
-            <div class="card orange">
-
-                <h3>VENTAS DEL MES</h3>
-
-                <h1>386</h1>
-
-                <span>unidades vendidas</span>
-
-            </div>
-
-            <div class="card red">
-
-                <h3>STOCK BAJO</h3>
-
-                <h1>3</h1>
-
-                <span>productos críticos</span>
-
-            </div>
-
+        <div class="card green">
+          <h3>MÁQUINAS INACTIVAS</h3>
+          <h1>{{ maquinasInactivas }}</h1>
+          <span>fuera de servicio</span>
         </div>
 
-        <div class="tables">
-
-            <div class="table-box">
-
-                <h2>ESTADO DE MÁQUINAS</h2>
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-                            <th>MÁQUINA</th>
-                            <th>OPERARIO</th>
-                            <th>ESTADO</th>
-                            <th>PRODUCCIÓN/DÍA</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-
-                            <td>
-                                <strong>Troqueladora A</strong>
-                                <p>MAQ-01</p>
-                            </td>
-
-                            <td>Carlos Mendoza</td>
-
-                            <td>
-                                <span class="status occupied">
-                                    Ocupada
-                                </span>
-                            </td>
-
-                            <td>140</td>
-
-                        </tr>
-
-                        <tr>
-
-                            <td>
-                                <strong>Inyectora B</strong>
-                                <p>MAQ-02</p>
-                            </td>
-
-                            <td>Ana Ríos</td>
-
-                            <td>
-                                <span class="status occupied">
-                                    Ocupada
-                                </span>
-                            </td>
-
-                            <td>280</td>
-
-                        </tr>
-
-                        <tr>
-
-                            <td>
-                                <strong>Ensambladora C</strong>
-                                <p>MAQ-03</p>
-                            </td>
-
-                            <td>Pedro Gómez</td>
-
-                            <td>
-                                <span class="status free">
-                                    Libre
-                                </span>
-                            </td>
-
-                            <td>95</td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-            <div class="table-box">
-
-                <h2>ALERTAS DE INVENTARIO</h2>
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-                            <th>PRODUCTO</th>
-                            <th>STOCK</th>
-                            <th>MÍNIMO</th>
-                            <th>ESTADO</th>
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-
-                            <td>Bombillo Xenon D2S</td>
-
-                            <td>8</td>
-
-                            <td>25</td>
-
-                            <td>
-                                <span class="status critical">
-                                    Crítico
-                                </span>
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <td>Kit Xenon H7</td>
-
-                            <td>12</td>
-
-                            <td>20</td>
-
-                            <td>
-                                <span class="status critical">
-                                    Crítico
-                                </span>
-                            </td>
-
-                        </tr>
-
-                        <tr>
-
-                            <td>Cable Arnés</td>
-
-                            <td>5</td>
-
-                            <td>15</td>
-
-                            <td>
-                                <span class="status warning">
-                                    Bajo
-                                </span>
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
+        <div class="card cyan">
+          <h3>PRODUCTOS EN STOCK</h3>
+          <h1>{{ stockTotal }}</h1>
+          <span>unidades totales</span>
         </div>
 
-    </main>
+        <div class="card orange">
+          <h3>TRABAJADORES</h3>
+          <h1>{{ totalTrabajadores }}</h1>
+          <span>en el sistema</span>
+        </div>
+
+        <div class="card red">
+          <h3>STOCK BAJO</h3>
+          <h1>{{ productosCriticos }}</h1>
+          <span>productos críticos</span>
+        </div>
+
+      </div>
+
+      <div class="tables">
+
+        <div class="table-box">
+          <h2>ESTADO DE MÁQUINAS</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>MÁQUINA</th>
+                <th>SERIE</th>
+                <th>ESTADO</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let m of maquinas">
+                <td><strong>{{ m.tipo }}</strong></td>
+                <td>{{ m.numeroSerie }}</td>
+                <td>
+                  <span class="status" [ngClass]="estadoMaquinaClase(m.estadoMaquinadto?.estado)">
+                    {{ m.estadoMaquinadto?.estado }}
+                  </span>
+                </td>
+              </tr>
+              <tr *ngIf="maquinas.length === 0">
+                <td colspan="3" class="empty">Sin máquinas registradas</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="table-box">
+          <h2>ALERTAS DE INVENTARIO</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>PRODUCTO</th>
+                <th>STOCK</th>
+                <th>MÍNIMO</th>
+                <th>ESTADO</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let i of inventario">
+                <td>{{ i.producto?.nombre }}</td>
+                <td>{{ i.cantidadProducto }}</td>
+                <td>{{ i.stockMinimo }}</td>
+                <td>
+                  <span class="status" [ngClass]="estadoInventarioClase(i)">
+                    {{ estadoInventarioLabel(i) }}
+                  </span>
+                </td>
+              </tr>
+              <tr *ngIf="inventario.length === 0">
+                <td colspan="4" class="empty">Sin datos de inventario</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+
+    </ng-container>
+
+  </main>
 
 </div>

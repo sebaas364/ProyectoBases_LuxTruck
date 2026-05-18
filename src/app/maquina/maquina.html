@@ -1,6 +1,5 @@
 <div class="layout">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar">
     <nav>
       <img src="logo.png" class="logo">
@@ -14,12 +13,10 @@
     </nav>
   </aside>
 
-  <!-- MAIN -->
   <main class="main-content">
 
     <div class="topbar"><h1>MÁQUINAS</h1></div>
 
-    <!-- CARDS -->
     <div class="cards">
       <div class="card blue">
         <h3>MÁQUINAS ACTIVAS</h3>
@@ -38,19 +35,19 @@
       </div>
     </div>
 
-    <!-- ACCIONES -->
     <div class="acciones">
-      <button class="btn crear"      (click)="abrirCrearMaquina()">+ Crear Máquina</button>
-      <button class="btn editarBtn"  (click)="abrirAsignarMaterial()">⚙ Asignar Material</button>
+      <button class="btn crear"        (click)="abrirCrearMaquina()">+ Crear Máquina</button>
+      <button class="btn editarBtn"    (click)="abrirAsignarMaterial()">⚙ Asignar Material</button>
       <button class="btn inactivarBtn" (click)="abrirEstadoMaquina()">Cambiar Estado</button>
     </div>
 
-    <!-- MENSAJE GLOBAL -->
     <div *ngIf="mensaje && !mostrarCrearMaquina && !mostrarAsignarMaterial && !mostrarEstadoMaquina && !mostrarEditarMaquina"
          class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
 
+    <div *ngIf="cargando" style="padding:1rem;color:#888">Cargando máquinas...</div>
+
     <!-- TABLA MÁQUINAS -->
-    <div class="tables">
+    <div class="tables" *ngIf="!cargando">
       <div class="table-box">
         <h2>LISTA DE MÁQUINAS</h2>
         <table>
@@ -60,62 +57,32 @@
               <th>N° SERIE</th>
               <th>TIPO</th>
               <th>ESTADO</th>
-              <th>MATERIAL ASIGNADO</th>
               <th>ACCIONES</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let m of maquinas">
-              <td><strong>MAQ-0{{ m.idMaquina }}</strong></td>
+              <td><strong>MAQ-{{ m.idMaquina }}</strong></td>
               <td>{{ m.numeroSerie }}</td>
               <td>{{ m.tipo }}</td>
               <td>
-                <span class="status" [ngClass]="estadoClase(m)">{{ m.estado }}</span>
+                <span class="status" [ngClass]="estadoClase(m)">{{ m.estadoMaquinadto?.estado }}</span>
               </td>
-              <td>{{ m.materialUsado || '—' }}</td>
               <td class="acciones-td">
                 <button class="btn-icon editar"   (click)="abrirEditarMaquina(m)" title="Editar">✏</button>
                 <button class="btn-icon eliminar" (click)="eliminarMaquina(m.idMaquina)" title="Eliminar">✕</button>
               </td>
             </tr>
             <tr *ngIf="maquinas.length === 0">
-              <td colspan="6" class="empty">Sin máquinas registradas</td>
+              <td colspan="5" class="empty">Sin máquinas registradas</td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
 
-    <br>
 
-    <!-- TABLA PRODUCCIÓN -->
-    <div class="table-box">
-      <h2>PRODUCCIÓN POR MÁQUINA</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>MÁQUINA</th>
-            <th>PRODUCTO</th>
-            <th>TIEMPO PRODUCCIÓN</th>
-            <th>PRECIO UNITARIO</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let pr of produccion">
-            <td>{{ pr.nombreMaquina }}</td>
-            <td>{{ pr.nombreProducto }}</td>
-            <td>{{ pr.tiempoProduccion }}</td>
-            <td>{{ pr.precioUnitario | currency:'COP':'symbol':'1.0-0' }}</td>
-          </tr>
-          <tr *ngIf="produccion.length === 0">
-            <td colspan="4" class="empty">Sin registros de producción</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-
-    <!-- ════ MODAL CREAR MÁQUINA ════ -->
+    <!-- MODAL CREAR MÁQUINA -->
     <div class="modal" *ngIf="mostrarCrearMaquina">
       <div class="modal-content">
         <div class="modal-header">
@@ -131,6 +98,9 @@
             <option value="Ensambladora">Ensambladora</option>
             <option value="Cortadora">Cortadora</option>
             <option value="Prensadora">Prensadora</option>
+            <option value="Soldadora MIG">Soldadora MIG</option>
+            <option value="Elevador Hidráulico">Elevador Hidráulico</option>
+            <option value="Compresor de Aire">Compresor de Aire</option>
           </select>
 
           <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
@@ -142,7 +112,7 @@
     </div>
 
 
-    <!-- ════ MODAL EDITAR MÁQUINA ════ -->
+    <!-- MODAL EDITAR MÁQUINA -->
     <div class="modal" *ngIf="mostrarEditarMaquina">
       <div class="modal-content">
         <div class="modal-header">
@@ -158,6 +128,9 @@
             <option value="Ensambladora">Ensambladora</option>
             <option value="Cortadora">Cortadora</option>
             <option value="Prensadora">Prensadora</option>
+            <option value="Soldadora MIG">Soldadora MIG</option>
+            <option value="Elevador Hidráulico">Elevador Hidráulico</option>
+            <option value="Compresor de Aire">Compresor de Aire</option>
           </select>
 
           <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
@@ -169,7 +142,7 @@
     </div>
 
 
-    <!-- ════ MODAL ASIGNAR MATERIAL ════ -->
+    <!-- MODAL ASIGNAR MATERIAL -->
     <div class="modal" *ngIf="mostrarAsignarMaterial">
       <div class="modal-content">
         <div class="modal-header">
@@ -180,18 +153,13 @@
           <select [(ngModel)]="asignarMaquinaId">
             <option [ngValue]="null">Seleccionar máquina *</option>
             <option *ngFor="let m of maquinas" [ngValue]="m.idMaquina">
-              MAQ-0{{ m.idMaquina }} — {{ m.tipo }} ({{ m.estado }})
+              MAQ-{{ m.idMaquina }} — {{ m.tipo }} ({{ m.estadoMaquinadto?.estado }})
             </option>
           </select>
 
-          <select [(ngModel)]="asignarMaterialId">
-            <option [ngValue]="null">Seleccionar material *</option>
-            <option *ngFor="let mat of materialesDisponibles" [ngValue]="mat.idMaterial">
-              {{ mat.nombre }}
-            </option>
-          </select>
-
-          <input type="text" placeholder="Descripción del uso (opcional)" [(ngModel)]="asignarDescripcion">
+          <!-- ID del material se escribe manualmente ya que no hay endpoint /material/getall expuesto aún -->
+          <input type="number" placeholder="ID del material *" [(ngModel)]="asignarMaterialId" min="1">
+          <input type="text"   placeholder="Descripción del uso (opcional)" [(ngModel)]="asignarDescripcion">
 
           <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
           <button class="guardar" (click)="guardarAsignacion()" [disabled]="guardando">
@@ -202,7 +170,7 @@
     </div>
 
 
-    <!-- ════ MODAL CAMBIAR ESTADO ════ -->
+    <!-- MODAL CAMBIAR ESTADO -->
     <div class="modal" *ngIf="mostrarEstadoMaquina">
       <div class="modal-content">
         <div class="modal-header">
@@ -213,15 +181,15 @@
           <select [(ngModel)]="estadoMaquinaId">
             <option [ngValue]="null">Seleccionar máquina *</option>
             <option *ngFor="let m of maquinas" [ngValue]="m.idMaquina">
-              MAQ-0{{ m.idMaquina }} — {{ m.tipo }} ({{ m.estado }})
+              MAQ-{{ m.idMaquina }} — {{ m.tipo }} ({{ m.estadoMaquinadto?.estado }})
             </option>
           </select>
 
-          <select [(ngModel)]="nuevoEstado">
-            <option value="">Nuevo estado *</option>
-            <option value="Activa">Activa</option>
-            <option value="Inactiva">Inactiva</option>
-            <option value="Mantenimiento">Mantenimiento</option>
+          <select [(ngModel)]="nuevoEstadoId">
+            <option [ngValue]="null">Nuevo estado *</option>
+            <option [ngValue]="1">Operativa</option>
+            <option [ngValue]="2">Mantenimiento</option>
+            <option [ngValue]="3">Fuera de servicio</option>
           </select>
 
           <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>

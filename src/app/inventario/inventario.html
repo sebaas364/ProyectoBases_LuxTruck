@@ -1,335 +1,145 @@
 <div class="layout">
 
-    <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <nav>
+      <img src="logo.png" class="logo">
+      <a routerLink="/dashboard">Dashboard</a>
+      <a routerLink="/inventario" class="active">Inventario</a>
+      <a href="#">Ventas</a>
+      <a href="#">Productos</a>
+      <a routerLink="/maquinas">Máquinas</a>
+      <a routerLink="/proveedores">Proveedores</a>
+      <a routerLink="/usuarios">Usuarios</a>
+    </nav>
+  </aside>
 
-    <aside class="sidebar">
+  <main class="main-content">
 
-        <nav>
+    <div class="topbar">
+      <div><h1>INVENTARIO</h1></div>
+    </div>
 
-            <img src="logo.png" class="logo">
+    <div class="cards">
+      <div class="card blue">
+        <h3>REFERENCIAS</h3>
+        <h1>{{ inventario.length }}</h1>
+        <span>Total registradas</span>
+      </div>
+      <div class="card green">
+        <h3>STOCK TOTAL</h3>
+        <h1>{{ totalStock }}</h1>
+        <span>Unidades disponibles</span>
+      </div>
+      <div class="card red">
+        <h3>PRODUCTOS CRÍTICOS</h3>
+        <h1>{{ criticos }}</h1>
+        <span>Por debajo del mínimo</span>
+      </div>
+    </div>
 
-            <a routerLink="/dashboard">
-                Dashboard
-            </a>
+    <div class="acciones">
+      <button class="btn crear"    (click)="abrirCrear()">+ Crear Referencia</button>
+      <button class="btn cantidad" (click)="abrirCantidad()">+ Actualizar Cantidad</button>
+    </div>
 
-            <a routerLink="/inventario" class="active">
-                Inventario
-            </a>
+    <div *ngIf="mensaje && !mostrarCrear && !mostrarCantidad"
+         class="mensaje" [ngClass]="tipoMensaje">
+      {{ mensaje }}
+    </div>
 
-            <a href="#">
-                Ventas
-            </a>
+    <div *ngIf="cargando" style="padding:1rem;color:#888">Cargando inventario...</div>
 
-            <a href="#">
-                Productos
-            </a>
+    <div class="tables" *ngIf="!cargando">
+      <div class="table-box">
+        <h2>INVENTARIO GENERAL</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>CÓDIGO</th>
+              <th>NOMBRE</th>
+              <th>TIPO</th>
+              <th>STOCK</th>
+              <th>STOCK MÍNIMO</th>
+              <th>ESTADO</th>
+              <th>PRECIO UNITARIO</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let i of inventario">
+              <td><strong>#{{ i.idProducto }}</strong></td>
+              <td>{{ i.producto?.nombre }}</td>
+              <td>{{ i.producto?.tipo }}</td>
+              <td>{{ i.cantidadProducto }}</td>
+              <td>{{ i.stockMinimo }}</td>
+              <td><span class="status" [ngClass]="estadoClase(i)">{{ estadoLabel(i) }}</span></td>
+              <td>{{ i.producto?.precioUnitario | currency:'COP':'symbol':'1.0-0' }}</td>
+            </tr>
+            <tr *ngIf="inventario.length === 0">
+              <td colspan="7" class="empty">Sin registros en inventario</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-            <a routerLink="/maquinas">
-                Máquinas
-            </a>
 
-            <a routerLink="/proveedores">
-                Proveedores
-            </a>
+    <!-- MODAL CREAR REFERENCIA -->
+    <div class="modal" *ngIf="mostrarCrear">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Nueva Referencia</h2>
+          <button class="cerrar" (click)="cerrarModales()">✕</button>
+        </div>
+        <div class="modal-body">
 
-            <a routerLink="/usuarios">
-                Usuarios
-            </a>
+          <input type="text"   placeholder="Nombre del producto *" [(ngModel)]="crearNombre">
+          <input type="text"   placeholder="Tipo (ej: Repuesto) *" [(ngModel)]="crearTipo">
+          <input type="number" placeholder="Precio unitario *"      [(ngModel)]="crearPrecio"      min="0">
+          <input type="number" placeholder="Stock mínimo *"         [(ngModel)]="crearStockMinimo" min="0">
+          <input type="number" placeholder="Cantidad inicial *"     [(ngModel)]="crearCantidad"    min="0">
 
-        </nav>
+          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
 
-    </aside>
-
-
-    <!-- MAIN -->
-
-    <main class="main-content">
-
-
-        <!-- TOPBAR -->
-
-        <div class="topbar">
-
-            <div>
-                <h1>INVENTARIO</h1>
-            </div>
+          <button class="guardar" (click)="guardarReferencia()" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : 'Guardar Referencia' }}
+          </button>
 
         </div>
+      </div>
+    </div>
 
 
-        <!-- CARDS -->
+    <!-- MODAL ACTUALIZAR CANTIDAD -->
+    <div class="modal" *ngIf="mostrarCantidad">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Actualizar Cantidad</h2>
+          <button class="cerrar" (click)="cerrarModales()">✕</button>
+        </div>
+        <div class="modal-body">
 
-        <div class="cards">
+          <select [(ngModel)]="actualizarId" (ngModelChange)="onSeleccionarProducto()">
+            <option [ngValue]="null">Seleccionar producto *</option>
+            <option *ngFor="let i of inventario" [ngValue]="i.idProducto">
+              {{ i.producto?.nombre }} (stock: {{ i.cantidadProducto }})
+            </option>
+          </select>
 
-            <div class="card blue">
+          <input type="number" placeholder="Nuevo stock mínimo" [(ngModel)]="actualizarStock"    min="0">
+          <input type="number" placeholder="Nueva cantidad *"   [(ngModel)]="actualizarCantidad" min="0">
 
-                <h3>REFERENCIAS</h3>
+          <p class="info-stock">No se permite dejar el inventario en negativo.</p>
 
-                <h1>4</h1>
+          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
 
-                <span>Total registradas</span>
-
-            </div>
-
-            <div class="card green">
-
-                <h3>STOCK TOTAL</h3>
-
-                <h1>5520</h1>
-
-                <span>Unidades disponibles</span>
-
-            </div>
-
-            <div class="card red">
-
-                <h3>PRODUCTOS CRÍTICOS</h3>
-
-                <h1>0</h1>
-
-                <span>Por debajo del mínimo</span>
-
-            </div>
+          <button class="guardar" (click)="guardarCantidad()" [disabled]="guardando">
+            {{ guardando ? 'Actualizando...' : 'Actualizar Stock' }}
+          </button>
 
         </div>
+      </div>
+    </div>
 
-
-        <!-- BOTONES -->
-
-        <div class="acciones">
-
-            <button class="btn crear" (click)="abrirCrear()">
-                + Crear Referencia
-            </button>
-
-            <button class="btn cantidad" (click)="abrirCantidad()">
-                + Actualizar Cantidad
-            </button>
-
-        </div>
-
-
-        <!-- TABLA -->
-
-        <div class="tables">
-
-            <div class="table-box">
-
-                <h2>INVENTARIO GENERAL</h2>
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>CÓDIGO</th>
-                            <th>NOMBRE</th>
-                            <th>STOCK</th>
-                            <th>STOCK MÍNIMO</th>
-                            <th>ESTADO</th>
-                            <th>PRECIO UNITARIO</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-
-                            <td>
-                                <strong>MAT-001</strong>
-                            </td>
-
-                            <td>Bombillo Xenon D2S</td>
-
-                            <td>250</td>
-
-                            <td>20</td>
-
-                            <td>
-
-                                <span class="status free">
-                                    Disponible
-                                </span>
-
-                            </td>
-
-                            <td>$20.000</td>
-
-                        </tr>
-
-
-                        <tr>
-
-                            <td>
-                                <strong>MAT-002</strong>
-                            </td>
-
-                            <td>Cable Arnés</td>
-
-                            <td>8</td>
-
-                            <td>15</td>
-
-                            <td>
-
-                                <span class="status critical">
-                                    Crítico
-                                </span>
-
-                            </td>
-
-                            <td>$8.000</td>
-
-                        </tr>
-
-
-                        <tr>
-
-                            <td>
-                                <strong>MAT-003</strong>
-                            </td>
-
-                            <td>Kit Xenon H7</td>
-
-                            <td>55</td>
-
-                            <td>10</td>
-
-                            <td>
-
-                                <span class="status free">
-                                    Disponible
-                                </span>
-
-                            </td>
-
-                            <td>$35.000</td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        </div>
-
-
-        <!-- MODAL CREAR REFERENCIA -->
-
-        <div class="modal" *ngIf="mostrarCrear">
-
-            <div class="modal-content">
-
-                <div class="modal-header">
-
-                    <h2>Nueva Referencia</h2>
-
-                    <button class="cerrar" (click)="cerrarModales()">
-                        X
-                    </button>
-
-                </div>
-
-                <div class="modal-body">
-
-                    <input 
-                        type="text" 
-                        placeholder="Código referencia"
-                        required>
-
-                    <input 
-                        type="text" 
-                        placeholder="Nombre material"
-                        required>
-
-                    <input 
-                        type="number" 
-                        placeholder="Precio unitario">
-
-                    <input 
-                        type="number" 
-                        placeholder="Stock mínimo">
-
-                    <select>
-
-                        <option>Categoría</option>
-
-                        <option>Bombillos</option>
-
-                        <option>Kits Xenon</option>
-
-                        <option>Cables</option>
-
-                        <option>Accesorios</option>
-
-                    </select>
-
-                    <button class="guardar">
-                        Guardar Referencia
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- MODAL ACTUALIZAR CANTIDAD -->
-
-        <div class="modal" *ngIf="mostrarCantidad">
-
-            <div class="modal-content">
-
-                <div class="modal-header">
-
-                    <h2>Actualizar Cantidad</h2>
-
-                    <button class="cerrar" (click)="cerrarModales()">
-                        X
-                    </button>
-
-                </div>
-
-                <div class="modal-body">
-
-                    <select>
-
-                        <option>Seleccionar referencia</option>
-
-                        <option>Bombillo Xenon D2S</option>
-
-                        <option>Cable Arnés</option>
-
-                        <option>Kit Xenon H7</option>
-
-                    </select>
-
-                    <input 
-                        type="number" 
-                        placeholder="Cantidad (+ o -)">
-
-                    <p class="info-stock">
-
-                        No se permite dejar el inventario en negativo.
-
-                    </p>
-
-                    <button class="guardar">
-                        Actualizar Stock
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </main>
+  </main>
 
 </div>

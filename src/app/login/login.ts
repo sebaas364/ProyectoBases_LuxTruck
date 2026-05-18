@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
+import { timeout, finalize } from 'rxjs/operators';
 import { ApiService, TrabajadorDTO } from '../services/api.service';
 
 @Component({
@@ -16,44 +17,55 @@ export class Login {
 
   correo = '';
   password = '';
+
   mensaje = '';
+
   tipoMensaje: 'error' | 'success' | '' = '';
+
   cargando = false;
 
-  constructor(private router: Router, private api: ApiService) {}
+  constructor(
+    private router: Router,
+    private api: ApiService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   // ──────────────────────────────────────────
-  // Hashea la contraseña en SHA-256 (igual que el backend usa DigestUtils.sha256Hex)
+  // Validaciones
   // ──────────────────────────────────────────
-  private async sha256(texto: string): Promise<string> {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(texto);
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hashBuffer));
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-
   private validar(): string | null {
-    if (!this.correo.trim()) return 'El correo es obligatorio.';
+
+    if (!this.correo.trim()) {
+      return 'El correo es obligatorio.';
+    }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(this.correo)) return 'Ingresa un correo válido.';
 
-    if (!this.password.trim()) return 'La contraseña es obligatoria.';
-    if (this.password.length < 4) return 'La contraseña debe tener al menos 4 caracteres.';
+    if (!emailRegex.test(this.correo)) {
+      return 'Ingresa un correo válido.';
+    }
 
-    return null; // todo bien
+    if (!this.password.trim()) {
+      return 'La contraseña es obligatoria.';
+    }
+
+    if (this.password.length < 4) {
+      return 'La contraseña debe tener al menos 4 caracteres.';
+    }
+
+    return null;
   }
 
   // ──────────────────────────────────────────
   // Login principal
   // ──────────────────────────────────────────
-  async login() {
+  login() {
+
     this.mensaje = '';
     this.tipoMensaje = '';
 
     const error = this.validar();
+
     if (error) {
       this.mensaje = error;
       this.tipoMensaje = 'error';
@@ -62,39 +74,74 @@ export class Login {
 
     this.cargando = true;
 
-    try {
-      const contraseniaHash = await this.sha256(this.password);
+    this.api.login({
+      correo: this.correo,
+      contrasenia: this.password
+    })
+    .pipe(
 
-      this.api.login({ correo: this.correo, contrasenia: contraseniaHash })
-        .subscribe({
-          next: (trabajador: TrabajadorDTO) => {
-            this.cargando = false;
-            // Guardamos el usuario en sessionStorage para usarlo en otros módulos
-            sessionStorage.setItem('usuario', JSON.stringify(trabajador));
-            this.router.navigate(['/dashboard']);
-          },
-          error: (err: HttpErrorResponse) => {
-            this.cargando = false;
-            if (err.status === 401) {
-              this.mensaje = 'Correo o contraseña incorrectos.';
-            } else if (err.status === 0) {
-              this.mensaje = 'No se puede conectar al servidor. ¿Está corriendo el backend?';
-            } else {
-              this.mensaje = 'Error inesperado. Intenta de nuevo.';
-            }
-            this.tipoMensaje = 'error';
-          }
-        });
+      timeout(5000),
 
-    } catch {
-      this.cargando = false;
-      this.mensaje = 'Error al procesar la contraseña.';
-      this.tipoMensaje = 'error';
-    }
+      finalize(() => {
+
+        this.cargando = false;
+
+        // Fuerza actualización visual
+        this.cdr.detectChanges();
+      })
+
+    )
+    .subscribe({
+
+      next: (trabajador: TrabajadorDTO) => {
+
+        this.mensaje = 'Inicio de sesión exitoso';
+        this.tipoMensaje = 'success';
+
+        // Guardar usuario
+        sessionStorage.setItem(
+          'usuario',
+          JSON.stringify(trabajador)
+        );
+
+        // Navegar
+        setTimeout(() => {
+          this.router.navigate(['/dashboard']);
+        }, 500);
+      },
+
+      error: (err: HttpErrorResponse) => {
+
+        console.log('ERROR LOGIN:', err);
+
+        if (err.status === 401) {
+
+          this.mensaje =
+            'Correo o contraseña incorrectos.';
+
+        } else if (err.status === 0) {
+
+          this.mensaje =
+            'No se puede conectar al servidor.';
+
+        } else {
+
+          this.mensaje =
+            'Error inesperado. Intenta de nuevo.';
+        }
+
+        this.tipoMensaje = 'error';
+      }
+    });
   }
 
-  // Permite enviar con Enter
+  // ──────────────────────────────────────────
+  // Enter para iniciar sesión
+  // ──────────────────────────────────────────
   onKeyDown(event: KeyboardEvent) {
-    if (event.key === 'Enter') this.login();
+
+    if (event.key === 'Enter') {
+      this.login();
+    }
   }
 }
