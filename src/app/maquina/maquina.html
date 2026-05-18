@@ -1,393 +1,236 @@
 <div class="layout">
 
-    <!-- SIDEBAR -->
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <nav>
+      <img src="logo.png" class="logo">
+      <a routerLink="/dashboard">Dashboard</a>
+      <a routerLink="/inventario">Inventario</a>
+      <a href="#">Ventas</a>
+      <a href="#">Productos</a>
+      <a routerLink="/maquinas" class="active">Máquinas</a>
+      <a routerLink="/proveedores">Proveedores</a>
+      <a routerLink="/usuarios">Usuarios</a>
+    </nav>
+  </aside>
 
-    <aside class="sidebar">
+  <!-- MAIN -->
+  <main class="main-content">
 
-        <nav>
+    <div class="topbar"><h1>MÁQUINAS</h1></div>
 
-            <img src="logo.png" class="logo">
+    <!-- CARDS -->
+    <div class="cards">
+      <div class="card blue">
+        <h3>MÁQUINAS ACTIVAS</h3>
+        <h1>{{ activas }}</h1>
+        <span>Operando</span>
+      </div>
+      <div class="card red">
+        <h3>FUERA DE SERVICIO</h3>
+        <h1>{{ inactivas }}</h1>
+        <span>Inactivas / Mantenimiento</span>
+      </div>
+      <div class="card green">
+        <h3>TOTAL MÁQUINAS</h3>
+        <h1>{{ maquinas.length }}</h1>
+        <span>Registradas</span>
+      </div>
+    </div>
 
-            <a routerLink="/dashboard">
-                Dashboard
-            </a>
+    <!-- ACCIONES -->
+    <div class="acciones">
+      <button class="btn crear"      (click)="abrirCrearMaquina()">+ Crear Máquina</button>
+      <button class="btn editarBtn"  (click)="abrirAsignarMaterial()">⚙ Asignar Material</button>
+      <button class="btn inactivarBtn" (click)="abrirEstadoMaquina()">Cambiar Estado</button>
+    </div>
 
-            <a routerLink="/inventario">
-                Inventario
-            </a>
+    <!-- MENSAJE GLOBAL -->
+    <div *ngIf="mensaje && !mostrarCrearMaquina && !mostrarAsignarMaterial && !mostrarEstadoMaquina && !mostrarEditarMaquina"
+         class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
 
-            <a href="#">
-                Ventas
-            </a>
+    <!-- TABLA MÁQUINAS -->
+    <div class="tables">
+      <div class="table-box">
+        <h2>LISTA DE MÁQUINAS</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>N° SERIE</th>
+              <th>TIPO</th>
+              <th>ESTADO</th>
+              <th>MATERIAL ASIGNADO</th>
+              <th>ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let m of maquinas">
+              <td><strong>MAQ-0{{ m.idMaquina }}</strong></td>
+              <td>{{ m.numeroSerie }}</td>
+              <td>{{ m.tipo }}</td>
+              <td>
+                <span class="status" [ngClass]="estadoClase(m)">{{ m.estado }}</span>
+              </td>
+              <td>{{ m.materialUsado || '—' }}</td>
+              <td class="acciones-td">
+                <button class="btn-icon editar"   (click)="abrirEditarMaquina(m)" title="Editar">✏</button>
+                <button class="btn-icon eliminar" (click)="eliminarMaquina(m.idMaquina)" title="Eliminar">✕</button>
+              </td>
+            </tr>
+            <tr *ngIf="maquinas.length === 0">
+              <td colspan="6" class="empty">Sin máquinas registradas</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-            <a href="#">
-                Productos
-            </a>
+    <br>
 
-            <a routerLink="/maquinas" class="active">
-                Máquinas
-            </a>
+    <!-- TABLA PRODUCCIÓN -->
+    <div class="table-box">
+      <h2>PRODUCCIÓN POR MÁQUINA</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>MÁQUINA</th>
+            <th>PRODUCTO</th>
+            <th>TIEMPO PRODUCCIÓN</th>
+            <th>PRECIO UNITARIO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let pr of produccion">
+            <td>{{ pr.nombreMaquina }}</td>
+            <td>{{ pr.nombreProducto }}</td>
+            <td>{{ pr.tiempoProduccion }}</td>
+            <td>{{ pr.precioUnitario | currency:'COP':'symbol':'1.0-0' }}</td>
+          </tr>
+          <tr *ngIf="produccion.length === 0">
+            <td colspan="4" class="empty">Sin registros de producción</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-            <a routerLink="/proveedores">
-                Proveedores
-            </a>
 
-            <a routerLink="/usuarios">
-                Usuarios
-            </a>
-
-        </nav>
-
-    </aside>
-
-
-    <!-- MAIN -->
-
-    <main class="main-content">
-
-
-        <!-- TOPBAR -->
-
-        <div class="topbar">
-
-            <div>
-                <h1>MÁQUINAS</h1>
-            </div>
-
+    <!-- ════ MODAL CREAR MÁQUINA ════ -->
+    <div class="modal" *ngIf="mostrarCrearMaquina">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Nueva Máquina</h2>
+          <button class="cerrar" (click)="cerrarModales()">✕</button>
         </div>
+        <div class="modal-body">
+          <input type="text" placeholder="Número de serie *" [(ngModel)]="nuevoNumeroSerie">
+          <select [(ngModel)]="nuevoTipo">
+            <option value="">Tipo de máquina *</option>
+            <option value="Inyectora">Inyectora</option>
+            <option value="Troqueladora">Troqueladora</option>
+            <option value="Ensambladora">Ensambladora</option>
+            <option value="Cortadora">Cortadora</option>
+            <option value="Prensadora">Prensadora</option>
+          </select>
 
-
-        <!-- CARDS -->
-
-        <div class="cards">
-
-            <div class="card blue">
-
-                <h3>MÁQUINAS ACTIVAS</h3>
-
-                <h1>4</h1>
-
-                <span>Actualmente operando</span>
-
-            </div>
-
-            <div class="card red">
-
-                <h3>MÁQUINAS INACTIVAS</h3>
-
-                <h1>1</h1>
-
-                <span>Fuera de servicio</span>
-
-            </div>
-
-            <div class="card green">
-
-                <h3>PRODUCCIÓN TOTAL</h3>
-
-                <h1>820</h1>
-
-                <span>Productos fabricados</span>
-
-            </div>
-
+          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
+          <button class="guardar" (click)="guardarMaquina()" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : 'Guardar Máquina' }}
+          </button>
         </div>
+      </div>
+    </div>
 
 
-        <!-- BOTONES -->
-
-        <div class="acciones">
-
-            <button class="btn crear" (click)="abrirCrearMaquina()">
-                + Crear Máquina
-            </button>
-
-            <button class="btn editarBtn" (click)="abrirAsignarMaterial()">
-                + Asignar Material
-            </button>
-
-            <button class="btn inactivarBtn" (click)="abrirEstadoMaquina()">
-                Cambiar Estado
-            </button>
-
+    <!-- ════ MODAL EDITAR MÁQUINA ════ -->
+    <div class="modal" *ngIf="mostrarEditarMaquina">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Editar Máquina</h2>
+          <button class="cerrar" (click)="cerrarModales()">✕</button>
         </div>
+        <div class="modal-body">
+          <input type="text" placeholder="Número de serie *" [(ngModel)]="editNumeroSerie">
+          <select [(ngModel)]="editTipo">
+            <option value="">Tipo de máquina</option>
+            <option value="Inyectora">Inyectora</option>
+            <option value="Troqueladora">Troqueladora</option>
+            <option value="Ensambladora">Ensambladora</option>
+            <option value="Cortadora">Cortadora</option>
+            <option value="Prensadora">Prensadora</option>
+          </select>
 
-
-        <!-- TABLA MAQUINAS -->
-
-        <div class="tables">
-
-            <div class="table-box">
-
-                <h2>LISTA DE MÁQUINAS</h2>
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>ID</th>
-                            <th>NÚMERO SERIE</th>
-                            <th>TIPO</th>
-                            <th>ESTADO</th>
-                            <th>MATERIAL USADO</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-
-                            <td>
-                                <strong>MAQ-01</strong>
-                            </td>
-
-                            <td>SN-XENON-001</td>
-
-                            <td>Inyectora</td>
-
-                            <td>
-
-                                <span class="status free">
-                                    Activa
-                                </span>
-
-                            </td>
-
-                            <td>Bombillo Xenon</td>
-
-                        </tr>
-
-
-                        <tr>
-
-                            <td>
-                                <strong>MAQ-02</strong>
-                            </td>
-
-                            <td>SN-XENON-002</td>
-
-                            <td>Troqueladora</td>
-
-                            <td>
-
-                                <span class="status critical">
-                                    Inactiva
-                                </span>
-
-                            </td>
-
-                            <td>Cable Arnés</td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
+          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
+          <button class="guardar" (click)="guardarEdicion()" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : 'Actualizar Máquina' }}
+          </button>
         </div>
+      </div>
+    </div>
 
 
-        <br>
-
-
-        <!-- TABLA PRODUCCIÓN -->
-
-        <div class="table-box">
-
-            <h2>PRODUCCIÓN</h2>
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>MÁQUINA</th>
-                        <th>PRODUCTO</th>
-                        <th>TIEMPO PRODUCCIÓN</th>
-                        <th>PRECIO UNITARIO</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    <tr>
-
-                        <td>MAQ-01</td>
-
-                        <td>Kit Xenon H7</td>
-
-                        <td>20 min</td>
-
-                        <td>$20.000</td>
-
-                    </tr>
-
-
-                    <tr>
-
-                        <td>MAQ-02</td>
-
-                        <td>Bombillo D2S</td>
-
-                        <td>15 min</td>
-
-                        <td>$15.000</td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
+    <!-- ════ MODAL ASIGNAR MATERIAL ════ -->
+    <div class="modal" *ngIf="mostrarAsignarMaterial">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Asignar Material</h2>
+          <button class="cerrar" (click)="cerrarModales()">✕</button>
         </div>
+        <div class="modal-body">
+          <select [(ngModel)]="asignarMaquinaId">
+            <option [ngValue]="null">Seleccionar máquina *</option>
+            <option *ngFor="let m of maquinas" [ngValue]="m.idMaquina">
+              MAQ-0{{ m.idMaquina }} — {{ m.tipo }} ({{ m.estado }})
+            </option>
+          </select>
 
+          <select [(ngModel)]="asignarMaterialId">
+            <option [ngValue]="null">Seleccionar material *</option>
+            <option *ngFor="let mat of materialesDisponibles" [ngValue]="mat.idMaterial">
+              {{ mat.nombre }}
+            </option>
+          </select>
 
-        <!-- MODAL CREAR -->
+          <input type="text" placeholder="Descripción del uso (opcional)" [(ngModel)]="asignarDescripcion">
 
-        <div class="modal" *ngIf="mostrarCrearMaquina">
-
-            <div class="modal-content">
-
-                <div class="modal-header">
-
-                    <h2>Crear Máquina</h2>
-
-                    <button class="cerrar" (click)="cerrarModales()">
-                        X
-                    </button>
-
-                </div>
-
-                <div class="modal-body">
-
-                    <input 
-                        type="text"
-                        placeholder="ID Máquina"
-                        required>
-
-                    <input 
-                        type="text"
-                        placeholder="Número serie"
-                        required>
-
-                    <select>
-
-                        <option>Tipo máquina</option>
-                        <option>Inyectora</option>
-                        <option>Troqueladora</option>
-                        <option>Ensambladora</option>
-
-                    </select>
-
-                    <button class="guardar">
-                        Guardar Máquina
-                    </button>
-
-                </div>
-
-            </div>
-
+          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
+          <button class="guardar" (click)="guardarAsignacion()" [disabled]="guardando">
+            {{ guardando ? 'Asignando...' : 'Asignar Material' }}
+          </button>
         </div>
+      </div>
+    </div>
 
 
-        <!-- MODAL ASIGNAR MATERIAL -->
-
-        <div class="modal" *ngIf="mostrarAsignarMaterial">
-
-            <div class="modal-content">
-
-                <div class="modal-header">
-
-                    <h2>Asignar Material</h2>
-
-                    <button class="cerrar" (click)="cerrarModales()">
-                        X
-                    </button>
-
-                </div>
-
-                <div class="modal-body">
-
-                    <select>
-
-                        <option>Seleccionar máquina</option>
-                        <option>MAQ-01</option>
-                        <option>MAQ-02</option>
-
-                    </select>
-
-                    <select>
-
-                        <option>Seleccionar material</option>
-                        <option>Bombillo Xenon</option>
-                        <option>Cable Arnés</option>
-
-                    </select>
-
-                    <button class="guardar">
-                        Asignar Material
-                    </button>
-
-                </div>
-
-            </div>
-
+    <!-- ════ MODAL CAMBIAR ESTADO ════ -->
+    <div class="modal" *ngIf="mostrarEstadoMaquina">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Cambiar Estado</h2>
+          <button class="cerrar" (click)="cerrarModales()">✕</button>
         </div>
+        <div class="modal-body">
+          <select [(ngModel)]="estadoMaquinaId">
+            <option [ngValue]="null">Seleccionar máquina *</option>
+            <option *ngFor="let m of maquinas" [ngValue]="m.idMaquina">
+              MAQ-0{{ m.idMaquina }} — {{ m.tipo }} ({{ m.estado }})
+            </option>
+          </select>
 
+          <select [(ngModel)]="nuevoEstado">
+            <option value="">Nuevo estado *</option>
+            <option value="Activa">Activa</option>
+            <option value="Inactiva">Inactiva</option>
+            <option value="Mantenimiento">Mantenimiento</option>
+          </select>
 
-        <!-- MODAL ESTADO -->
-
-        <div class="modal" *ngIf="mostrarEstadoMaquina">
-
-            <div class="modal-content">
-
-                <div class="modal-header">
-
-                    <h2>Cambiar Estado</h2>
-
-                    <button class="cerrar" (click)="cerrarModales()">
-                        X
-                    </button>
-
-                </div>
-
-                <div class="modal-body">
-
-                    <select>
-
-                        <option>Seleccionar máquina</option>
-                        <option>MAQ-01</option>
-                        <option>MAQ-02</option>
-
-                    </select>
-
-                    <select>
-
-                        <option>Nuevo estado</option>
-                        <option>Activa</option>
-                        <option>Inactiva</option>
-
-                    </select>
-
-                    <button class="guardar">
-                        Actualizar Estado
-                    </button>
-
-                </div>
-
-            </div>
-
+          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
+          <button class="guardar" (click)="guardarEstado()" [disabled]="guardando">
+            {{ guardando ? 'Actualizando...' : 'Actualizar Estado' }}
+          </button>
         </div>
+      </div>
+    </div>
 
-    </main>
-
+  </main>
 </div>

@@ -1,403 +1,325 @@
 <div class="layout">
 
-    <!-- SIDEBAR -->
-    <aside class="sidebar">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <nav>
+      <img src="logo.png" class="logo">
+      <a routerLink="/dashboard">Dashboard</a>
+      <a routerLink="/inventario">Inventario</a>
+      <a href="#">Ventas</a>
+      <a href="#">Productos</a>
+      <a routerLink="/maquinas">Máquinas</a>
+      <a routerLink="/proveedores">Proveedores</a>
+      <a routerLink="/usuarios" class="active">Usuarios</a>
+    </nav>
+  </aside>
 
-        <nav>
+  <!-- MAIN -->
+  <main class="main-content">
 
-            <img src="logo.png" class="logo">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <h1>USUARIOS</h1>
+    </div>
 
-            <a routerLink="/dashboard">Dashboard</a>
-            <a routerLink="/inventario">Inventario</a>
-            <a href="#">Ventas</a>
-            <a href="#">Productos</a>
-            <a routerLink="/maquinas">Máquinas</a>
-            <a routerLink="/proveedores">Proveedores</a>
-            <a routerLink="/usuarios" class="active">Usuarios</a>
+    <!-- CARDS con datos reales -->
+    <div class="cards">
+      <div class="card green">
+        <h3>ADMINISTRATIVOS</h3>
+        <h1>{{ administrativos.length }}</h1>
+        <span>registrados</span>
+      </div>
+      <div class="card cyan">
+        <h3>OPERARIOS</h3>
+        <h1>{{ operarios.length }}</h1>
+        <span>registrados</span>
+      </div>
+      <div class="card orange">
+        <h3>VENDEDORES</h3>
+        <h1>{{ vendedores.length }}</h1>
+        <span>registrados</span>
+      </div>
+      <div class="card blue">
+        <h3>TOTAL TRABAJADORES</h3>
+        <h1>{{ administrativos.length + operarios.length + vendedores.length }}</h1>
+        <span>en el sistema</span>
+      </div>
+    </div>
 
-        </nav>
+    <!-- ACCIONES -->
+    <div class="acciones">
+      <button class="btn crear" (click)="abrirCrearTrabajador()">+ Crear Trabajador</button>
+      <button class="btn editarBtn" (click)="abrirEditarTrabajador()">Editar Trabajador</button>
+      <button class="btn inactivarBtn" (click)="abrirEstadoTrabajador()">Cambiar Estado</button>
+    </div>
 
-    </aside>
+    <!-- MENSAJE GLOBAL -->
+    <div *ngIf="mensaje && !mostrarCrearTrabajador && !mostrarEditarTrabajador && !mostrarEstadoTrabajador"
+         class="mensaje" [ngClass]="tipoMensaje">
+      {{ mensaje }}
+    </div>
 
-    <!-- MAIN -->
-    <main class="main-content">
+    <!-- CARGANDO -->
+    <div *ngIf="cargando" class="cargando-msg">Cargando datos...</div>
 
-        <!-- CARDS -->
-        <div class="cards">
+    <!-- ===== TABLA ADMINISTRATIVOS ===== -->
+    <div class="table-box" *ngIf="!cargando">
+      <h2>Administrativos</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Documento</th>
+            <th>Correo</th>
+            <th>Teléfono</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let a of administrativos">
+            <td><strong>{{ nombreCompleto(a) }}</strong></td>
+            <td>{{ a.tipoDocumento }} {{ a.numeroDocumento }}</td>
+            <td><span class="status free">{{ a.correo }}</span></td>
+            <td>{{ a.telefono }}</td>
+            <td><span class="status" [ngClass]="estadoClase(a)">{{ a.estadoTrabajadordto?.estado }}</span></td>
+          </tr>
+          <tr *ngIf="administrativos.length === 0">
+            <td colspan="5" class="empty">Sin administrativos registrados</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-            <div class="card blue">
-                <h3>Clientes Persona</h3>
-                <h1>4</h1>
-                <span>de 7 totales</span>
-            </div>
+    <br>
 
-            <div class="card moradita">
-                <h3>Clientes Empresa</h3>
-                <h1>3</h1>
-                <span>de 7 totales</span>
-            </div>
+    <!-- ===== TABLA OPERARIOS ===== -->
+    <div class="table-box" *ngIf="!cargando">
+      <h2>Operarios</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Documento</th>
+            <th>Correo</th>
+            <th>Desempeño</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let o of operarios">
+            <td><strong>{{ nombreCompleto(o) }}</strong></td>
+            <td>{{ o.tipoDocumento }} {{ o.numeroDocumento }}</td>
+            <td><span class="status azulitoC">{{ o.correo }}</span></td>
+            <td>{{ o.desempenio }}</td>
+            <td><span class="status" [ngClass]="estadoClase(o)">{{ o.estadoTrabajadordto?.estado }}</span></td>
+          </tr>
+          <tr *ngIf="operarios.length === 0">
+            <td colspan="5" class="empty">Sin operarios registrados</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-            <div class="card green">
-                <h3>Administrativos</h3>
-                <h1>3</h1>
-                <span>De trabajadores</span>
-            </div>
+    <br>
 
-            <div class="card cyan">
-                <h3>Operarios</h3>
-                <h1>1248</h1>
-                <span>De trabajadores</span>
-            </div>
+    <!-- ===== TABLA VENDEDORES ===== -->
+    <div class="table-box" *ngIf="!cargando">
+      <h2>Vendedores</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Documento</th>
+            <th>Correo</th>
+            <th>Comisión</th>
+            <th>Estado</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let v of vendedores">
+            <td><strong>{{ nombreCompleto(v) }}</strong></td>
+            <td>{{ v.tipoDocumento }} {{ v.numeroDocumento }}</td>
+            <td><span class="status warning">{{ v.correo }}</span></td>
+            <td>{{ v.comision | currency:'COP':'symbol':'1.0-0' }}</td>
+            <td><span class="status" [ngClass]="estadoClase(v)">{{ v.estadoTrabajadordto?.estado }}</span></td>
+          </tr>
+          <tr *ngIf="vendedores.length === 0">
+            <td colspan="5" class="empty">Sin vendedores registrados</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-            <div class="card orange">
-                <h3>Vendedores</h3>
-                <h1>386</h1>
-                <span>De trabajadores</span>
-            </div>
 
+    <!-- ========================= MODAL CREAR ========================= -->
+    <div class="modal" *ngIf="mostrarCrearTrabajador">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h2>Crear Trabajador</h2>
+          <button class="cerrar" (click)="cerrarModales()">✕</button>
         </div>
 
-        <!-- BOTONES CRUD -->
-        <div class="acciones">
+        <div class="modal-body">
 
-            <button class="btn crear" (click)="abrirCrearTrabajador()">
-                + Crear Trabajador
-            </button>
+          <select [(ngModel)]="tipoTrabajador">
+            <option value="">Tipo de trabajador *</option>
+            <option value="administrativo">Administrativo</option>
+            <option value="operario">Operario</option>
+            <option value="vendedor">Vendedor</option>
+          </select>
 
-            <button class="btn editarBtn" (click)="abrirEditarTrabajador()">
-                Editar Trabajador
-            </button>
+          <div class="fila-2">
+            <input type="text" placeholder="Primer nombre *" [(ngModel)]="primerNombre">
+            <input type="text" placeholder="Segundo nombre" [(ngModel)]="segundoNombre">
+          </div>
 
-            <button class="btn inactivarBtn" (click)="abrirEstadoTrabajador()">
-                Cambiar Estado
-            </button>
+          <div class="fila-2">
+            <input type="text" placeholder="Primer apellido *" [(ngModel)]="primerApellido">
+            <input type="text" placeholder="Segundo apellido" [(ngModel)]="segundoApellido">
+          </div>
 
-        </div>
+          <div class="fila-2">
+            <select [(ngModel)]="tipoDocumento">
+              <option value="">Tipo documento *</option>
+              <option value="CC">CC</option>
+              <option value="TI">TI</option>
+              <option value="CE">CE</option>
+              <option value="PAS">Pasaporte</option>
+            </select>
+            <input type="text" placeholder="Número documento *" [(ngModel)]="numeroDocumento">
+          </div>
 
-        <!-- MENSAJE BONITO (ERROR / SUCCESS) -->
-        <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">
-            {{ mensaje }}
-        </div>
+          <div class="fila-2">
+            <input type="text" placeholder="Teléfono *" [(ngModel)]="telefono">
+            <input type="email" placeholder="Correo *" [(ngModel)]="correo">
+          </div>
 
-        <!-- TABLAS -->
+          <div class="fila-2">
+            <input type="number" placeholder="Salario *" [(ngModel)]="salario" min="0">
+            <input type="date" placeholder="Fecha ingreso *" [(ngModel)]="fechaIngreso">
+          </div>
 
-        <!-- CLIENTES PERSONA -->
-        <div class="table-box">
+          <input type="password" placeholder="Contraseña *" [(ngModel)]="contrasenia">
 
-            <h2>Clientes tipo persona</h2>
+          <!-- Campo exclusivo operario -->
+          <input *ngIf="tipoTrabajador === 'operario'"
+                 type="number" placeholder="Desempeño (0-100) *"
+                 [(ngModel)]="desempenio" min="0" max="100">
 
-            <table>
+          <!-- Campo exclusivo vendedor -->
+          <input *ngIf="tipoTrabajador === 'vendedor'"
+                 type="number" placeholder="Comisión (%) *"
+                 [(ngModel)]="comision" min="0">
 
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Identificación</th>
-                        <th>Correo</th>
-                        <th>¿Quién lo atiende?</th>
-                    </tr>
-                </thead>
+          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
 
-                <tbody>
-                    <tr>
-                        <td><strong>Sebastian Perez</strong></td>
-                        <td>1254829684</td>
-                        <td>
-                            <span class="status azulito">
-                                sphmsjs@gmail.com
-                            </span>
-                        </td>
-                        <td>Ricardo ****</td>
-                    </tr>
-                </tbody>
-
-            </table>
-
-        </div>
-
-        <br>
-
-        <!-- CLIENTES EMPRESA -->
-        <div class="table-box">
-
-            <h2>Clientes tipo empresa</h2>
-
-            <table>
-
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Nit</th>
-                        <th>Correo</th>
-                        <th>¿Quién lo atiende?</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td><strong>Industrias S.A.S</strong></td>
-                        <td>111222112111</td>
-                        <td>
-                            <span class="status morado">
-                                sphmsjs@gmail.com
-                            </span>
-                        </td>
-                        <td>Diana Herrera</td>
-                    </tr>
-                </tbody>
-
-            </table>
+          <button class="guardar" (click)="guardarTrabajador()" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : 'Guardar Trabajador' }}
+          </button>
 
         </div>
+      </div>
+    </div>
 
-        <br>
 
-        <!-- ADMINISTRATIVOS -->
-        <div class="table-box">
+    <!-- ========================= MODAL EDITAR ========================= -->
+    <div class="modal" *ngIf="mostrarEditarTrabajador">
+      <div class="modal-content">
 
-            <h2>Administrativos</h2>
-
-            <table>
-
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Identificación</th>
-                        <th>Correo</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td><strong>MIAAAAUY</strong></td>
-                        <td>11122211256241</td>
-                        <td>
-                            <span class="status free">
-                                ejemplo@gmail.com
-                            </span>
-                        </td>
-                        <td>
-                            <span class="status free">
-                                Activo
-                            </span>
-                        </td>
-                    </tr>
-                </tbody>
-
-            </table>
-
+        <div class="modal-header">
+          <h2>Editar Trabajador</h2>
+          <button class="cerrar" (click)="cerrarModales()">✕</button>
         </div>
 
-        <br>
+        <div class="modal-body">
 
-        <!-- OPERARIOS -->
-        <div class="table-box">
+          <select [(ngModel)]="trabajadorSeleccionadoId" (ngModelChange)="onSeleccionarParaEditar()">
+            <option [ngValue]="null">Seleccionar trabajador *</option>
+            <optgroup label="Administrativos">
+              <option *ngFor="let a of administrativos" [ngValue]="a.idPersona">
+                {{ nombreCompleto(a) }}
+              </option>
+            </optgroup>
+            <optgroup label="Operarios">
+              <option *ngFor="let o of operarios" [ngValue]="o.idPersona">
+                {{ nombreCompleto(o) }}
+              </option>
+            </optgroup>
+            <optgroup label="Vendedores">
+              <option *ngFor="let v of vendedores" [ngValue]="v.idPersona">
+                {{ nombreCompleto(v) }}
+              </option>
+            </optgroup>
+          </select>
 
-            <h2>Operarios</h2>
+          <div class="fila-2" *ngIf="trabajadorSeleccionadoId">
+            <input type="text" placeholder="Nombre" [(ngModel)]="editNombre">
+            <input type="text" placeholder="Apellido" [(ngModel)]="editApellido">
+          </div>
+          <div class="fila-2" *ngIf="trabajadorSeleccionadoId">
+            <input type="email" placeholder="Correo" [(ngModel)]="editCorreo">
+            <input type="text" placeholder="Teléfono" [(ngModel)]="editTelefono">
+          </div>
+          <input *ngIf="trabajadorSeleccionadoId"
+                 type="number" placeholder="Salario" [(ngModel)]="editSalario">
 
-            <table>
+          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
 
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Identificación</th>
-                        <th>Correo</th>
-                        <th>Máquina</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td><strong>AAAAAA</strong></td>
-                        <td>111111111</td>
-                        <td>
-                            <span class="status azulitoC">
-                                operario@gmail.com
-                            </span>
-                        </td>
-                        <td>MAQ 3</td>
-                        <td>
-                            <span class="status free">
-                                Activo
-                            </span>
-                        </td>
-                    </tr>
-                </tbody>
-
-            </table>
-
-        </div>
-
-        <br>
-
-        <!-- VENDEDORES -->
-        <div class="table-box">
-
-            <h2>Vendedores</h2>
-
-            <table>
-
-                <thead>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Identificación</th>
-                        <th>Correo</th>
-                        <th>Cantidad de Clientes</th>
-                        <th>Estado</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td><strong>AAAAAA</strong></td>
-                        <td>111111111</td>
-                        <td>
-                            <span class="status warning">
-                                vendedor@gmail.com
-                            </span>
-                        </td>
-                        <td>3</td>
-                        <td>
-                            <span class="status free">
-                                Activo
-                            </span>
-                        </td>
-                    </tr>
-                </tbody>
-
-            </table>
+          <button class="guardar" (click)="guardarEdicion()" [disabled]="guardando">
+            {{ guardando ? 'Actualizando...' : 'Actualizar Trabajador' }}
+          </button>
 
         </div>
+      </div>
+    </div>
 
-        <!-- =========================
-             MODAL CREAR
-        ========================= -->
-        <div class="modal" *ngIf="mostrarCrearTrabajador">
 
-            <div class="modal-content">
+    <!-- ========================= MODAL ESTADO ========================= -->
+    <div class="modal" *ngIf="mostrarEstadoTrabajador">
+      <div class="modal-content">
 
-                <div class="modal-header">
-                    <h2>Crear Trabajador</h2>
-                    <button class="cerrar" (click)="cerrarModales()">X</button>
-                </div>
-
-                <div class="modal-body">
-
-                    <select [(ngModel)]="tipoTrabajador">
-                        <option value="">Tipo de trabajador</option>
-                        <option value="administrativo">Administrativo</option>
-                        <option value="operario">Operario</option>
-                        <option value="vendedor">Vendedor</option>
-                    </select>
-
-                    <input type="text" placeholder="Primer nombre" [(ngModel)]="primerNombre">
-                    <input type="text" placeholder="Primer apellido" [(ngModel)]="primerApellido">
-
-                    <input type="text" placeholder="Segundo nombre">
-                    <input type="text" placeholder="Segundo apellido">
-
-                    <select>
-                        <option>Tipo documento</option>
-                        <option>CC</option>
-                        <option>TI</option>
-                        <option>CE</option>
-                    </select>
-
-                    <input type="number" placeholder="Número documento">
-                    <input type="number" placeholder="Teléfono">
-                    <input type="email" placeholder="Correo">
-                    <input type="number" placeholder="Salario">
-                    <input type="date">
-
-                    <select>
-                        <option>Estado</option>
-                        <option>Activo</option>
-                        <option>Inactivo</option>
-                    </select>
-
-                    <!-- DINÁMICO -->
-                    <div *ngIf="tipoTrabajador === 'operario'">
-                        <input type="text" placeholder="Especialidad">
-                    </div>
-
-                    <div *ngIf="tipoTrabajador === 'vendedor'">
-                        <input type="text" placeholder="Zona de venta">
-                        <input type="number" placeholder="Comisión">
-                    </div>
-
-                    <!-- MENSAJE -->
-                    <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">
-                        {{ mensaje }}
-                    </div>
-
-                    <button class="guardar" (click)="guardarTrabajador()">
-                        Guardar Trabajador
-                    </button>
-
-                </div>
-
-            </div>
-
+        <div class="modal-header">
+          <h2>Cambiar Estado</h2>
+          <button class="cerrar" (click)="cerrarModales()">✕</button>
         </div>
 
-        <!-- EDITAR -->
-        <div class="modal" *ngIf="mostrarEditarTrabajador">
+        <div class="modal-body">
 
-            <div class="modal-content">
+          <select [(ngModel)]="trabajadorEstadoId">
+            <option [ngValue]="null">Seleccionar trabajador *</option>
+            <optgroup label="Administrativos">
+              <option *ngFor="let a of administrativos" [ngValue]="a.idPersona">
+                {{ nombreCompleto(a) }} — {{ a.estadoTrabajadordto?.estado }}
+              </option>
+            </optgroup>
+            <optgroup label="Operarios">
+              <option *ngFor="let o of operarios" [ngValue]="o.idPersona">
+                {{ nombreCompleto(o) }} — {{ o.estadoTrabajadordto?.estado }}
+              </option>
+            </optgroup>
+            <optgroup label="Vendedores">
+              <option *ngFor="let v of vendedores" [ngValue]="v.idPersona">
+                {{ nombreCompleto(v) }} — {{ v.estadoTrabajadordto?.estado }}
+              </option>
+            </optgroup>
+          </select>
 
-                <div class="modal-header">
-                    <h2>Editar Trabajador</h2>
-                    <button class="cerrar" (click)="cerrarModales()">X</button>
-                </div>
+          <select [(ngModel)]="nuevoEstadoId">
+            <option [ngValue]="null">Nuevo estado *</option>
+            <option [ngValue]="1">Activo</option>
+            <option [ngValue]="2">Inactivo</option>
+          </select>
 
-                <div class="modal-body">
+          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
 
-                    <select>
-                        <option>Seleccionar trabajador</option>
-                    </select>
-
-                    <input type="text" placeholder="Nuevo nombre">
-                    <input type="email" placeholder="Nuevo correo">
-
-                    <button class="guardar">Actualizar Trabajador</button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-        <!-- ESTADO -->
-        <div class="modal" *ngIf="mostrarEstadoTrabajador">
-
-            <div class="modal-content">
-
-                <div class="modal-header">
-                    <h2>Cambiar Estado</h2>
-                    <button class="cerrar" (click)="cerrarModales()">X</button>
-                </div>
-
-                <div class="modal-body">
-
-                    <select>
-                        <option>Seleccionar trabajador</option>
-                    </select>
-
-                    <select>
-                        <option>Nuevo estado</option>
-                        <option>Activo</option>
-                        <option>Inactivo</option>
-                    </select>
-
-                    <button class="guardar">Actualizar Estado</button>
-
-                </div>
-
-            </div>
+          <button class="guardar" (click)="guardarEstado()" [disabled]="guardando">
+            {{ guardando ? 'Actualizando...' : 'Actualizar Estado' }}
+          </button>
 
         </div>
+      </div>
+    </div>
 
-    </main>
-
+  </main>
 </div>
