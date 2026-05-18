@@ -50,7 +50,7 @@ public class VendedorService {
 
         if (found.isEmpty()) {
             Vendedor entity = modelMapper.map(dto, Vendedor.class);
-
+            entity.setIdPersona(null);
             if (dto.getFechaIngreso() != null) {
                 entity.setFechaIngreso(new Date(dto.getFechaIngreso().getTime()));
             }
