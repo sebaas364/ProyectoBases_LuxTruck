@@ -1,110 +1,127 @@
 package co.edu.unbosque.backLuxtruck.service;
 
+import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import co.edu.unbosque.backLuxtruck.dto.AdministrativoDTO;
-import co.edu.unbosque.backLuxtruck.dto.TrabajadorDTO;
 import co.edu.unbosque.backLuxtruck.model.Administrativo;
-import co.edu.unbosque.backLuxtruck.model.Trabajador;
+import co.edu.unbosque.backLuxtruck.model.EstadoTrabajador;
 import co.edu.unbosque.backLuxtruck.repository.AdministrativoRepository;
-import co.edu.unbosque.backLuxtruck.repository.TrabajadorRepository;
+import co.edu.unbosque.backLuxtruck.repository.EstadoTrabajadorRepository;
+import co.edu.unbosque.backLuxtruck.security.SecurityConfig;
 
 @Service
 public class AdministrativoService {
-    private final AdministrativoRepository repo;
-    private final TrabajadorRepository trabajadorRepo;
 
-    public AdministrativoService(AdministrativoRepository repo, TrabajadorRepository trabajadorRepo) {
-        this.repo = repo;
-        this.trabajadorRepo = trabajadorRepo;
+    @Autowired
+    private AdministrativoRepository administrativoRepo;
+
+    @Autowired
+    private EstadoTrabajadorRepository estadoTrabajadorRepo;
+
+    @Autowired
+    private ModelMapper modelMapper;
+    
+    private SecurityConfig sec;
+    
+    public AdministrativoService() {
+    	sec = new SecurityConfig();
     }
 
-    private AdministrativoDTO toDto(Administrativo e) {
-        AdministrativoDTO d = new AdministrativoDTO();
-        d.idPersona       = e.getIdPersona().intValue();
-        d.numeroDocumento = Integer.parseInt(e.getNumeroDocumento());
-        d.tipoDocumento   = e.getTipoDocumento();
-        d.primerNombre    = e.getPrimerNombre();
-        d.segundoNombre   = e.getSegundoNombre();
-        d.primerApellido  = e.getPrimerApellido();
-        d.segundoApellido = e.getSegundoApellido();
-        d.telefono        = Integer.parseInt(e.getTelefono());
-        d.correo          = e.getCorreo();
-        d.fechaIngreso    = e.getFechaIngreso().toLocalDate();
-        d.salario         = e.getSalario().intValue();
-        d.estado          = e.getEstado();
-        d.contrasenia     = e.getContrasenia();
-        if (e.getTrabajador() != null) {
-            TrabajadorDTO tDto = new TrabajadorDTO();
-            tDto.idPersona = e.getTrabajador().getIdPersona().intValue();
-            tDto.primerNombre = e.getTrabajador().getPrimerNombre();
-            tDto.correo = e.getTrabajador().getCorreo();
-            d.setTrabajadordto(tDto);
+    public int create(AdministrativoDTO dto) {
+        Optional<Administrativo> found = administrativoRepo.findById(dto.getIdPersona());
+
+        if (found.isEmpty()) {
+            Administrativo entity = modelMapper.map(dto, Administrativo.class);
+
+            if (dto.getFechaIngreso() != null) {
+                entity.setFechaIngreso(new Date(dto.getFechaIngreso().getTime()));
+            }
+            entity.setContrasenia(sec.hashingToSHA256(dto.getContrasenia()));
+
+            administrativoRepo.save(entity);
+            return 0;
         }
-        return d;
+
+        return 1;
     }
 
-    private Administrativo toEntity(AdministrativoDTO d) {
-        Administrativo e = new Administrativo();
-        e.setNumeroDocumento(String.valueOf(d.numeroDocumento));
-        e.setTipoDocumento(d.tipoDocumento);
-        e.setPrimerNombre(d.primerNombre);
-        e.setSegundoNombre(d.segundoNombre);
-        e.setPrimerApellido(d.primerApellido);
-        e.setSegundoApellido(d.segundoApellido);
-        e.setTelefono(String.valueOf(d.telefono));
-        e.setCorreo(d.correo);
-        e.setFechaIngreso(java.sql.Date.valueOf(d.fechaIngreso));
-        e.setSalario((double) d.salario);
-        e.setEstado(d.estado);
-        e.setContrasenia(d.contrasenia);
-        if (d.getTrabajadordto() != null && d.getTrabajadordto().idPersona != null) {
-            Trabajador t = trabajadorRepo.findById(d.getTrabajadordto().idPersona.intValue())
-                    .orElseThrow(() -> new NotFoundException("Trabajador asociado no encontrado"));
-            e.setTrabajador(t);
+    public List<AdministrativoDTO> getAll() {
+        List<AdministrativoDTO> dtoList = new ArrayList<>();
+
+        for (Administrativo a : administrativoRepo.findAll()) {
+            AdministrativoDTO dto = modelMapper.map(a, AdministrativoDTO.class);
+
+            if (a.getFechaIngreso() != null) {
+                dto.setFechaIngreso(new Date(a.getFechaIngreso().getTime()));
+            }
+
+            dtoList.add(dto);
         }
-        return e;
+
+        return dtoList;
     }
 
-    public AdministrativoDTO registrar(AdministrativoDTO dto) {
-        return toDto(repo.save(toEntity(dto)));
-    }
+    public int update(int idPersona, AdministrativoDTO dto) {
+        Optional<Administrativo> found = administrativoRepo.findById(idPersona);
 
-    public AdministrativoDTO actualizar(Integer id, AdministrativoDTO dto) {
-        Administrativo e = repo.findById(id.intValue())
-                .orElseThrow(() -> new NotFoundException("Administrativo no encontrado"));
-        e.setNumeroDocumento(String.valueOf(dto.numeroDocumento));
-        e.setTipoDocumento(dto.tipoDocumento);
-        e.setPrimerNombre(dto.primerNombre);
-        e.setSegundoNombre(dto.segundoNombre);
-        e.setPrimerApellido(dto.primerApellido);
-        e.setSegundoApellido(dto.segundoApellido);
-        e.setTelefono(String.valueOf(dto.telefono));
-        e.setCorreo(dto.correo);
-        e.setFechaIngreso(java.sql.Date.valueOf(dto.fechaIngreso));
-        e.setSalario((double) dto.salario);
-        e.setEstado(dto.estado);
-        e.setContrasenia(dto.contrasenia);
-        if (dto.getTrabajadordto() != null && dto.getTrabajadordto().idPersona != null) {
-            Trabajador t = trabajadorRepo.findById(dto.getTrabajadordto().idPersona.intValue())
-                    .orElseThrow(() -> new NotFoundException("Trabajador asociado no encontrado"));
-            e.setTrabajador(t);
+        if (found.isPresent()) {
+            Administrativo administrativo = found.get();
+
+            
+            administrativo.setNumeroDocumento(dto.getNumeroDocumento());
+            administrativo.setTipoDocumento(dto.getTipoDocumento());
+            administrativo.setPrimerNombre(dto.getPrimerNombre());
+            administrativo.setSegundoNombre(dto.getSegundoNombre());
+            administrativo.setPrimerApellido(dto.getPrimerApellido());
+            administrativo.setSegundoApellido(dto.getSegundoApellido());
+            administrativo.setTelefono(dto.getTelefono());
+            administrativo.setCorreo(dto.getCorreo());
+
+            if (dto.getFechaIngreso() != null) {
+                administrativo.setFechaIngreso(new Date(dto.getFechaIngreso().getTime()));
+            }
+
+            administrativo.setSalario(dto.getSalario());
+            if (dto.getContrasenia() != null && !dto.getContrasenia().isBlank()) {
+                administrativo.setContrasenia(sec.hashingToSHA256(dto.getContrasenia()));
+            }
+
+            administrativoRepo.save(administrativo);
+            return 0;
         }
-        return toDto(repo.save(e));
+
+        return 1;
     }
 
-    public AdministrativoDTO obtener(Integer id) {
-        return repo.findById(id.intValue()).map(this::toDto)
-                .orElseThrow(() -> new NotFoundException("Administrativo no encontrado"));
+    public int delete(int idPersona) {
+        Optional<Administrativo> found = administrativoRepo.findById(idPersona);
+
+        if (found.isPresent()) {
+            administrativoRepo.deleteById(idPersona);
+            return 0;
+        }
+
+        return 1;
     }
 
-    public List<AdministrativoDTO> listar() {
-        return ServiceUtils.toList(repo.findAll()).stream().map(this::toDto).toList();
-    }
+    public int addEstadoToAdministrativo(int idPersona, int idEstado) {
+        Optional<Administrativo> adminOpt = administrativoRepo.findById(idPersona);
+        Optional<EstadoTrabajador> estadoOpt = estadoTrabajadorRepo.findById(idEstado);
 
-    public void eliminar(Integer id) {
-        if (!repo.existsById(id.intValue()))
-            throw new NotFoundException("Administrativo no encontrado");
-        repo.deleteById(id.intValue());
+        if (adminOpt.isPresent() && estadoOpt.isPresent()) {
+            Administrativo administrativo = adminOpt.get();
+            administrativo.setEstadoTrabajador(estadoOpt.get());
+            administrativoRepo.save(administrativo);
+            return 0;
+        }
+
+        return 1;
     }
 }

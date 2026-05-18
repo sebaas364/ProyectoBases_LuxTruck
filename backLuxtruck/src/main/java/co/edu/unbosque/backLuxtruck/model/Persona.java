@@ -34,7 +34,7 @@ public class Persona {
 	@Column(name = "primerApellido", nullable = false)
 	private String primerApellido;
 
-	 @Column(name = "segundoApellido")
+	@Column(name = "segundoApellido")
 	private String segundoApellido;
 	 
 	@Column(name = "telefono", nullable = false)

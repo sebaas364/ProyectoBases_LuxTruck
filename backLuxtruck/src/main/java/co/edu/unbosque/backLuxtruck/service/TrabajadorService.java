@@ -1,88 +1,145 @@
 package co.edu.unbosque.backLuxtruck.service;
 
-import java.util.List;
+import java.sql.Date;
+import java.util.ArrayList;
+import java.util.Optional;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import co.edu.unbosque.backLuxtruck.dto.EstadoTrabajadorDTO;
+import co.edu.unbosque.backLuxtruck.dto.LoginDTO;
 import co.edu.unbosque.backLuxtruck.dto.TrabajadorDTO;
+import co.edu.unbosque.backLuxtruck.model.EstadoTrabajador;
 import co.edu.unbosque.backLuxtruck.model.Trabajador;
+import co.edu.unbosque.backLuxtruck.repository.AdministrativoRepository;
+import co.edu.unbosque.backLuxtruck.repository.OperarioRepository;
 import co.edu.unbosque.backLuxtruck.repository.TrabajadorRepository;
+import co.edu.unbosque.backLuxtruck.repository.VendedorRepository;
+import co.edu.unbosque.backLuxtruck.security.SecurityConfig;
 
 @Service
 public class TrabajadorService {
-    private final TrabajadorRepository repo;
 
-    public TrabajadorService(TrabajadorRepository repo) {
-        this.repo = repo;
+    @Autowired
+    private TrabajadorRepository trabajadorRepo;
+    
+    @Autowired
+    private VendedorRepository vendedorRepo;
+
+    @Autowired
+    private OperarioRepository operarioRepo;
+
+    @Autowired
+    private AdministrativoRepository administrativoRepo;
+    
+  private SecurityConfig sec;
+    
+    public TrabajadorService() {
+    	sec = new SecurityConfig();
     }
 
-    private TrabajadorDTO toDto(Trabajador e) {
-        TrabajadorDTO d = new TrabajadorDTO();
-        d.idPersona       = e.getIdPersona().intValue();
-        d.numeroDocumento = Integer.parseInt(e.getNumeroDocumento());
-        d.tipoDocumento   = e.getTipoDocumento();
-        d.primerNombre    = e.getPrimerNombre();
-        d.segundoNombre   = e.getSegundoNombre();
-        d.primerApellido  = e.getPrimerApellido();
-        d.segundoApellido = e.getSegundoApellido();
-        d.telefono        = Integer.parseInt(e.getTelefono());
-        d.correo          = e.getCorreo();
-        d.fechaIngreso    = e.getFechaIngreso().toLocalDate();
-        d.salario         = e.getSalario().intValue();
-        d.estado          = e.getEstado();
-        d.contrasenia     = e.getContrasenia();
-        return d;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    public int create(TrabajadorDTO dto) {
+        Optional<Trabajador> found = trabajadorRepo.findById(dto.getIdPersona());
+
+        if (found.isEmpty()) {
+            Trabajador entity = modelMapper.map(dto, Trabajador.class);
+            entity.setContrasenia(sec.hashingToSHA256(dto.getContrasenia()));
+            entity.setFechaIngreso(new java.sql.Date(dto.getFechaIngreso().getTime()));
+
+            trabajadorRepo.save(entity);
+            return 0;
+        }
+
+        return 1;
     }
 
-    private Trabajador toEntity(TrabajadorDTO d) {
-        Trabajador e = new Trabajador();
-        e.setNumeroDocumento(String.valueOf(d.numeroDocumento));
-        e.setTipoDocumento(d.tipoDocumento);
-        e.setPrimerNombre(d.primerNombre);
-        e.setSegundoNombre(d.segundoNombre);
-        e.setPrimerApellido(d.primerApellido);
-        e.setSegundoApellido(d.segundoApellido);
-        e.setTelefono(String.valueOf(d.telefono));
-        e.setCorreo(d.correo);
-        e.setFechaIngreso(java.sql.Date.valueOf(d.fechaIngreso));
-        e.setSalario((double) d.salario);
-        e.setEstado(d.estado);
-        e.setContrasenia(d.contrasenia);
-        return e;
+    public ArrayList<TrabajadorDTO> getAll() {
+        ArrayList<TrabajadorDTO> dtoList = new ArrayList<>();
+
+        for (Trabajador t : trabajadorRepo.findAll()) {
+            TrabajadorDTO dto = modelMapper.map(t, TrabajadorDTO.class);
+            if (t.getFechaIngreso() != null) {
+                dto.setFechaIngreso(new Date(t.getFechaIngreso().getTime()));
+            }
+            dtoList.add(dto);
+        }
+
+        return dtoList;
     }
 
-    public TrabajadorDTO registrar(TrabajadorDTO dto) {
-        return toDto(repo.save(toEntity(dto)));
+    public int update(int idPersona, TrabajadorDTO dto) {
+        Optional<Trabajador> found = trabajadorRepo.findById(idPersona);
+
+        if (found.isPresent()) {
+            Trabajador trabajador = found.get();
+
+            trabajador.setNumeroDocumento(dto.getNumeroDocumento());
+            trabajador.setTipoDocumento(dto.getTipoDocumento());
+            trabajador.setPrimerNombre(dto.getPrimerNombre());
+            trabajador.setSegundoNombre(dto.getSegundoNombre());
+            trabajador.setPrimerApellido(dto.getPrimerApellido());
+            trabajador.setSegundoApellido(dto.getSegundoApellido());
+            trabajador.setTelefono(dto.getTelefono());
+            trabajador.setCorreo(dto.getCorreo());
+
+            if (dto.getFechaIngreso() != null) {
+                trabajador.setFechaIngreso(new Date(dto.getFechaIngreso().getTime()));
+            }
+
+            trabajador.setSalario(dto.getSalario());
+            if (dto.getContrasenia() != null && !dto.getContrasenia().isBlank()) {
+                trabajador.setContrasenia(sec.hashingToSHA256(dto.getContrasenia()));
+            }
+
+            trabajadorRepo.save(trabajador);
+            return 0;
+        }
+
+        return 1;
     }
 
-    public TrabajadorDTO actualizar(Integer id, TrabajadorDTO dto) {
-        Trabajador e = repo.findById(id.intValue())
-                .orElseThrow(() -> new NotFoundException("Trabajador no encontrado"));
-        e.setNumeroDocumento(String.valueOf(dto.numeroDocumento));
-        e.setTipoDocumento(dto.tipoDocumento);
-        e.setPrimerNombre(dto.primerNombre);
-        e.setSegundoNombre(dto.segundoNombre);
-        e.setPrimerApellido(dto.primerApellido);
-        e.setSegundoApellido(dto.segundoApellido);
-        e.setTelefono(String.valueOf(dto.telefono));
-        e.setCorreo(dto.correo);
-        e.setFechaIngreso(java.sql.Date.valueOf(dto.fechaIngreso));
-        e.setSalario((double) dto.salario);
-        e.setEstado(dto.estado);
-        e.setContrasenia(dto.contrasenia);
-        return toDto(repo.save(e));
-    }
+    public int delete(int idPersona) {
+        Optional<Trabajador> found = trabajadorRepo.findById(idPersona);
 
-    public TrabajadorDTO obtener(Integer id) {
-        return repo.findById(id.intValue()).map(this::toDto)
-                .orElseThrow(() -> new NotFoundException("Trabajador no encontrado"));
-    }
+        if (found.isPresent()) {
+            trabajadorRepo.delete(found.get());
+            return 0;
+        }
 
-    public List<TrabajadorDTO> listar() {
-        return ServiceUtils.toList(repo.findAll()).stream().map(this::toDto).toList();
+        return 1;
     }
+    
+    public TrabajadorDTO login(LoginDTO dto) {
+    	Optional<Trabajador> found = trabajadorRepo.findByCorreo(dto.getCorreo());
 
-    public void eliminar(Integer id) {
-        if (!repo.existsById(id.intValue()))
-            throw new NotFoundException("Trabajador no encontrado");
-        repo.deleteById(id.intValue());
+        if (found.isPresent()) {
+            Trabajador trabajador = found.get();
+            String hashIngresado = sec.hashingToSHA256(dto.getContrasenia());
+
+            if (trabajador.getContrasenia().equals(hashIngresado)) {
+                TrabajadorDTO resultado = modelMapper.map(trabajador, TrabajadorDTO.class);
+
+                int id = trabajador.getIdPersona();
+
+                if (vendedorRepo.existsById(id)) {
+                    resultado.setRol("VENDEDOR");
+                } else if (operarioRepo.existsById(id)) {
+                    resultado.setRol("OPERARIO");
+                } else if (administrativoRepo.existsById(id)) {
+                    resultado.setRol("ADMINISTRATIVO");
+                } else {
+                    resultado.setRol("TRABAJADOR");
+                }
+
+                return resultado;
+            }
+        }	
+		return null;
     }
 }
