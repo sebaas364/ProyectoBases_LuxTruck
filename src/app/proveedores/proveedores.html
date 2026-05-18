@@ -1,414 +1,187 @@
 <div class="layout">
 
-    <!-- SIDEBAR -->
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <nav>
+      <img src="logo.png" class="logo">
+      <a routerLink="/dashboard">Dashboard</a>
+      <a routerLink="/inventario">Inventario</a>
+      <a href="#">Ventas</a>
+      <a routerLink="/maquinas">Máquinas</a>
+      <a routerLink="/proveedores" class="active">Proveedores</a>
+      <a routerLink="/usuarios">Usuarios</a>
+    </nav>
+  </aside>
 
-    <aside class="sidebar">
+  <!-- MAIN -->
+  <main class="main-content">
 
-        <nav>
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div><h1>PROVEEDORES</h1></div>
+    </div>
 
-            <img src="logo.png" class="logo">
+    <!-- CARDS (datos reales del backend) -->
+    <div class="cards">
+      <div class="card blue">
+        <h3>PROVEEDORES REGISTRADOS</h3>
+        <h1>{{ proveedores.length }}</h1>
+        <span>En el sistema</span>
+      </div>
+      <div class="card green">
+        <h3>PEDIDOS REGISTRADOS</h3>
+        <h1>{{ pedidos.length }}</h1>
+        <span>Materiales solicitados</span>
+      </div>
+    </div>
 
-            <a routerLink="/dashboard">
-                Dashboard
-            </a>
+    <!-- BOTONES CRUD -->
+    <div class="acciones">
+      <button class="btn crear"     (click)="abrirCrearProveedor()">+ Crear Proveedor</button>
+      <button class="btn editarBtn" (click)="abrirPedidoMaterial()">+ Registrar Pedido</button>
+    </div>
 
-            <a routerLink="/inventario">
-                Inventario
-            </a>
+    <!-- Mensaje global (fuera de modales) -->
+    <div *ngIf="mensaje && !mostrarCrearProveedor && !mostrarPedidoMaterial && !mostrarEditarProveedor && !mostrarEstadoProveedor"
+         class="mensaje" [ngClass]="tipoMensaje">
+      {{ mensaje }}
+    </div>
 
-            <a href="#">
-                Ventas
-            </a>
+    <div *ngIf="cargando" style="padding:1rem;color:#888">Cargando proveedores...</div>
 
-            <a href="#">
-                Productos
-            </a>
+    <!-- TABLA PROVEEDORES -->
+    <div class="tables" *ngIf="!cargando">
+      <div class="table-box">
+        <h2>LISTA DE PROVEEDORES</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>NIT</th>
+              <th>PROVEEDOR</th>
+              <th>TIPO</th>
+              <th>CALIFICACIÓN</th>
+              <th>TELÉFONO</th>
+              <th>CORREO</th>
+              <th>ACCIONES</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let p of proveedores">
+              <td><strong>#{{ p.idEmpresa }}</strong></td>
+              <td>{{ p.nIT }}</td>
+              <td><strong>{{ p.nombre }}</strong></td>
+              <td>{{ p.tipoProveedor }}</td>
+              <td>{{ p.calificacion }}</td>
+              <td>{{ p.telefono }}</td>
+              <td>{{ p.correo }}</td>
+              <td class="acciones-td">
+                <button class="btn-icon eliminar" (click)="eliminarProveedor(p.idEmpresa)" title="Eliminar">✕</button>
+              </td>
+            </tr>
+            <tr *ngIf="proveedores.length === 0">
+              <td colspan="8" class="empty">Sin proveedores registrados</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
 
-            <a href="#">
-                Máquinas
-            </a>
+    <br>
 
-            <a routerLink="/proveedores" class="active">
-                Proveedores
-            </a>
+    <!-- TABLA PEDIDOS -->
+    <div class="table-box" *ngIf="!cargando">
+      <h2>PEDIDOS DE MATERIAL</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>CANTIDAD</th>
+            <th>FECHA PEDIDO</th>
+            <th>FECHA ENTREGA</th>
+            <th>PROVEEDOR</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let d of pedidos">
+            <td><strong>#{{ d.idPedido }}</strong></td>
+            <td>{{ d.cantidadMaterial }}</td>
+            <td>{{ d.fechaPedido }}</td>
+            <td>{{ d.fechaEntrega }}</td>
+            <td>{{ d.proveedordto?.nombre }}</td>
+          </tr>
+          <tr *ngIf="pedidos.length === 0">
+            <td colspan="5" class="empty">Sin pedidos registrados</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
 
-            <a routerLink="/usuarios">
-                Usuarios
-            </a>
 
-        </nav>
-
-    </aside>
-
-
-    <!-- MAIN -->
-
-    <main class="main-content">
-
-
-        <!-- TOPBAR -->
-
-        <div class="topbar">
-
-            <div>
-                <h1>PROVEEDORES</h1>
-            </div>
-
+    <!-- MODAL CREAR PROVEEDOR -->
+    <div class="modal" *ngIf="mostrarCrearProveedor">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Crear Proveedor</h2>
+          <button class="cerrar" (click)="cerrarModales()">✕</button>
         </div>
+        <div class="modal-body">
 
+          <input type="text"   placeholder="NIT *"              [(ngModel)]="nuevoNIT">
+          <input type="text"   placeholder="Nombre proveedor *" [(ngModel)]="nuevoNombre">
+          <input type="text"   placeholder="Teléfono"           [(ngModel)]="nuevoTelefono">
+          <input type="email"  placeholder="Correo"             [(ngModel)]="nuevoCorreo">
 
-        <!-- CARDS -->
+          <select [(ngModel)]="nuevoTipo">
+            <option value="">Tipo proveedor *</option>
+            <option value="Nacional">Nacional</option>
+            <option value="Internacional">Internacional</option>
+          </select>
 
-        <div class="cards">
+          <input type="number" placeholder="Calificación (0-5)" [(ngModel)]="nuevoCalificacion" min="0" max="5" step="0.1">
 
-            <div class="card blue">
+          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
 
-                <h3>PROVEEDORES ACTIVOS</h3>
-
-                <h1>8</h1>
-
-                <span>Actualmente vinculados</span>
-
-            </div>
-
-            <div class="card red">
-
-                <h3>PROVEEDORES INACTIVOS</h3>
-
-                <h1>2</h1>
-
-                <span>Sin actividad</span>
-
-            </div>
-
-            <div class="card green">
-
-                <h3>MATERIALES REGISTRADOS</h3>
-
-                <h1>54</h1>
-
-                <span>Materiales suministrados</span>
-
-            </div>
-
+          <button class="guardar" (click)="guardarProveedor()" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : 'Guardar Proveedor' }}
+          </button>
         </div>
+      </div>
+    </div>
 
 
-        <!-- BOTONES CRUD -->
-
-        <div class="acciones">
-
-            <button class="btn crear" (click)="abrirCrearProveedor()">
-                + Crear Proveedor
-            </button>
-
-            <button class="btn editarBtn" (click)="abrirPedidoMaterial()">
-                + Registrar Pedido
-            </button>
-
-            <button class="btn inactivarBtn" (click)="abrirEstadoProveedor()">
-                Cambiar Estado
-            </button>
-
+    <!-- MODAL REGISTRAR PEDIDO -->
+    <div class="modal" *ngIf="mostrarPedidoMaterial">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Registrar Pedido</h2>
+          <button class="cerrar" (click)="cerrarModales()">✕</button>
         </div>
+        <div class="modal-body">
 
+          <select [(ngModel)]="pedidoProveedorId">
+            <option [ngValue]="null">Seleccionar proveedor *</option>
+            <option *ngFor="let p of proveedores" [ngValue]="p.idEmpresa">
+              {{ p.nombre }}
+            </option>
+          </select>
 
-        <!-- TABLA PROVEEDORES -->
+          <input type="text"   placeholder="Material solicitado *" [(ngModel)]="pedidoMaterial">
+          <input type="text"   placeholder="Cantidad"              [(ngModel)]="pedidoCantidad">
+          <label style="color:#94a3b8;font-size:0.82rem">Fecha del pedido</label>
+          <input type="date"   [(ngModel)]="pedidoFecha">
+          <label style="color:#94a3b8;font-size:0.82rem">Fecha de entrega</label>
+          <input type="date"   [(ngModel)]="pedidoFechaEntrega">
 
-        <div class="tables">
+          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
 
-            <div class="table-box">
-
-                <h2>LISTA DE PROVEEDORES</h2>
-
-                <table>
-
-                    <thead>
-
-                        <tr>
-
-                            <th>PROVEEDOR</th>
-                            <th>TIPO</th>
-                            <th>CALIFICACIÓN</th>
-                            <th>TIEMPO ENTREGA</th>
-                            <th>ESTADO</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        <tr>
-
-                            <td>
-                                <strong>Autolux SAS</strong>
-                            </td>
-
-                            <td>Nacional</td>
-
-                            <td>4.8</td>
-
-                            <td>3 días</td>
-
-                            <td>
-
-                                <span class="status free">
-                                    Activo
-                                </span>
-
-                            </td>
-
-                        </tr>
-
-
-                        <tr>
-
-                            <td>
-                                <strong>Lumix Import</strong>
-                            </td>
-
-                            <td>Internacional</td>
-
-                            <td>4.2</td>
-
-                            <td>10 días</td>
-
-                            <td>
-
-                                <span class="status critical">
-                                    Inactivo
-                                </span>
-
-                            </td>
-
-                        </tr>
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
+          <button class="guardar" (click)="registrarPedido()" [disabled]="guardando">
+            {{ guardando ? 'Registrando...' : 'Registrar Pedido' }}
+          </button>
         </div>
+      </div>
+    </div>
 
-
-        <br>
-
-
-        <!-- TABLA PEDIDOS -->
-
-        <div class="table-box">
-
-            <h2>PEDIDOS DE MATERIAL</h2>
-
-            <table>
-
-                <thead>
-
-                    <tr>
-
-                        <th>MATERIAL</th>
-                        <th>CANTIDAD</th>
-                        <th>FECHA PEDIDO</th>
-                        <th>FECHA ENTREGA</th>
-                        <th>PROVEEDOR</th>
-
-                    </tr>
-
-                </thead>
-
-                <tbody>
-
-                    <tr>
-
-                        <td>
-                            <strong>Bombillo Xenon</strong>
-                        </td>
-
-                        <td>250</td>
-
-                        <td>10/05/2026</td>
-
-                        <td>14/05/2026</td>
-
-                        <td>Autolux SAS</td>
-
-                    </tr>
-
-
-                    <tr>
-
-                        <td>
-                            <strong>Cable Arnés</strong>
-                        </td>
-
-                        <td>120</td>
-
-                        <td>12/05/2026</td>
-
-                        <td>20/05/2026</td>
-
-                        <td>Lumix Import</td>
-
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
-
-
-        <!-- MODAL CREAR PROVEEDOR -->
-
-        <div class="modal" *ngIf="mostrarCrearProveedor">
-
-            <div class="modal-content">
-
-                <div class="modal-header">
-
-                    <h2>Crear Proveedor</h2>
-
-                    <button class="cerrar" (click)="cerrarModales()">
-                        X
-                    </button>
-
-                </div>
-
-                <div class="modal-body">
-
-                    <input 
-                        type="text" 
-                        placeholder="Nombre proveedor"
-                        required>
-
-                    <select>
-
-                        <option>Tipo proveedor</option>
-                        <option>Nacional</option>
-                        <option>Internacional</option>
-
-                    </select>
-
-                    <input 
-                        type="number" 
-                        placeholder="Calificación">
-
-                    <input 
-                        type="text" 
-                        placeholder="Tiempo promedio entrega">
-
-                    <button class="guardar">
-                        Guardar Proveedor
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- MODAL PEDIDO MATERIAL -->
-
-        <div class="modal" *ngIf="mostrarPedidoMaterial">
-
-            <div class="modal-content">
-
-                <div class="modal-header">
-
-                    <h2>Registrar Pedido</h2>
-
-                    <button class="cerrar" (click)="cerrarModales()">
-                        X
-                    </button>
-
-                </div>
-
-                <div class="modal-body">
-
-                    <select>
-
-                        <option>Proveedor</option>
-                        <option>Autolux SAS</option>
-                        <option>Lumix Import</option>
-
-                    </select>
-
-                    <select>
-
-                        <option>Material</option>
-                        <option>Bombillo Xenon</option>
-                        <option>Cable Arnés</option>
-
-                    </select>
-
-                    <input 
-                        type="number" 
-                        placeholder="Cantidad material">
-
-                    <input 
-                        type="date">
-
-                    <input 
-                        type="date">
-
-                    <button class="guardar">
-                        Registrar Pedido
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-
-        <!-- MODAL CAMBIAR ESTADO -->
-
-        <div class="modal" *ngIf="mostrarEstadoProveedor">
-
-            <div class="modal-content">
-
-                <div class="modal-header">
-
-                    <h2>Cambiar Estado</h2>
-
-                    <button class="cerrar" (click)="cerrarModales()">
-                        X
-                    </button>
-
-                </div>
-
-                <div class="modal-body">
-
-                    <select>
-
-                        <option>Seleccionar proveedor</option>
-                        <option>Autolux SAS</option>
-                        <option>Lumix Import</option>
-
-                    </select>
-
-                    <select>
-
-                        <option>Nuevo estado</option>
-                        <option>Activo</option>
-                        <option>Inactivo</option>
-
-                    </select>
-
-                    <button class="guardar">
-                        Actualizar Estado
-                    </button>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </main>
+  </main>
 
 </div>

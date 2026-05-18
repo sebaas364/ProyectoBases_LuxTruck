@@ -156,6 +156,18 @@ export interface PedidoMaterialDTO {
   proveedordto: ProveedorDTO;
 }
 
+// ──────────────────────────────────────────
+// INTERFACES — DASHBOARD
+// ──────────────────────────────────────────
+
+export interface DashboardResumenDTO {
+  maquinasLibres: number;
+  maquinasTotales: number;
+  productosEnStock: number;
+  ventasDelMes: number;
+  stockBajo: number;
+}
+
 export interface CrearPedidoPayload {
   cantidadMaterial: string;
   fechaPedido: string;
@@ -279,6 +291,13 @@ export class ApiService {
 
   crearPedido(datos: CrearPedidoPayload): Observable<string> {
     return this.http.post(`${this.BASE_URL}/pedidomaterial/createjson`, datos, { responseType: 'text' });
+  }
+
+  // ──────────────────────────────────────────
+  // DASHBOARD
+  // ──────────────────────────────────────────
+  getDashboardResumen(): Observable<DashboardResumenDTO> {
+    return this.http.get<DashboardResumenDTO>(`${this.BASE_URL}/dashboard/resumen`);
   }
 
   // ──────────────────────────────────────────

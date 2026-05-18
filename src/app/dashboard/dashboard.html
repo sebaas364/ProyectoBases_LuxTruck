@@ -3,10 +3,9 @@
   <aside class="sidebar">
     <nav>
       <img src="logo.png" class="logo">
-      <a routerLink="/dashboard">Dashboard</a>
+      <a routerLink="/dashboard" class="active">Dashboard</a>
       <a routerLink="/inventario">Inventario</a>
       <a href="#">Ventas</a>
-      <a href="#">Productos</a>
       <a routerLink="/maquinas">Máquinas</a>
       <a routerLink="/proveedores">Proveedores</a>
       <a routerLink="/usuarios">Usuarios</a>
@@ -33,32 +32,32 @@
       <div class="cards">
 
         <div class="card blue">
-          <h3>MÁQUINAS ACTIVAS</h3>
-          <h1>{{ maquinasActivas }}</h1>
-          <span>de {{ totalMaquinas }} totales</span>
+          <h3>MÁQUINAS OPERATIVAS</h3>
+          <h1>{{ maquinasLibres }}</h1>
+          <span>de {{ maquinasTotales }} totales</span>
         </div>
 
-        <div class="card green">
+        <div class="card red">
           <h3>MÁQUINAS INACTIVAS</h3>
-          <h1>{{ maquinasInactivas }}</h1>
+          <h1>{{ maquinasTotales - maquinasLibres }}</h1>
           <span>fuera de servicio</span>
         </div>
 
         <div class="card cyan">
           <h3>PRODUCTOS EN STOCK</h3>
-          <h1>{{ stockTotal }}</h1>
-          <span>unidades totales</span>
+          <h1>{{ productosEnStock }}</h1>
+          <span>referencias registradas</span>
         </div>
 
         <div class="card orange">
-          <h3>TRABAJADORES</h3>
-          <h1>{{ totalTrabajadores }}</h1>
-          <span>en el sistema</span>
+          <h3>VENTAS DEL MES</h3>
+          <h1>{{ ventasDelMes }}</h1>
+          <span>transacciones</span>
         </div>
 
-        <div class="card red">
+        <div class="card green">
           <h3>STOCK BAJO</h3>
-          <h1>{{ productosCriticos }}</h1>
+          <h1>{{ stockBajo }}</h1>
           <span>productos críticos</span>
         </div>
 
@@ -71,7 +70,7 @@
           <table>
             <thead>
               <tr>
-                <th>MÁQUINA</th>
+                <th>TIPO</th>
                 <th>SERIE</th>
                 <th>ESTADO</th>
               </tr>
