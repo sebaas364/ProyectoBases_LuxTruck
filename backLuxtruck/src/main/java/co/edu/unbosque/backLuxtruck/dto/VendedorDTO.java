@@ -32,19 +32,17 @@ public class VendedorDTO extends TrabajadorDTO {
 	}
 
 	
-	public double getComision() {
-		return comision;
+	public Double getComision() {
+	    return comision;
 	}
 
-	public void setComision(double comision) {
-		this.comision = comision;
+	public void setComision(Double comision) {
+	    this.comision = comision;
 	}
 
 	@Override
 	public String toString() {
 		return "VendedorDTO [comision=" + comision + "]";
 	}
-	
-	
 
 }
