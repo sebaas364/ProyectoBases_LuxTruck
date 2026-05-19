@@ -23,9 +23,9 @@ public class MaterialService {
 
 
     public int create(MaterialDTO dto) {
-        Optional<Material> found = materialRepo.findById(dto.getIdMaterial());
-        if (found.isEmpty()) {
+        if (dto != null) {
             Material entity = modelMapper.map(dto, Material.class);
+            entity.setIdMaterial(null);
             materialRepo.save(entity);
             return 0;
         }

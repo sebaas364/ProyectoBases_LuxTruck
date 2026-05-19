@@ -56,9 +56,13 @@ public class OperarioService {
     private ModelMapper modelMapper;
 
     public int create(OperarioDTO dto) {
-        Optional<Operario> found = operarioRepo.findById(dto.getIdPersona());
+        Optional<Operario> found = operarioRepo.findByNumeroDocumento(dto.getNumeroDocumento());
         if (found.isEmpty()) {
             Operario entity = modelMapper.map(dto, Operario.class);
+            entity.setIdPersona(null);
+            if (dto.getFechaIngreso() != null) {
+                entity.setFechaIngreso(new Date(dto.getFechaIngreso().getTime()));
+            }
             entity.setContrasenia(sec.hashingToSHA256(dto.getContrasenia()));
             operarioRepo.save(entity);
             return 0;

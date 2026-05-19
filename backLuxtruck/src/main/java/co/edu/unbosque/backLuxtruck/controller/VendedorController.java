@@ -1,10 +1,10 @@
 package co.edu.unbosque.backLuxtruck.controller;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+
 import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -31,11 +31,6 @@ public class VendedorController {
 	@Autowired
 	private VendedorService vendedorServ;
 
-	private Date parseDate(String fecha) throws ParseException {
-		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-		sdf.setLenient(false);
-		return sdf.parse(fecha);
-	}
 
 	@PostMapping(path = "/createjson", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<String> createWithJSON(@RequestBody VendedorDTO nuevoVendedor) {
@@ -49,12 +44,11 @@ public class VendedorController {
 	public ResponseEntity<String> create(@RequestParam String numeroDocumento, @RequestParam String tipoDocumento,
 			@RequestParam String primerNombre, @RequestParam(required = false) String segundoNombre,
 			@RequestParam String primerApellido, @RequestParam(required = false) String segundoApellido,
-			@RequestParam String telefono, @RequestParam String correo, @RequestParam String fechaIngreso,
+			@RequestParam String telefono, @RequestParam String correo, @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaIngreso,
 			@RequestParam Double salario, @RequestParam String contrasenia, @RequestParam Double comision,
 			@RequestParam Integer idEstadoTrabajador, @RequestParam String estadoNombre) {
 
-		try {
-			Date fechaIngresoParsed = parseDate(fechaIngreso);
+
 
 			EstadoTrabajadorDTO estadoDTO = new EstadoTrabajadorDTO(idEstadoTrabajador, estadoNombre);
 
@@ -67,7 +61,7 @@ public class VendedorController {
 			nuevoVendedor.setSegundoApellido(segundoApellido);
 			nuevoVendedor.setTelefono(telefono);
 			nuevoVendedor.setCorreo(correo);
-			nuevoVendedor.setFechaIngreso(fechaIngresoParsed);
+			nuevoVendedor.setFechaIngreso(fechaIngreso);
 			nuevoVendedor.setSalario(salario);
 			nuevoVendedor.setContrasenia(contrasenia);
 			nuevoVendedor.setComision(comision);
@@ -76,11 +70,8 @@ public class VendedorController {
 			return estado == 0 ? ResponseEntity.status(HttpStatus.CREATED).body("Vendedor creado exitosamente")
 					: ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE)
 							.body("Error al crear el vendedor, posiblemente el ID ya está registrado");
-
-		} catch (ParseException e) {
-			return ResponseEntity.badRequest().body("Formato de fecha inválido. Use yyyy-MM-dd");
-		}
 	}
+
 
 	@GetMapping("/getall")
 	public ResponseEntity<?> getAll() {

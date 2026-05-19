@@ -22,120 +22,127 @@ import co.edu.unbosque.backLuxtruck.repository.ProveedorRepository;
 @Service
 public class PedidoMaterialService {
 
-    @Autowired
-    private PedidoMaterialRepository pedidoMaterialRepo;
+	@Autowired
+	private PedidoMaterialRepository pedidoMaterialRepo;
 
-    @Autowired
-    private ProveedorRepository proveedorRepo;
+	@Autowired
+	private ProveedorRepository proveedorRepo;
 
-    @Autowired
-    private MaterialRepository materialRepo;
+	@Autowired
+	private MaterialRepository materialRepo;
 
-    @Autowired
-    private ContenerRepository contenerRepo;
+	@Autowired
+	private ContenerRepository contenerRepo;
 
-    @Autowired
-    private ModelMapper modelMapper;
+	@Autowired
+	private ModelMapper modelMapper;
 
-    public int create(PedidoMaterialDTO dto) {
-        Optional<PedidoMaterial> found = pedidoMaterialRepo.findById(dto.getIdPedido());
+	public int create(PedidoMaterialDTO dto) {
 
-        if (found.isEmpty()) {
-            PedidoMaterial entity = modelMapper.map(dto, PedidoMaterial.class);
 
-            if (dto.getFechaPedido() != null) {
-                entity.setFechaPedido(new Date(dto.getFechaPedido().getTime()));
-            }
+	    if (dto.getProveedor() == null || dto.getProveedor().getIdEmpresa() == null) {
+	        return 0;
+	    }
 
-            if (dto.getFechaEntrega() != null) {
-                entity.setFechaEntrega(new Date(dto.getFechaEntrega().getTime()));
-            }
+	    Optional<Proveedor> proveedorOpt = proveedorRepo.findById(dto.getProveedor().getIdEmpresa());
+	    if (proveedorOpt.isEmpty()) {
+	        return 0;
+	    }
 
-            pedidoMaterialRepo.save(entity);
-            return 0;
-        }
+	    PedidoMaterial entity = modelMapper.map(dto, PedidoMaterial.class);
+	    entity.setIdPedido(null);
 
-        return 1;
-    }
+	    if (dto.getFechaPedido() != null) {
+	        entity.setFechaPedido(new Date(dto.getFechaPedido().getTime()));
+	    }
+	    if (dto.getFechaEntrega() != null) {
+	        entity.setFechaEntrega(new Date(dto.getFechaEntrega().getTime()));
+	    }
 
-    public List<PedidoMaterialDTO> getAll() {
-        List<PedidoMaterialDTO> dtoList = new ArrayList<>();
+	    entity.setProveedor(proveedorOpt.get());
+	    pedidoMaterialRepo.save(entity);
+	    return 1;
 
-        for (PedidoMaterial p : pedidoMaterialRepo.findAll()) {
-            PedidoMaterialDTO dto = modelMapper.map(p, PedidoMaterialDTO.class);
+	}
 
-            if (p.getFechaPedido() != null) {
-                dto.setFechaPedido(new java.util.Date(p.getFechaPedido().getTime()));
-            }
+	public List<PedidoMaterialDTO> getAll() {
+		List<PedidoMaterialDTO> dtoList = new ArrayList<>();
 
-            if (p.getFechaEntrega() != null) {
-                dto.setFechaEntrega(new java.util.Date(p.getFechaEntrega().getTime()));
-            }
+		for (PedidoMaterial p : pedidoMaterialRepo.findAll()) {
+			PedidoMaterialDTO dto = modelMapper.map(p, PedidoMaterialDTO.class);
 
-            dtoList.add(dto);
-        }
+			if (p.getFechaPedido() != null) {
+				dto.setFechaPedido(new Date(p.getFechaPedido().getTime()));
+			}
 
-        return dtoList;
-    }
+			if (p.getFechaEntrega() != null) {
+				dto.setFechaEntrega(new Date(p.getFechaEntrega().getTime()));
+			}
 
-    public int update(int idPedido, PedidoMaterialDTO dto) {
-        Optional<PedidoMaterial> found = pedidoMaterialRepo.findById(idPedido);
+			dtoList.add(dto);
+		}
 
-        if (found.isPresent()) {
-            PedidoMaterial pedido = found.get();
+		return dtoList;
+	}
 
-            pedido.setCantidadMaterial(dto.getCantidadMaterial());
+	public int update(int idPedido, PedidoMaterialDTO dto) {
+		Optional<PedidoMaterial> found = pedidoMaterialRepo.findById(idPedido);
 
-            if (dto.getFechaPedido() != null) {
-                pedido.setFechaPedido(new java.sql.Date(dto.getFechaPedido().getTime()));
-            }
+		if (found.isPresent()) {
+			PedidoMaterial pedido = found.get();
 
-            if (dto.getFechaEntrega() != null) {
-                pedido.setFechaEntrega(new java.sql.Date(dto.getFechaEntrega().getTime()));
-            }
+			pedido.setCantidadMaterial(dto.getCantidadMaterial());
 
-            pedidoMaterialRepo.save(pedido);
-            return 0;
-        }
+			if (dto.getFechaPedido() != null) {
+				pedido.setFechaPedido(new java.sql.Date(dto.getFechaPedido().getTime()));
+			}
 
-        return 1;
-    }
+			if (dto.getFechaEntrega() != null) {
+				pedido.setFechaEntrega(new java.sql.Date(dto.getFechaEntrega().getTime()));
+			}
 
-    public int delete(int idPedido) {
-        Optional<PedidoMaterial> found = pedidoMaterialRepo.findById(idPedido);
+			pedidoMaterialRepo.save(pedido);
+			return 0;
+		}
 
-        if (found.isPresent()) {
-            pedidoMaterialRepo.deleteById(idPedido);
-            return 0;
-        }
+		return 1;
+	}
 
-        return 1;
-    }
+	public int delete(int idPedido) {
+		Optional<PedidoMaterial> found = pedidoMaterialRepo.findById(idPedido);
 
-    public int addProveedorToPedido(int idPedido, int idProveedor) {
-        Optional<PedidoMaterial> pedidoOpt = pedidoMaterialRepo.findById(idPedido);
-        Optional<Proveedor> proveedorOpt = proveedorRepo.findById(idProveedor);
+		if (found.isPresent()) {
+			pedidoMaterialRepo.deleteById(idPedido);
+			return 0;
+		}
 
-        if (pedidoOpt.isPresent() && proveedorOpt.isPresent()) {
-            PedidoMaterial pedido = pedidoOpt.get();
-            pedido.setProveedor(proveedorOpt.get());
-            pedidoMaterialRepo.save(pedido);
-            return 0;
-        }
+		return 1;
+	}
 
-        return 1;
-    }
+	public int addProveedorToPedido(int idPedido, int idProveedor) {
+		Optional<PedidoMaterial> pedidoOpt = pedidoMaterialRepo.findById(idPedido);
+		Optional<Proveedor> proveedorOpt = proveedorRepo.findById(idProveedor);
 
-    public int addMaterialToPedido(int idPedido, int idMaterial) {
-        Optional<PedidoMaterial> pedidoOpt = pedidoMaterialRepo.findById(idPedido);
-        Optional<Material> materialOpt = materialRepo.findById(idMaterial);
+		if (pedidoOpt.isPresent() && proveedorOpt.isPresent()) {
+			PedidoMaterial pedido = pedidoOpt.get();
+			pedido.setProveedor(proveedorOpt.get());
+			pedidoMaterialRepo.save(pedido);
+			return 0;
+		}
 
-        if (pedidoOpt.isPresent() && materialOpt.isPresent()) {
-            Contener relacion = new Contener(pedidoOpt.get(), materialOpt.get());
-            contenerRepo.save(relacion);
-            return 0;
-        }
+		return 1;
+	}
 
-        return 1;
-    }
+	public int addMaterialToPedido(int idPedido, int idMaterial) {
+		Optional<PedidoMaterial> pedidoOpt = pedidoMaterialRepo.findById(idPedido);
+		Optional<Material> materialOpt = materialRepo.findById(idMaterial);
+
+		if (pedidoOpt.isPresent() && materialOpt.isPresent()) {
+			Contener relacion = new Contener(pedidoOpt.get(), materialOpt.get());
+			contenerRepo.save(relacion);
+			return 0;
+		}
+
+		return 1;
+	}
 }

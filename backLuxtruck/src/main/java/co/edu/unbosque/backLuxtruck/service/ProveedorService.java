@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import co.edu.unbosque.backLuxtruck.dto.ProveedorDTO;
-import co.edu.unbosque.backLuxtruck.model.Material;
 import co.edu.unbosque.backLuxtruck.model.PedidoMaterial;
 import co.edu.unbosque.backLuxtruck.model.Proveedor;
 import co.edu.unbosque.backLuxtruck.repository.PedidoMaterialRepository;
@@ -29,9 +28,10 @@ public class ProveedorService {
 
 
     public int create(ProveedorDTO dto) {
-        Optional<Proveedor> found = proveedorRepo.findById(dto.getIdEmpresa());
+        Optional<Proveedor> found = proveedorRepo.findByNIT(dto.getNIT());
         if (found.isEmpty()) {
             Proveedor entity = modelMapper.map(dto, Proveedor.class);
+            entity.setIdEmpresa(null);
             proveedorRepo.save(entity);
             return 0;
         }

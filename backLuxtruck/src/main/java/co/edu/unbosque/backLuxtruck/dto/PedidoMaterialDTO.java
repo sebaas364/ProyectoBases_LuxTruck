@@ -8,18 +8,18 @@ public class PedidoMaterialDTO {
     private String cantidadMaterial;
     private Date fechaPedido;
     private Date fechaEntrega;
-    private ProveedorDTO proveedordto;
+    private ProveedorDTO proveedor;
  
     public PedidoMaterialDTO() {
     }
  
     public PedidoMaterialDTO(Integer idPedido, String cantidadMaterial, Date fechaPedido, Date fechaEntrega,
-                          ProveedorDTO proveedordto) {
+                          ProveedorDTO proveedor) {
         this.idPedido = idPedido;
         this.cantidadMaterial = cantidadMaterial;
         this.fechaPedido = fechaPedido;
         this.fechaEntrega = fechaEntrega;
-        this.proveedordto = proveedordto;
+        this.proveedor = proveedor;
     }
  
     public Integer getIdPedido() {
@@ -54,18 +54,11 @@ public class PedidoMaterialDTO {
         this.fechaEntrega = fechaEntrega;
     }
  
-	public ProveedorDTO getProveedordto() {
-		return proveedordto;
+	public ProveedorDTO getProveedor() {
+		return proveedor;
 	}
 
-	public void setProveedordto(ProveedorDTO proveedordto) {
-		this.proveedordto = proveedordto;
+	public void setProveedor(ProveedorDTO proveedor) {
+		this.proveedor = proveedor;
 	}
-
-	@Override
-	public String toString() {
-		return "PedidoMaterialDTO [idPedido=" + idPedido + ", cantidadMaterial=" + cantidadMaterial + ", fechaPedido="
-				+ fechaPedido + ", fechaEntrega=" + fechaEntrega + ", proveedordto=" + proveedordto + "]";
-	}
-    
 }

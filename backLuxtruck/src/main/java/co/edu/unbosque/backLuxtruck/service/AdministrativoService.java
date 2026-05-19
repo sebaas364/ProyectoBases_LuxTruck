@@ -39,7 +39,7 @@ public class AdministrativoService {
 
         if (found.isEmpty()) {
             Administrativo entity = modelMapper.map(dto, Administrativo.class);
-
+            entity.setIdPersona(null);
             if (dto.getFechaIngreso() != null) {
                 entity.setFechaIngreso(new Date(dto.getFechaIngreso().getTime()));
             }

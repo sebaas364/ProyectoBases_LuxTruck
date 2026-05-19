@@ -1,5 +1,6 @@
 package co.edu.unbosque.backLuxtruck.service;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -37,19 +38,16 @@ public class VentaService {
     private ModelMapper modelMapper;
 
     public int create(VentaDTO dto) {
-        Optional<Venta> found = ventaRepo.findById(dto.getIdVenta());
-
-        if (found.isEmpty()) {
+        if (dto != null) {
             Venta entity = modelMapper.map(dto, Venta.class);
+            entity.setIdVenta(null);
 
             if (dto.getFecha() != null) {
-                entity.setFecha(new java.sql.Date(dto.getFecha().getTime()));
+                entity.setFecha(new Date(dto.getFecha().getTime()));
             }
-
             ventaRepo.save(entity);
             return 0;
         }
-
         return 1;
     }
 
@@ -60,7 +58,7 @@ public class VentaService {
             VentaDTO dto = modelMapper.map(v, VentaDTO.class);
 
             if (v.getFecha() != null) {
-                dto.setFecha(new java.util.Date(v.getFecha().getTime()));
+                dto.setFecha(new Date(v.getFecha().getTime()));
             }
 
             dtoList.add(dto);
@@ -76,7 +74,7 @@ public class VentaService {
             Venta venta = found.get();
 
             if (dto.getFecha() != null) {
-                venta.setFecha(new java.sql.Date(dto.getFecha().getTime()));
+                venta.setFecha(new Date(dto.getFecha().getTime()));
             }
 
             venta.setMetodoPago(dto.getMetodoPago());
