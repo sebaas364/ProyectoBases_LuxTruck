@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.springframework.data.repository.CrudRepository;
 
 import co.edu.unbosque.backLuxtruck.model.Maquina;
-import java.util.List;
 
 
 public interface MaquinaRepository extends CrudRepository<Maquina, Integer> {
