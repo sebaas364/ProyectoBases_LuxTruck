@@ -83,7 +83,8 @@ export interface InventarioDTO {
   idProducto: number;
   stockMinimo: number;
   cantidadProducto: number;
-  producto: ProductoDTO;
+  // El back serializa el campo como "productodto" (getter getProductodto() en InventarioDTO.java)
+  productodto: ProductoDTO;
 }
 
 export interface CrearInventarioPayload {
@@ -274,11 +275,34 @@ export class ApiService {
   // INVENTARIO
   // ──────────────────────────────────────────
   getInventario(): Observable<InventarioDTO[]> {
-    return this.http.get<InventarioDTO[]>(`${this.BASE_URL}/inventario/getall`);
+    // No existe /inventario/getall en el back — mapeamos desde /producto/getall
+    return this.http.get<InventarioDTO[]>(`${this.BASE_URL}/producto/getall`);
   }
 
-  crearInventario(datos: CrearInventarioPayload): Observable<string> {
-    return this.http.post(`${this.BASE_URL}/producto/addinventario`, datos, { responseType: 'text' });
+  getProductos(): Observable<ProductoDTO[]> {
+    return this.http.get<ProductoDTO[]>(`${this.BASE_URL}/producto/getall`);
+  }
+
+  editarProducto(id: number, datos: { nombre: string; precioUnitario: number; tipo: string }): Observable<string> {
+    return this.http.put(`${this.BASE_URL}/producto/update/${id}`, datos, { responseType: 'text' });
+  }
+
+  eliminarProducto(id: number): Observable<string> {
+    return this.http.delete(`${this.BASE_URL}/producto/delete/${id}`, { responseType: 'text' });
+  }
+
+  // Paso 1: crea el producto → devuelve el idProducto en la respuesta (texto)
+  crearProducto(datos: { nombre: string; precioUnitario: number; tipo: string }): Observable<string> {
+    return this.http.post(`${this.BASE_URL}/producto/createjson`, datos, { responseType: 'text' });
+  }
+
+  // Paso 2: asocia inventario al producto por ID
+  asociarInventario(idProducto: number, stockMinimo: number, cantidadProducto: number): Observable<string> {
+    return this.http.post(
+      `${this.BASE_URL}/producto/addinventario?idProducto=${idProducto}&stockMinimo=${stockMinimo}&cantidadProducto=${cantidadProducto}`,
+      null,
+      { responseType: 'text' }
+    );
   }
 
   actualizarInventario(idProducto: number, datos: ActualizarInventarioPayload): Observable<string> {
@@ -326,8 +350,18 @@ export class ApiService {
     return this.http.get<VentaDTO[]>(`${this.BASE_URL}/venta/getall`);
   }
 
-  crearVenta(datos: CrearVentaPayload): Observable<string> {
+  // Paso 1: crea la venta sin vendedor → el back asigna el ID auto
+  crearVentaBase(datos: { fecha: number; metodoPago: string }): Observable<string> {
     return this.http.post(`${this.BASE_URL}/venta/createjson`, datos, { responseType: 'text' });
+  }
+
+  // Paso 2: asigna el vendedor a la venta recién creada
+  addVendedorAVenta(idVenta: number, idVendedor: number): Observable<string> {
+    return this.http.post(
+      `${this.BASE_URL}/venta/addvendedor?idVenta=${idVenta}&idVendedor=${idVendedor}`,
+      null,
+      { responseType: 'text' }
+    );
   }
 
   editarVenta(id: number, datos: Partial<CrearVentaPayload>): Observable<string> {
