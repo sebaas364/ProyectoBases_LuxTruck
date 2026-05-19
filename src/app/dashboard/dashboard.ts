@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { catchError, timeout } from 'rxjs/operators';
-import { forkJoin, of } from 'rxjs';
-import { ApiService } from '../services/api.service';
+import { ApiService, MaquinaDTO, ProductoDTO } from '../services/api.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -14,7 +12,7 @@ import { ApiService } from '../services/api.service';
 })
 export class Dashboard implements OnInit {
 
-  fechaActual: string = new Date().toLocaleDateString('es-CO', {
+  fechaActual = new Date().toLocaleDateString('es-CO', {
     weekday: 'short',
     year: 'numeric',
     month: 'long',
@@ -23,20 +21,21 @@ export class Dashboard implements OnInit {
 
   nombreUsuario = '';
 
-  // Datos del endpoint /dashboard/resumen
-  maquinasLibres   = 0;
-  maquinasTotales  = 0;
-  productosEnStock = 0;
-  ventasDelMes     = 0;
-  stockBajo        = 0;
-
-  // Listas para las tablas
-  maquinas:   any[] = [];
-  inventario: any[] = [];
-
+  cargandoMaquinas = true;
+  cargandoProductos = true;
   cargando = true;
 
-  constructor(private api: ApiService, private router: Router) {}
+  maquinas: MaquinaDTO[] = [];
+  productos: ProductoDTO[] = [];
+
+  maquinasTotales = 0;
+  maquinasOperativas = 0;
+  productosTotales = 0;
+
+  constructor(
+    private api: ApiService,
+    private router: Router
+  ) {}
 
   ngOnInit(): void {
     const raw = sessionStorage.getItem('usuario');
@@ -45,46 +44,84 @@ export class Dashboard implements OnInit {
       this.nombreUsuario = `${u.primerNombre} ${u.primerApellido}`;
     }
 
-    // Carga todo en paralelo; cargando=false cuando terminen todos (con o sin error)
-    forkJoin({
-      resumen:    this.api.getDashboardResumen().pipe(timeout(5000), catchError(() => of(null))),
-      maquinas:   this.api.getMaquinas().pipe(timeout(5000), catchError(() => of([]))),
-      inventario: this.api.getInventario().pipe(timeout(5000), catchError(() => of([])))
-    }).subscribe({
-      next: ({ resumen, maquinas, inventario }) => {
-        if (resumen) {
-          this.maquinasLibres   = resumen.maquinasLibres;
-          this.maquinasTotales  = resumen.maquinasTotales;
-          this.productosEnStock = resumen.productosEnStock;
-          this.ventasDelMes     = resumen.ventasDelMes;
-          this.stockBajo        = resumen.stockBajo;
-        }
-        this.maquinas   = maquinas  ?? [];
-        this.inventario = inventario ?? [];
-        this.cargando   = false;
+    this.cargarMaquinas();
+    this.cargarProductos();
+  }
+
+  // ─────────────────────────────
+  // CARGA DE MÁQUINAS
+  // ─────────────────────────────
+  cargarMaquinas(): void {
+    this.cargandoMaquinas = true;
+    this.cargando = true;
+
+    this.api.getMaquinas().subscribe({
+      next: (data) => {
+        this.maquinas = data ?? [];
+        this.maquinasTotales = this.maquinas.length;
+        this.maquinasOperativas = this.maquinas.filter(m =>
+          (m.estadoMaquinadto?.estado ?? '').toUpperCase() === 'OPERATIVA'
+        ).length;
+        
+        this.cargandoMaquinas = false;
+        this.validarCarga();
       },
-      error: () => {
-        // catchError en cada observable evita llegar aquí, pero por si acaso
-        this.cargando = false;
+      error: (err) => {
+        console.error('Error al cargar máquinas:', err);
+        this.maquinas = [];
+        this.cargandoMaquinas = false; // Desbloquea la bandera en caso de error
+        this.validarCarga();
       }
     });
   }
 
-  estadoMaquinaClase(estado: string): string {
-    const e = estado?.toUpperCase() ?? '';
-    if (e === 'OPERATIVA')     return 'free';
+  // ─────────────────────────────
+  // CARGA DE PRODUCTOS
+  // ─────────────────────────────
+  cargarProductos(): void {
+    this.cargandoProductos = true;
+    this.cargando = true;
+
+    this.api.getProductos().subscribe({
+      next: (data) => {
+        this.productos = data ?? [];
+        this.productosTotales = this.productos.length;
+        
+        this.cargandoProductos = false;
+        this.validarCarga();
+      },
+      error: (err) => {
+        console.error('Error al cargar productos:', err);
+        this.productos = [];
+        this.cargandoProductos = false; // Desbloquea la bandera en caso de error
+        this.validarCarga();
+      }
+    });
+  }
+
+  // ─────────────────────────────
+  // CONTROL DE LOADING GLOBAL
+  // ─────────────────────────────
+  validarCarga(): void {
+    if (!this.cargandoMaquinas && !this.cargandoProductos) {
+      this.cargando = false;
+    }
+  }
+
+  // ─────────────────────────────
+  // ESTADOS
+  // ─────────────────────────────
+  estadoClaseMaquina(estado?: string): string {
+    const e = (estado ?? '').toUpperCase();
+
+    if (e === 'OPERATIVA') return 'free';
     if (e === 'MANTENIMIENTO') return 'warning';
     return 'critical';
   }
 
-  estadoInventarioClase(item: any): string {
-    return item.cantidadProducto <= item.stockMinimo ? 'critical' : 'free';
-  }
-
-  estadoInventarioLabel(item: any): string {
-    return item.cantidadProducto <= item.stockMinimo ? 'Crítico' : 'OK';
-  }
-
+  // ─────────────────────────────
+  // SESIÓN
+  // ─────────────────────────────
   cerrarSesion(): void {
     sessionStorage.removeItem('usuario');
     this.router.navigate(['/']);
