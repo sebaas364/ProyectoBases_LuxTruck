@@ -47,6 +47,7 @@ public class TrabajadorService {
 
         if (found.isEmpty()) {
             Trabajador entity = modelMapper.map(dto, Trabajador.class);
+            entity.setIdPersona(null);
             entity.setContrasenia(sec.hashingToSHA256(dto.getContrasenia()));
             entity.setFechaIngreso(new Date(dto.getFechaIngreso().getTime()));
 

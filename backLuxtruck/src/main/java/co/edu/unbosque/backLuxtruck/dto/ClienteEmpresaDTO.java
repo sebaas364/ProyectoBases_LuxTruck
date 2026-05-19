@@ -1,35 +1,27 @@
 package co.edu.unbosque.backLuxtruck.dto;
  
 public class ClienteEmpresaDTO extends EmpresaDTO {
-	private VendedorDTO vendedordto;
+	private VendedorDTO vendedor;
  
 	public ClienteEmpresaDTO() {
 	}
 
-	public ClienteEmpresaDTO(VendedorDTO vendedordto) {
+	public ClienteEmpresaDTO(VendedorDTO vendedor) {
 		super();
-		this.vendedordto = vendedordto;
+		this.vendedor = vendedor;
 	}
 
-	public ClienteEmpresaDTO(Integer idEmpresa, String nIT, String nombre, String telefono, String correo) {
+	public ClienteEmpresaDTO(Integer idEmpresa, String nIT, String nombre, String telefono, String correo, VendedorDTO vendedor	) {
 		super(idEmpresa, nIT, nombre, telefono, correo);
-		// TODO Auto-generated constructor stub
+		this.vendedor = vendedor;
 	}
 
-	public VendedorDTO getVendedordto() {
-		return vendedordto;
+	public VendedorDTO getVendedor() {
+		return vendedor;
 	}
 
-	public void setVendedordto(VendedorDTO vendedordto) {
-		this.vendedordto = vendedordto;
+	public void setVendedor(VendedorDTO vendedor) {
+		this.vendedor = vendedor;
 	}
-
-	@Override
-	public String toString() {
-		return "ClienteEmpresaDTO [getIdEmpresa()=" + getIdEmpresa() + ", getNIT()=" + getNIT() + ", getNombre()="
-				+ getNombre() + ", getTelefono()=" + getTelefono() + ", getCorreo()=" + getCorreo() + ", getClass()="
-				+ getClass() + ", hashCode()=" + hashCode() + ", toString()=" + super.toString() + "]";
-	}
- 
 
 }

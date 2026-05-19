@@ -22,12 +22,11 @@ public class EspecialidadService {
     private ModelMapper modelMapper;
 
     public int create(EspecialidadDTO dto) {
-        Optional<Especialidad> found = especialidadRepo.findById(dto.getIdEspecialidad());
-        if (found.isEmpty()) {
-            Especialidad entity = modelMapper.map(dto, Especialidad.class);
-            especialidadRepo.save(entity);
-            return 0;
-        }
+    	if (dto != null) {
+    		Especialidad entity = modelMapper.map(dto, Especialidad.class);
+    		entity.setIdEspecialidad(null);
+    		return 0;
+    	}
         return 1;
     }
 

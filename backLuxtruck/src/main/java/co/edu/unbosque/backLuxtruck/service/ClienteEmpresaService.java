@@ -27,9 +27,10 @@ public class ClienteEmpresaService {
     private ModelMapper modelMapper;
 
     public int create(ClienteEmpresaDTO dto) {
-        Optional<ClienteEmpresa> found = clienteEmpresaRepo.findById(dto.getIdEmpresa());
+        Optional<ClienteEmpresa> found = clienteEmpresaRepo.findByNIT(dto.getNIT());
         if (found.isEmpty()) {
             ClienteEmpresa entity = modelMapper.map(dto, ClienteEmpresa.class);
+            entity.setIdEmpresa(null);
             clienteEmpresaRepo.save(entity);
             return 0;
         }

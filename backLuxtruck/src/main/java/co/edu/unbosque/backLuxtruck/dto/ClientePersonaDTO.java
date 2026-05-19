@@ -4,7 +4,7 @@ public class ClientePersonaDTO extends PersonaDTO {
 	private VendedorDTO vendedor;
 
 	public ClientePersonaDTO() {
-		// TODO Auto-generated constructor stub
+
 	}
 
 	public ClientePersonaDTO(VendedorDTO vendedor) {
@@ -13,10 +13,10 @@ public class ClientePersonaDTO extends PersonaDTO {
 	}
 
 	public ClientePersonaDTO(Integer idPersona, String numeroDocumento, String tipoDocumento, String primerNombre,
-			String segundoNombre, String primerApellido, String segundoApellido, String telefono, String correo) {
+			String segundoNombre, String primerApellido, String segundoApellido, String telefono, String correo, VendedorDTO vendedor) {
 		super(idPersona, numeroDocumento, tipoDocumento, primerNombre, segundoNombre, primerApellido, segundoApellido,
 				telefono, correo);
-		// TODO Auto-generated constructor stub
+		this.vendedor = vendedor;
 	}
 
 	public VendedorDTO getVendedor() {
@@ -25,11 +25,6 @@ public class ClientePersonaDTO extends PersonaDTO {
 
 	public void setVendedor(VendedorDTO vendedor) {
 		this.vendedor = vendedor;
-	}
-
-	@Override
-	public String toString() {
-		return "ClientePersonaDTO [vendedor=" + vendedor + "]";
 	}
 
 }
