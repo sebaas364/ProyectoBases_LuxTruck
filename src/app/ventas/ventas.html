@@ -1,0 +1,158 @@
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <nav>
+      <img src="logo.png" class="logo">
+      <a routerLink="/dashboard">Dashboard</a>
+      <a routerLink="/inventario">Inventario</a>
+      <a routerLink="/ventas" class="active">Ventas</a>
+      <a routerLink="/maquinas">Máquinas</a>
+      <a routerLink="/proveedores">Proveedores</a>
+      <a routerLink="/usuarios">Usuarios</a>
+    </nav>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div><h1>VENTAS</h1></div>
+    </div>
+
+    <!-- CARDS -->
+    <div class="cards">
+      <div class="card blue">
+        <h3>VENTAS REGISTRADAS</h3>
+        <h1>{{ ventas.length }}</h1>
+        <span>En el sistema</span>
+      </div>
+      <div class="card green">
+        <h3>VENDEDORES ACTIVOS</h3>
+        <h1>{{ vendedores.length }}</h1>
+        <span>Disponibles</span>
+      </div>
+    </div>
+
+    <!-- BOTONES CRUD -->
+    <div class="acciones">
+      <button class="btn crear"     (click)="abrirCrearVenta()">+ Registrar Venta</button>
+      <button class="btn editarBtn" (click)="abrirEditarVenta()">Editar Venta</button>
+    </div>
+
+    <!-- Mensaje global -->
+    <div *ngIf="mensaje && !mostrarCrearVenta && !mostrarEditarVenta"
+         class="mensaje" [ngClass]="tipoMensaje">
+      {{ mensaje }}
+    </div>
+
+    <div *ngIf="cargando" style="padding:1rem;color:#888">Cargando ventas...</div>
+
+    <!-- TABLA VENTAS -->
+    <div class="tables" *ngIf="!cargando">
+      <div class="table-box">
+        <h2>LISTA DE VENTAS</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>FECHA</th>
+              <th>MÉTODO DE PAGO</th>
+              <th>VENDEDOR</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let v of ventas">
+              <td><strong>#{{ v.idVenta }}</strong></td>
+              <td>{{ v.fecha | date:'dd/MM/yyyy':'UTC' }}</td>
+              <td>
+                <span class="status azulito">{{ v.metodoPago }}</span>
+              </td>
+              <td>{{ nombreVendedor(v) }}</td>
+              <td>
+                <button class="btn-icon eliminar" (click)="eliminarVenta(v.idVenta)" title="Eliminar">✕</button>
+              </td>
+            </tr>
+            <tr *ngIf="ventas.length === 0">
+              <td colspan="5" class="empty">Sin ventas registradas</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+
+    <!-- MODAL CREAR VENTA -->
+    <div class="modal" *ngIf="mostrarCrearVenta">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Registrar Venta</h2>
+          <button class="cerrar" (click)="cerrarModales()">✕</button>
+        </div>
+        <div class="modal-body">
+
+          <label class="campo-label">Fecha de la venta *</label>
+          <input type="date" [(ngModel)]="nuevaFecha">
+
+          <select [(ngModel)]="nuevaMetodoPago">
+            <option value="">Método de pago *</option>
+            <option *ngFor="let m of METODOS_PAGO" [value]="m">{{ m }}</option>
+          </select>
+
+          <select [(ngModel)]="nuevaVendedorId">
+            <option [ngValue]="null">Seleccionar vendedor *</option>
+            <option *ngFor="let v of vendedores" [ngValue]="v.idPersona">
+              {{ v.primerNombre }} {{ v.primerApellido }}
+            </option>
+          </select>
+
+          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
+
+          <button class="guardar" (click)="guardarVenta()" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : 'Registrar Venta' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- MODAL EDITAR VENTA -->
+    <div class="modal" *ngIf="mostrarEditarVenta">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Editar Venta</h2>
+          <button class="cerrar" (click)="cerrarModales()">✕</button>
+        </div>
+        <div class="modal-body">
+
+          <select [(ngModel)]="editVentaId" (ngModelChange)="onSeleccionarVenta()">
+            <option [ngValue]="null">Seleccionar venta *</option>
+            <option *ngFor="let v of ventas" [ngValue]="v.idVenta">
+              #{{ v.idVenta }} — {{ v.metodoPago }} ({{ v.fecha | date:'dd/MM/yyyy':'UTC' }})
+            </option>
+          </select>
+
+          <ng-container *ngIf="editVentaId">
+            <label class="campo-label">Fecha *</label>
+            <input type="date" [(ngModel)]="editFecha">
+
+            <select [(ngModel)]="editMetodoPago">
+              <option value="">Método de pago *</option>
+              <option *ngFor="let m of METODOS_PAGO" [value]="m">{{ m }}</option>
+            </select>
+          </ng-container>
+
+          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
+
+          <button class="guardar" (click)="guardarEdicionVenta()" [disabled]="guardando || !editVentaId">
+            {{ guardando ? 'Actualizando...' : 'Actualizar Venta' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+</div>

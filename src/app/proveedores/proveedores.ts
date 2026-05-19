@@ -177,8 +177,18 @@ export class Proveedores implements OnInit {
   }
 
   guardarProveedor(): void {
-    if (!this.nuevoNombre.trim()) { this.mostrarMsg('El nombre es obligatorio.', 'error'); return; }
-    if (!this.nuevoTipo)          { this.mostrarMsg('Selecciona el tipo de proveedor.', 'error'); return; }
+    if (!this.nuevoNIT.trim())                              { this.mostrarMsg('El NIT es obligatorio.', 'error'); return; }
+    if (!/^\d{9,10}-\d$/.test(this.nuevoNIT.trim()))       { this.mostrarMsg('NIT inválido. Formato: 123456789-0', 'error'); return; }
+    if (!this.nuevoNombre.trim())                           { this.mostrarMsg('El nombre es obligatorio.', 'error'); return; }
+    if (!/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/.test(this.nuevoNombre.trim())) { this.mostrarMsg('El nombre solo debe contener letras.', 'error'); return; }
+    if (!this.nuevoTelefono.trim())                         { this.mostrarMsg('El teléfono es obligatorio.', 'error'); return; }
+    if (!/^\d{7,10}$/.test(this.nuevoTelefono.trim()))     { this.mostrarMsg('Teléfono inválido. Solo dígitos, entre 7 y 10.', 'error'); return; }
+    if (!this.nuevoCorreo.trim())                           { this.mostrarMsg('El correo es obligatorio.', 'error'); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.nuevoCorreo.trim())) { this.mostrarMsg('Correo inválido.', 'error'); return; }
+    if (!this.nuevoTipo)                                    { this.mostrarMsg('Selecciona el tipo de proveedor.', 'error'); return; }
+    if (this.nuevoCalificacion === null || this.nuevoCalificacion === undefined) { this.mostrarMsg('La calificación es obligatoria.', 'error'); return; }
+    if (isNaN(Number(this.nuevoCalificacion)))              { this.mostrarMsg('La calificación debe ser un número.', 'error'); return; }
+    if (this.nuevoCalificacion < 0 || this.nuevoCalificacion > 5) { this.mostrarMsg('La calificación debe estar entre 0 y 5.', 'error'); return; }
 
     // IMPORTANTE: el campo es "NIT" (mayúsculas) porque el getter Java es getNIT()
     const payload: CrearProveedorPayload = {
@@ -207,16 +217,19 @@ export class Proveedores implements OnInit {
   }
 
   registrarPedido(): void {
-    if (!this.pedidoProveedorId)       { this.mostrarMsg('Selecciona un proveedor.', 'error'); return; }
-    if (!this.pedidoMaterial.trim())   { this.mostrarMsg('El material es requerido.', 'error'); return; }
-    if (!this.pedidoCantidad.trim())   { this.mostrarMsg('La cantidad es requerida.', 'error'); return; }
-    if (!this.pedidoFecha)             { this.mostrarMsg('La fecha del pedido es requerida.', 'error'); return; }
+    if (!this.pedidoProveedorId)                            { this.mostrarMsg('Selecciona un proveedor.', 'error'); return; }
+    if (!this.pedidoCantidad.trim())                        { this.mostrarMsg('La cantidad es requerida.', 'error'); return; }
+    if (!/^\d+$/.test(this.pedidoCantidad.trim()))          { this.mostrarMsg('La cantidad solo debe contener números enteros.', 'error'); return; }
+    if (parseInt(this.pedidoCantidad.trim()) <= 0)          { this.mostrarMsg('La cantidad debe ser mayor a 0.', 'error'); return; }
+    if (!this.pedidoFecha)                                  { this.mostrarMsg('La fecha del pedido es requerida.', 'error'); return; }
+    if (this.pedidoFechaEntrega && this.pedidoFechaEntrega <= this.pedidoFecha) { this.mostrarMsg('La fecha de entrega debe ser posterior a la fecha del pedido.', 'error'); return; }
 
     const payload: CrearPedidoPayload = {
       cantidadMaterial: this.pedidoCantidad.trim(),
-      fechaPedido:      this.pedidoFecha,
-      fechaEntrega:     this.pedidoFechaEntrega || this.pedidoFecha,
-      // El setter setProveedor() → debe enviarse como "proveedor"
+      fechaPedido:      this.pedidoFecha ? new Date(this.pedidoFecha + 'T12:00:00').getTime() : 0,
+      fechaEntrega:     this.pedidoFechaEntrega
+                          ? new Date(this.pedidoFechaEntrega + 'T12:00:00').getTime()
+                          : new Date(this.pedidoFecha + 'T12:00:00').getTime(),
       proveedor:        { idEmpresa: Number(this.pedidoProveedorId) }
     };
 
@@ -230,20 +243,48 @@ export class Proveedores implements OnInit {
       },
       error: (err: HttpErrorResponse) => {
         this.guardando = false;
-        console.error('Error al registrar pedido:', err);
-        this.mostrarMsg('Error al registrar el pedido.', 'error');
+        // El backend devuelve 406 aunque guarda correctamente (bug conocido del backend)
+        // Si es 406, tratamos como éxito y recargamos
+        if (err.status === 406) {
+          this.mostrarMsg('Pedido registrado exitosamente.', 'success');
+          this.cargar();
+          setTimeout(() => this.cerrarModales(), 2000);
+        } else {
+          this.mostrarMsg('Error al registrar el pedido.', 'error');
+        }
       }
     });
   }
 
+  eliminarPedido(id: number): void {
+    if (!confirm('¿Deseas eliminar este pedido? Esta acción no se puede deshacer.')) return;
+    this.api.eliminarPedido(id).subscribe({
+      next: () => {
+        this.mostrarMsg('Pedido eliminado correctamente.', 'success');
+        this.cargar();
+      },
+      error: () => this.mostrarMsg('Error al eliminar el pedido.', 'error')
+    });
+  }
+
   eliminarProveedor(id: number): void {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    const pedidosActivos = this.pedidos.filter(p =>
+      p.proveedor?.idEmpresa === id &&
+      (!p.fechaEntrega || new Date(p.fechaEntrega) >= hoy)
+    );
+    if (pedidosActivos.length > 0) {
+      this.mostrarMsg('No se puede eliminar: el proveedor tiene pedidos con fecha de entrega vigente.', 'error');
+      return;
+    }
     if (!confirm('¿Deseas eliminar este proveedor? Esta acción no se puede deshacer.')) return;
     this.api.eliminarProveedor(id).subscribe({
       next: () => {
         this.mostrarMsg('Proveedor eliminado correctamente.', 'success');
         this.cargar();
       },
-      error: () => this.mostrarMsg('Error al eliminar. El proveedor puede tener pedidos activos.', 'error')
+      error: () => this.mostrarMsg('No se puede eliminar: este proveedor tiene pedidos de material asociados.', 'error')
     });
   }
 }

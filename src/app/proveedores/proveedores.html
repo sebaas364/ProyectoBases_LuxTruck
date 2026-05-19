@@ -6,7 +6,7 @@
       <img src="logo.png" class="logo">
       <a routerLink="/dashboard">Dashboard</a>
       <a routerLink="/inventario">Inventario</a>
-      <a href="#">Ventas</a>
+      <a routerLink= "/ventas" > Ventas</a>
       <a routerLink="/maquinas">Máquinas</a>
       <a routerLink="/proveedores" class="active">Proveedores</a>
       <a routerLink="/usuarios">Usuarios</a>
@@ -101,6 +101,7 @@
             <th>FECHA PEDIDO</th>
             <th>FECHA ENTREGA</th>
             <th>PROVEEDOR</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -110,6 +111,7 @@
             <td>{{ d.fechaPedido | date:'dd/MM/yyyy':'UTC' }}</td>
             <td>{{ d.fechaEntrega ? (d.fechaEntrega | date:'dd/MM/yyyy':'UTC') : '—' }}</td>
             <td>{{ d.proveedor ? d.proveedor.nombre : '—' }}</td>
+            <td><button class="btn-icon eliminar" (click)="eliminarPedido(d.idPedido)" title="Eliminar">✕</button></td>
           </tr>
           <tr *ngIf="pedidos.length === 0">
             <td colspan="5" class="empty">Sin pedidos registrados</td>

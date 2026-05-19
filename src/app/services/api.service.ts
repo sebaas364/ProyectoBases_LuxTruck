@@ -155,8 +155,8 @@ export interface CrearMaquinaPayload {
 export interface PedidoMaterialDTO {
   idPedido: number;
   cantidadMaterial: string;
-  fechaPedido: string;
-  fechaEntrega: string;
+  fechaPedido: number | string;
+  fechaEntrega: number | string;
   // getter getProveedor() → Jackson serializa como "proveedor"
   proveedor: ProveedorDTO | null;
 }
@@ -175,10 +175,26 @@ export interface DashboardResumenDTO {
 
 export interface CrearPedidoPayload {
   cantidadMaterial: string;
-  fechaPedido: string;
-  fechaEntrega: string;
-  // setter setProveedor() → Jackson deserializa como "proveedor"
+  fechaPedido: number | string;
+  fechaEntrega: number | string;
   proveedor: { idEmpresa: number };
+}
+
+// ──────────────────────────────────────────
+// INTERFACES — VENTA
+// ──────────────────────────────────────────
+
+export interface VentaDTO {
+  idVenta: number;
+  fecha: number;
+  metodoPago: string;
+  vendedordto: VendedorDTO | null;
+}
+
+export interface CrearVentaPayload {
+  fecha: number;
+  metodoPago: string;
+  vendedordto: { idPersona: number };
 }
 
 @Injectable({
@@ -295,8 +311,31 @@ export class ApiService {
     return this.http.get<PedidoMaterialDTO[]>(`${this.BASE_URL}/pedidomaterial/getall`);
   }
 
+  eliminarPedido(id: number): Observable<string> {
+    return this.http.delete(`${this.BASE_URL}/pedidomaterial/delete/${id}`, { responseType: 'text' });
+  }
+
   crearPedido(datos: CrearPedidoPayload): Observable<string> {
     return this.http.post(`${this.BASE_URL}/pedidomaterial/createjson`, datos, { responseType: 'text' });
+  }
+
+  // ──────────────────────────────────────────
+  // VENTAS
+  // ──────────────────────────────────────────
+  getVentas(): Observable<VentaDTO[]> {
+    return this.http.get<VentaDTO[]>(`${this.BASE_URL}/venta/getall`);
+  }
+
+  crearVenta(datos: CrearVentaPayload): Observable<string> {
+    return this.http.post(`${this.BASE_URL}/venta/createjson`, datos, { responseType: 'text' });
+  }
+
+  editarVenta(id: number, datos: Partial<CrearVentaPayload>): Observable<string> {
+    return this.http.put(`${this.BASE_URL}/venta/update/${id}`, datos, { responseType: 'text' });
+  }
+
+  eliminarVenta(id: number): Observable<string> {
+    return this.http.delete(`${this.BASE_URL}/venta/delete/${id}`, { responseType: 'text' });
   }
 
   // ──────────────────────────────────────────
