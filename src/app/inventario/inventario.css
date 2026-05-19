@@ -511,3 +511,61 @@ td p{
 .mensaje.error   { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid #ef4444; }
 .mensaje.success { background: rgba(34,197,94,0.2);  color: #4ade80; border: 1px solid #22c55e; }
 .guardar[disabled] { opacity: 0.6; cursor: not-allowed; }
+/* ── Cantidad badge ── */
+.cantidad-badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-weight: bold;
+  font-size: 14px;
+}
+.cantidad-badge.critical {
+  background: rgba(239,68,68,0.2);
+  color: #f87171;
+  border: 1px solid #ef444466;
+}
+.cantidad-badge.free {
+  background: rgba(34,197,94,0.15);
+  color: #4ade80;
+  border: 1px solid #22c55e44;
+}
+
+/* ── Fila crítica ── */
+tr.fila-critica {
+  background: rgba(239, 68, 68, 0.06);
+}
+
+/* ── Info actual en modal ── */
+.info-actual {
+  display: flex;
+  gap: 20px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  color: #94a3b8;
+}
+.info-actual strong { color: white; }
+
+/* ── Label de campo en modal ── */
+.campo-label {
+  display: block;
+  font-size: 12px;
+  color: #94a3b8;
+  margin: 8px 0 2px 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* ── Alerta stock mínimo ── */
+.alerta-stock {
+  background: rgba(251,191,36,0.15);
+  border: 1px solid #fbbf2466;
+  color: #fbbf24;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 13px;
+  margin: 8px 0;
+}

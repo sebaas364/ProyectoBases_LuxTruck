@@ -5,7 +5,7 @@
       <img src="logo.png" class="logo">
       <a routerLink="/dashboard">Dashboard</a>
       <a routerLink="/inventario" class="active">Inventario</a>
-      <a routerLink="/ventas">Ventas</a>
+      <a routerLink= "/ventas" > Ventas</a>
       <a routerLink="/maquinas">Máquinas</a>
       <a routerLink="/proveedores">Proveedores</a>
       <a routerLink="/usuarios">Usuarios</a>
@@ -20,17 +20,28 @@
 
     <div class="cards">
       <div class="card blue">
-        <h3>PRODUCTOS REGISTRADOS</h3>
-        <h1>{{ productos.length }}</h1>
-        <span>En catálogo</span>
+        <h3>REFERENCIAS</h3>
+        <h1>{{ inventario.length }}</h1>
+        <span>Total registradas</span>
+      </div>
+      <div class="card green">
+        <h3>STOCK TOTAL</h3>
+        <h1>{{ totalStock }}</h1>
+        <span>Unidades disponibles</span>
+      </div>
+      <div class="card red">
+        <h3>PRODUCTOS CRÍTICOS</h3>
+        <h1>{{ criticos }}</h1>
+        <span>Por debajo del mínimo</span>
       </div>
     </div>
 
     <div class="acciones">
-      <button class="btn crear" (click)="abrirCrear()">+ Crear Producto</button>
+      <button class="btn crear"    (click)="abrirCrear()">+ Crear Referencia</button>
+      <button class="btn cantidad" (click)="abrirCantidad()">+ Actualizar Cantidad</button>
     </div>
 
-    <div *ngIf="mensaje && !mostrarCrear && !mostrarEditar"
+    <div *ngIf="mensaje && !mostrarCrear && !mostrarCantidad"
          class="mensaje" [ngClass]="tipoMensaje">
       {{ mensaje }}
     </div>
@@ -46,23 +57,28 @@
               <th>CÓDIGO</th>
               <th>NOMBRE</th>
               <th>TIPO</th>
+              <th>CANTIDAD</th>
+              <th>STOCK MÍNIMO</th>
+              <th>ESTADO</th>
               <th>PRECIO UNITARIO</th>
-              <th></th>
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let p of productos">
-              <td><strong>#{{ p.idProducto }}</strong></td>
-              <td>{{ p.nombre }}</td>
-              <td>{{ p.tipo }}</td>
-              <td>{{ p.precioUnitario | currency:'COP':'symbol':'1.0-0' }}</td>
-              <td class="acciones-td">
-                <button class="btn-icon editar"   (click)="abrirEditar(p)" title="Editar">✎</button>
-                <button class="btn-icon eliminar" (click)="eliminarProducto(p.idProducto)" title="Eliminar">✕</button>
+            <tr *ngFor="let i of inventario" [ngClass]="{'fila-critica': i.cantidadProducto <= i.stockMinimo}">
+              <td><strong>#{{ i.idProducto }}</strong></td>
+              <td>{{ i.productodto?.nombre }}</td>
+              <td>{{ i.productodto?.tipo }}</td>
+              <td>
+                <span class="cantidad-badge" [ngClass]="estadoClase(i)">
+                  {{ i.cantidadProducto }}
+                </span>
               </td>
+              <td>{{ i.stockMinimo }}</td>
+              <td><span class="status" [ngClass]="estadoClase(i)">{{ estadoLabel(i) }}</span></td>
+              <td>{{ i.productodto?.precioUnitario | currency:'COP':'symbol':'1.0-0' }}</td>
             </tr>
-            <tr *ngIf="productos.length === 0">
-              <td colspan="5" class="empty">Sin registros en inventario</td>
+            <tr *ngIf="inventario.length === 0">
+              <td colspan="7" class="empty">Sin registros en inventario</td>
             </tr>
           </tbody>
         </table>
@@ -70,41 +86,76 @@
     </div>
 
 
-    <!-- MODAL CREAR -->
+    <!-- MODAL CREAR REFERENCIA -->
     <div class="modal" *ngIf="mostrarCrear">
       <div class="modal-content">
         <div class="modal-header">
-          <h2>Nuevo Producto</h2>
+          <h2>Nueva Referencia</h2>
           <button class="cerrar" (click)="cerrarModales()">✕</button>
         </div>
         <div class="modal-body">
+
           <input type="text"   placeholder="Nombre del producto *" [(ngModel)]="crearNombre">
           <input type="text"   placeholder="Tipo (ej: Repuesto) *" [(ngModel)]="crearTipo">
-          <input type="number" placeholder="Precio unitario *"      [(ngModel)]="crearPrecio" min="0">
+          <input type="number" placeholder="Precio unitario *"      [(ngModel)]="crearPrecio"      min="0">
+          <input type="number" placeholder="Stock mínimo *"         [(ngModel)]="crearStockMinimo" min="0">
+          <input type="number" placeholder="Cantidad inicial *"     [(ngModel)]="crearCantidad"    min="0">
+
           <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
-          <button class="guardar" (click)="guardarProducto()" [disabled]="guardando">
-            {{ guardando ? 'Guardando...' : 'Guardar Producto' }}
+
+          <button class="guardar" (click)="guardarReferencia()" [disabled]="guardando">
+            {{ guardando ? 'Guardando...' : 'Guardar Referencia' }}
           </button>
+
         </div>
       </div>
     </div>
 
 
-    <!-- MODAL EDITAR -->
-    <div class="modal" *ngIf="mostrarEditar">
+    <!-- MODAL ACTUALIZAR CANTIDAD -->
+    <div class="modal" *ngIf="mostrarCantidad">
       <div class="modal-content">
         <div class="modal-header">
-          <h2>Editar Producto</h2>
+          <h2>Actualizar Cantidad</h2>
           <button class="cerrar" (click)="cerrarModales()">✕</button>
         </div>
         <div class="modal-body">
-          <input type="text"   placeholder="Nombre *"        [(ngModel)]="editNombre">
-          <input type="text"   placeholder="Tipo *"          [(ngModel)]="editTipo">
-          <input type="number" placeholder="Precio unitario *" [(ngModel)]="editPrecio" min="0">
+
+          <select [(ngModel)]="actualizarId" (ngModelChange)="onSeleccionarProducto()">
+            <option [ngValue]="null">Seleccionar producto *</option>
+            <option *ngFor="let i of inventario" [ngValue]="i.idProducto">
+              {{ i.productodto?.nombre }} (stock: {{ i.cantidadProducto }})
+            </option>
+          </select>
+
+          <ng-container *ngIf="actualizarId">
+            <div class="info-actual">
+              <span>Cantidad actual: <strong>{{ actualizarCantidad }}</strong></span>
+              <span>Stock mínimo actual: <strong>{{ actualizarStock }}</strong></span>
+            </div>
+          </ng-container>
+
+          <label class="campo-label">Nueva cantidad *</label>
+          <input type="number" placeholder="Ingresa la nueva cantidad"
+                 [(ngModel)]="actualizarCantidad" min="0">
+
+          <label class="campo-label">Nuevo stock mínimo</label>
+          <input type="number" placeholder="Stock mínimo"
+                 [(ngModel)]="actualizarStock" min="0">
+
+          <div class="alerta-stock"
+               *ngIf="actualizarCantidad !== null && actualizarStock !== null && actualizarCantidad <= actualizarStock">
+            ⚠️ La cantidad quedará en nivel crítico (igual o por debajo del stock mínimo).
+          </div>
+
+          <p class="info-stock">No se permite dejar el inventario en negativo.</p>
+
           <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
-          <button class="guardar" (click)="guardarEdicion()" [disabled]="guardando">
-            {{ guardando ? 'Actualizando...' : 'Actualizar Producto' }}
+
+          <button class="guardar" (click)="guardarCantidad()" [disabled]="guardando">
+            {{ guardando ? 'Actualizando...' : 'Actualizar Stock' }}
           </button>
+
         </div>
       </div>
     </div>
