@@ -72,7 +72,7 @@
             <td>{{ a.tipoDocumento }} {{ a.numeroDocumento }}</td>
             <td><span class="status free">{{ a.correo }}</span></td>
             <td>{{ a.telefono }}</td>
-            <td><span class="status" [ngClass]="estadoClase(a)">{{ a.estadoTrabajadordto?.estado || $any(a).estadoTrabajador?.estado || 'Desconocido' }}</span></td>
+            <td><span class="status" [ngClass]="estadoClase(a)">{{ a.estadoTrabajador?.estado || 'Desconocido' }}</span></td>
           </tr>
           <tr *ngIf="administrativos.length === 0">
             <td colspan="5" class="empty">Sin administrativos registrados</td>
@@ -101,7 +101,7 @@
             <td>{{ o.tipoDocumento }} {{ o.numeroDocumento }}</td>
             <td><span class="status azulitoC">{{ o.correo }}</span></td>
             <td>{{ o.desempenio }}</td>
-            <td><span class="status" [ngClass]="estadoClase(o)">{{ o.estadoTrabajadordto?.estado || $any(o).estadoTrabajador?.estado || 'Desconocido' }}</span></td>
+            <td><span class="status" [ngClass]="estadoClase(o)">{{ o.estadoTrabajador?.estado || 'Desconocido' }}</span></td>
           </tr>
           <tr *ngIf="operarios.length === 0">
             <td colspan="5" class="empty">Sin operarios registrados</td>
@@ -130,7 +130,7 @@
             <td>{{ v.tipoDocumento }} {{ v.numeroDocumento }}</td>
             <td><span class="status warning">{{ v.correo }}</span></td>
             <td>{{ v.comision | currency:'COP':'symbol':'1.0-0' }}</td>
-            <td><span class="status" [ngClass]="estadoClase(v)">{{ v.estadoTrabajadordto?.estado || $any(v).estadoTrabajador?.estado || 'Desconocido' }}</span></td>
+            <td><span class="status" [ngClass]="estadoClase(v)">{{ v.estadoTrabajador?.estado || 'Desconocido' }}</span></td>
           </tr>
           <tr *ngIf="vendedores.length === 0">
             <td colspan="5" class="empty">Sin vendedores registrados</td>
@@ -170,10 +170,10 @@
           <div class="fila-2">
             <select [(ngModel)]="tipoDocumento">
               <option value="">Tipo documento *</option>
-              <option value="CC">CC</option>
-              <option value="TI">TI</option>
-              <option value="CE">CE</option>
-              <option value="PAS">Pasaporte</option>
+              <option value="Cédula de ciudadanía">Cédula de ciudadanía</option>
+              <option value="Tarjeta de identidad">Tarjeta de identidad</option>
+              <option value="Cédula de extranjería">Cédula de extranjería</option>
+              <option value="Pasaporte">Pasaporte</option>
             </select>
             <input type="text" placeholder="Número documento *" [(ngModel)]="numeroDocumento">
           </div>
@@ -274,17 +274,17 @@
             <option [ngValue]="null">Seleccionar trabajador *</option>
             <optgroup label="Administrativos">
               <option *ngFor="let a of administrativos" [ngValue]="a.idPersona">
-                {{ nombreCompleto(a) }} — {{ a.estadoTrabajadordto?.estado || $any(a).estadoTrabajador?.estado || 'Sin estado' }}
+                {{ nombreCompleto(a) }} — {{ a.estadoTrabajador?.estado || 'Sin estado' }}
               </option>
             </optgroup>
             <optgroup label="Operarios">
               <option *ngFor="let o of operarios" [ngValue]="o.idPersona">
-                {{ nombreCompleto(o) }} — {{ o.estadoTrabajadordto?.estado || $any(o).estadoTrabajador?.estado || 'Sin estado' }}
+                {{ nombreCompleto(o) }} — {{ o.estadoTrabajador?.estado || 'Sin estado' }}
               </option>
             </optgroup>
             <optgroup label="Vendedores">
               <option *ngFor="let v of vendedores" [ngValue]="v.idPersona">
-                {{ nombreCompleto(v) }} — {{ v.estadoTrabajadordto?.estado || $any(v).estadoTrabajador?.estado || 'Sin estado' }}
+                {{ nombreCompleto(v) }} — {{ v.estadoTrabajador?.estado || 'Sin estado' }}
               </option>
             </optgroup>
           </select>

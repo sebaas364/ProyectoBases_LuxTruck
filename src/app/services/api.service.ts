@@ -29,7 +29,8 @@ export interface TrabajadorDTO {
   salario: number;
   fechaIngreso: string;
   contrasenia?: string;
-  estadoTrabajadordto: EstadoTrabajadorDTO;
+  // El backend usa getEstadoTrabajador() → Jackson serializa como "estadoTrabajador"
+  estadoTrabajador: EstadoTrabajadorDTO;
 }
 
 export interface AdministrativoDTO extends TrabajadorDTO {}
@@ -43,7 +44,7 @@ export interface VendedorDTO extends TrabajadorDTO {
 }
 
 export interface CrearAdministrativoPayload {
-  idPersona: number; 
+  idPersona: number;
   numeroDocumento: string;
   tipoDocumento: string;
   primerNombre: string;
@@ -55,7 +56,8 @@ export interface CrearAdministrativoPayload {
   salario: number;
   fechaIngreso: string;
   contrasenia: string;
-  estadoTrabajadordto: EstadoTrabajadorDTO;
+  // IMPORTANTE: debe llamarse "estadoTrabajador" para que Jackson lo mapee al setter setEstadoTrabajador()
+  estadoTrabajador: EstadoTrabajadorDTO;
 }
 
 export interface CrearOperarioPayload extends CrearAdministrativoPayload {
@@ -105,7 +107,8 @@ export interface ActualizarInventarioPayload {
 
 export interface ProveedorDTO {
   idEmpresa: number;
-  nIT: string;
+  // El getter getNIT() hace que Jackson serialice el campo como "NIT" (mayúsculas)
+  NIT: string;
   nombre: string;
   telefono: string;
   correo: string;
@@ -114,7 +117,8 @@ export interface ProveedorDTO {
 }
 
 export interface CrearProveedorPayload {
-  nIT: string;
+  // IMPORTANTE: debe ser "NIT" (mayúsculas) para que el setter setNIT() de Jackson lo mapee
+  NIT: string;
   nombre: string;
   telefono: string;
   correo: string;
@@ -153,7 +157,8 @@ export interface PedidoMaterialDTO {
   cantidadMaterial: string;
   fechaPedido: string;
   fechaEntrega: string;
-  proveedordto: ProveedorDTO;
+  // getter getProveedor() → Jackson serializa como "proveedor"
+  proveedor: ProveedorDTO | null;
 }
 
 // ──────────────────────────────────────────
@@ -172,7 +177,8 @@ export interface CrearPedidoPayload {
   cantidadMaterial: string;
   fechaPedido: string;
   fechaEntrega: string;
-  proveedordto: { idEmpresa: number };
+  // setter setProveedor() → Jackson deserializa como "proveedor"
+  proveedor: { idEmpresa: number };
 }
 
 @Injectable({

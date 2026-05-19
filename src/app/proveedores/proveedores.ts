@@ -33,13 +33,20 @@ export class Proveedores implements OnInit {
 
   // Formulario Crear Proveedor
   nuevoNIT          = '';
-  nuevoNombre       = '';
+  nuevoNombre       = '';;
   nuevoTelefono     = '';
   nuevoCorreo       = '';
   nuevoTipo         = '';
   nuevoCalificacion: number | null = null;
 
-  // Formulario Registrar Pedido
+  // Formulario Editar Proveedor
+  editProveedorId: number | null = null;
+  editNIT          = '';
+  editNombre       = '';
+  editTelefono     = '';
+  editCorreo       = '';
+  editTipo         = '';
+  editCalificacion: number | null = null;
   pedidoProveedorId: number | null = null;
   pedidoMaterial    = '';
   pedidoCantidad    = '';
@@ -96,6 +103,60 @@ export class Proveedores implements OnInit {
     this.mostrarCrearProveedor = true;
   }
 
+  abrirEditarProveedor(): void {
+    this.cerrarModales();
+    this.editProveedorId = null;
+    this.editNIT = '';
+    this.editNombre = '';
+    this.editTelefono = '';
+    this.editCorreo = '';
+    this.editTipo = '';
+    this.editCalificacion = null;
+    this.mostrarEditarProveedor = true;
+  }
+
+  onSeleccionarProveedor(): void {
+    if (!this.editProveedorId) return;
+    const p = this.proveedores.find(x => x.idEmpresa === this.editProveedorId);
+    if (!p) return;
+    this.editNIT          = p.NIT || '';
+    this.editNombre       = p.nombre;
+    this.editTelefono     = p.telefono;
+    this.editCorreo       = p.correo;
+    this.editTipo         = p.tipoProveedor;
+    this.editCalificacion = p.calificacion;
+  }
+
+  guardarEdicionProveedor(): void {
+    if (!this.editProveedorId) { this.mostrarMsg('Selecciona un proveedor.', 'error'); return; }
+    if (!this.editNombre.trim()) { this.mostrarMsg('El nombre es obligatorio.', 'error'); return; }
+    if (!this.editTipo) { this.mostrarMsg('Selecciona el tipo de proveedor.', 'error'); return; }
+
+    const payload = {
+      NIT:           this.editNIT.trim(),
+      nombre:        this.editNombre.trim(),
+      telefono:      this.editTelefono.trim(),
+      correo:        this.editCorreo.trim(),
+      tipoProveedor: this.editTipo,
+      calificacion:  this.editCalificacion ?? 0,
+    };
+
+    this.guardando = true;
+    this.api.editarProveedor(this.editProveedorId, payload).subscribe({
+      next: () => {
+        this.guardando = false;
+        this.mostrarMsg('Proveedor actualizado exitosamente.', 'success');
+        this.cargar();
+        setTimeout(() => this.cerrarModales(), 2000);
+      },
+      error: (err: HttpErrorResponse) => {
+        this.guardando = false;
+        console.error('Error al editar proveedor:', err);
+        this.mostrarMsg('Error al actualizar. Verifica los datos.', 'error');
+      }
+    });
+  }
+
   abrirPedidoMaterial(): void {
     this.cerrarModales();
     this.pedidoProveedorId = null;
@@ -119,8 +180,9 @@ export class Proveedores implements OnInit {
     if (!this.nuevoNombre.trim()) { this.mostrarMsg('El nombre es obligatorio.', 'error'); return; }
     if (!this.nuevoTipo)          { this.mostrarMsg('Selecciona el tipo de proveedor.', 'error'); return; }
 
+    // IMPORTANTE: el campo es "NIT" (mayúsculas) porque el getter Java es getNIT()
     const payload: CrearProveedorPayload = {
-      nIT:           this.nuevoNIT.trim(),
+      NIT:           this.nuevoNIT.trim(),
       nombre:        this.nuevoNombre.trim(),
       telefono:      this.nuevoTelefono.trim(),
       correo:        this.nuevoCorreo.trim(),
@@ -154,7 +216,8 @@ export class Proveedores implements OnInit {
       cantidadMaterial: this.pedidoCantidad.trim(),
       fechaPedido:      this.pedidoFecha,
       fechaEntrega:     this.pedidoFechaEntrega || this.pedidoFecha,
-      proveedordto:     { idEmpresa: Number(this.pedidoProveedorId) }
+      // El setter setProveedor() → debe enviarse como "proveedor"
+      proveedor:        { idEmpresa: Number(this.pedidoProveedorId) }
     };
 
     this.guardando = true;

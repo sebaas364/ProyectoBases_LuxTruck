@@ -80,7 +80,7 @@ export class Usuarios implements OnInit {
         this.operarios = operarios || [];
         this.vendedores = vendedores || [];
         this.cargando = false;
-        this.cdr.detectChanges(); 
+        this.cdr.detectChanges();
       },
       error: () => {
         this.mostrarMensaje('Error al cargar los datos. ¿Está corriendo el backend?', 'error');
@@ -97,8 +97,9 @@ export class Usuarios implements OnInit {
 
   estadoClase(t: any): string {
     if (!t) return 'critical';
-    const objEstado = t.estadoTrabajador || t.estadoTrabajadordto;
-    if (!objEstado || !objEstado.estado) return 'critical'; 
+    // El backend serializa como "estadoTrabajador" (getter getEstadoTrabajador())
+    const objEstado = t.estadoTrabajador;
+    if (!objEstado || !objEstado.estado) return 'critical';
     return objEstado.estado.toLowerCase() === 'activo' ? 'free' : 'critical';
   }
 
@@ -187,7 +188,7 @@ export class Usuarios implements OnInit {
     if (!this.tipoTrabajador) return 'Selecciona el tipo de trabajador.';
     if (!this.primerNombre.trim()) return 'El primer nombre es obligatorio.';
     if (!this.primerApellido.trim()) return 'El primer apellido es obligatorio.';
-    
+
     const soloLetrasRx = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
     if (!soloLetrasRx.test(this.primerNombre) || (this.segundoNombre.trim() && !soloLetrasRx.test(this.segundoNombre))) {
       return 'Los nombres no pueden contener números ni caracteres especiales.';
@@ -199,11 +200,11 @@ export class Usuarios implements OnInit {
     if (!this.tipoDocumento) return 'Selecciona el tipo de documento.';
     if (!this.numeroDocumento.trim()) return 'El número de documento es obligatorio.';
     if (!this.telefono.trim()) return 'El teléfono es obligatorio.';
-    
+
     const emailRx = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRx.test(this.correo)) return 'Ingresa un correo válido.';
     if (!this.salario || this.salario <= 0) return 'El salario debe ser mayor a 0.';
-    
+
     if (!this.fechaIngreso) return 'La fecha de ingreso es obligatoria.';
     const fechaSeleccionada = new Date(this.fechaIngreso + 'T00:00:00');
     const fechaActual = new Date();
@@ -232,7 +233,7 @@ export class Usuarios implements OnInit {
     this.guardando = true;
     this.mensaje = '';
 
-    // CLAVE: idPersona viaja en 0 idéntico a Swagger para evadir el findById() obligatorio del Service en Java
+    // IMPORTANTE: el campo debe llamarse "estadoTrabajador" (igual al getter Java getEstadoTrabajador())
     const basePayload = {
       idPersona: 0,
       numeroDocumento: this.numeroDocumento,
@@ -246,7 +247,7 @@ export class Usuarios implements OnInit {
       salario: this.salario!,
       fechaIngreso: this.fechaIngreso,
       contrasenia: this.contrasenia,
-      estadoTrabajadordto: { idEstadoTrabajador: 1, estado: 'Activo' }
+      estadoTrabajador: { idEstadoTrabajador: 1, estado: 'Activo' }
     };
 
     let obs$;

@@ -21,7 +21,7 @@
       <div><h1>PROVEEDORES</h1></div>
     </div>
 
-    <!-- CARDS (datos reales del backend) -->
+    <!-- CARDS -->
     <div class="cards">
       <div class="card blue">
         <h3>PROVEEDORES REGISTRADOS</h3>
@@ -38,10 +38,11 @@
     <!-- BOTONES CRUD -->
     <div class="acciones">
       <button class="btn crear"     (click)="abrirCrearProveedor()">+ Crear Proveedor</button>
+      <button class="btn editarBtn" (click)="abrirEditarProveedor()">Editar Proveedor</button>
       <button class="btn editarBtn" (click)="abrirPedidoMaterial()">+ Registrar Pedido</button>
     </div>
 
-    <!-- Mensaje global (fuera de modales) -->
+    <!-- Mensaje global -->
     <div *ngIf="mensaje && !mostrarCrearProveedor && !mostrarPedidoMaterial && !mostrarEditarProveedor && !mostrarEstadoProveedor"
          class="mensaje" [ngClass]="tipoMensaje">
       {{ mensaje }}
@@ -69,7 +70,7 @@
           <tbody>
             <tr *ngFor="let p of proveedores">
               <td><strong>#{{ p.idEmpresa }}</strong></td>
-              <td>{{ p.nIT }}</td>
+              <td>{{ p.NIT }}</td>
               <td><strong>{{ p.nombre }}</strong></td>
               <td>{{ p.tipoProveedor }}</td>
               <td>{{ p.calificacion }}</td>
@@ -106,9 +107,9 @@
           <tr *ngFor="let d of pedidos">
             <td><strong>#{{ d.idPedido }}</strong></td>
             <td>{{ d.cantidadMaterial }}</td>
-            <td>{{ d.fechaPedido }}</td>
-            <td>{{ d.fechaEntrega }}</td>
-            <td>{{ d.proveedordto?.nombre }}</td>
+            <td>{{ d.fechaPedido | date:'dd/MM/yyyy':'UTC' }}</td>
+            <td>{{ d.fechaEntrega ? (d.fechaEntrega | date:'dd/MM/yyyy':'UTC') : '—' }}</td>
+            <td>{{ d.proveedor ? d.proveedor.nombre : '—' }}</td>
           </tr>
           <tr *ngIf="pedidos.length === 0">
             <td colspan="5" class="empty">Sin pedidos registrados</td>
@@ -144,6 +145,49 @@
 
           <button class="guardar" (click)="guardarProveedor()" [disabled]="guardando">
             {{ guardando ? 'Guardando...' : 'Guardar Proveedor' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- MODAL EDITAR PROVEEDOR -->
+    <div class="modal" *ngIf="mostrarEditarProveedor">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Editar Proveedor</h2>
+          <button class="cerrar" (click)="cerrarModales()">✕</button>
+        </div>
+        <div class="modal-body">
+
+          <select [(ngModel)]="editProveedorId" (ngModelChange)="onSeleccionarProveedor()">
+            <option [ngValue]="null">Seleccionar proveedor *</option>
+            <option *ngFor="let p of proveedores" [ngValue]="p.idEmpresa">
+              #{{ p.idEmpresa }} — {{ p.nombre }}
+            </option>
+          </select>
+
+          <ng-container *ngIf="editProveedorId">
+            <input type="text"   placeholder="NIT"               [(ngModel)]="editNIT">
+            <input type="text"   placeholder="Nombre *"           [(ngModel)]="editNombre">
+            <input type="text"   placeholder="Teléfono"           [(ngModel)]="editTelefono">
+            <input type="email"  placeholder="Correo"             [(ngModel)]="editCorreo">
+
+            <select [(ngModel)]="editTipo">
+              <option value="">Tipo proveedor *</option>
+              <option value="Nacional">Nacional</option>
+              <option value="Internacional">Internacional</option>
+              <option value="Repuestos">Repuestos</option>
+              <option value="Materias primas">Materias primas</option>
+            </select>
+
+            <input type="number" placeholder="Calificación (0-5)" [(ngModel)]="editCalificacion" min="0" max="5" step="0.1">
+          </ng-container>
+
+          <div *ngIf="mensaje" class="mensaje" [ngClass]="tipoMensaje">{{ mensaje }}</div>
+
+          <button class="guardar" (click)="guardarEdicionProveedor()" [disabled]="guardando || !editProveedorId">
+            {{ guardando ? 'Actualizando...' : 'Actualizar Proveedor' }}
           </button>
         </div>
       </div>

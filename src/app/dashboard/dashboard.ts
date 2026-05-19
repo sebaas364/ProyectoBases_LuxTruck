@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { catchError, timeout } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { forkJoin, of } from 'rxjs';
 import { ApiService } from '../services/api.service';
 
 @Component({
@@ -45,16 +45,13 @@ export class Dashboard implements OnInit {
       this.nombreUsuario = `${u.primerNombre} ${u.primerApellido}`;
     }
 
-    // Carga el resumen consolidado del backend
-    this.api.getDashboardResumen()
-      .pipe(
-        timeout(5000),
-        catchError(err => {
-          console.error('ERROR DASHBOARD RESUMEN', err);
-          return of(null);
-        })
-      )
-      .subscribe(resumen => {
+    // Carga todo en paralelo; cargando=false cuando terminen todos (con o sin error)
+    forkJoin({
+      resumen:    this.api.getDashboardResumen().pipe(timeout(5000), catchError(() => of(null))),
+      maquinas:   this.api.getMaquinas().pipe(timeout(5000), catchError(() => of([]))),
+      inventario: this.api.getInventario().pipe(timeout(5000), catchError(() => of([])))
+    }).subscribe({
+      next: ({ resumen, maquinas, inventario }) => {
         if (resumen) {
           this.maquinasLibres   = resumen.maquinasLibres;
           this.maquinasTotales  = resumen.maquinasTotales;
@@ -62,16 +59,15 @@ export class Dashboard implements OnInit {
           this.ventasDelMes     = resumen.ventasDelMes;
           this.stockBajo        = resumen.stockBajo;
         }
-      });
-
-    // Carga las listas para las tablas de detalle
-    this.api.getMaquinas()
-      .pipe(timeout(5000), catchError(() => of([])))
-      .subscribe(data => { this.maquinas = data; });
-
-    this.api.getInventario()
-      .pipe(timeout(5000), catchError(() => of([])))
-      .subscribe(data => { this.inventario = data; this.cargando = false; });
+        this.maquinas   = maquinas  ?? [];
+        this.inventario = inventario ?? [];
+        this.cargando   = false;
+      },
+      error: () => {
+        // catchError en cada observable evita llegar aquí, pero por si acaso
+        this.cargando = false;
+      }
+    });
   }
 
   estadoMaquinaClase(estado: string): string {
