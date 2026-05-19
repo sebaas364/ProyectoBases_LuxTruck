@@ -31,7 +31,7 @@ public class ProveedorService {
         Optional<Proveedor> found = proveedorRepo.findByNIT(dto.getNIT());
         if (found.isEmpty()) {
             Proveedor entity = modelMapper.map(dto, Proveedor.class);
-            entity.setNIT(null);
+            entity.setIdEmpresa(null);
             proveedorRepo.save(entity);
             return 0;
         }
