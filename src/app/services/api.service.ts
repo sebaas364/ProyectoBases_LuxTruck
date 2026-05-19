@@ -188,13 +188,13 @@ export interface VentaDTO {
   idVenta: number;
   fecha: number;
   metodoPago: string;
-  vendedordto: VendedorDTO | null;
+  vendedor: VendedorDTO | null;
 }
 
 export interface CrearVentaPayload {
   fecha: number;
   metodoPago: string;
-  vendedordto: { idPersona: number };
+  vendedor: { idPersona: number };
 }
 
 @Injectable({

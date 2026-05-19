@@ -122,7 +122,7 @@ export class Ventas implements OnInit {
     const payload: CrearVentaPayload = {
       fecha:       fechaDate.getTime(),
       metodoPago:  this.nuevaMetodoPago,
-      vendedordto: { idPersona: Number(this.nuevaVendedorId) },
+      vendedor: { idPersona: Number(this.nuevaVendedorId) },
     };
 
     this.guardando = true;
@@ -133,15 +133,9 @@ export class Ventas implements OnInit {
         this.cargar();
         setTimeout(() => this.cerrarModales(), 2000);
       },
-      error: (err: HttpErrorResponse) => {
+      error: () => {
         this.guardando = false;
-        if (err.status === 406) {
-          this.mostrarMsg('Venta registrada exitosamente.', 'success');
-          this.cargar();
-          setTimeout(() => this.cerrarModales(), 2000);
-        } else {
-          this.mostrarMsg('Error al registrar la venta.', 'error');
-        }
+        this.mostrarMsg('Error al registrar la venta.', 'error');
       }
     });
   }
@@ -186,7 +180,7 @@ export class Ventas implements OnInit {
   }
 
   nombreVendedor(v: VentaDTO): string {
-    if (!v.vendedordto) return '—';
-    return `${v.vendedordto.primerNombre ?? ''} ${v.vendedordto.primerApellido ?? ''}`.trim() || '—';
+    if (!v.vendedor) return '—';
+    return `${v.vendedor.primerNombre ?? ''} ${v.vendedor.primerApellido ?? ''}`.trim() || '—';
   }
 }
