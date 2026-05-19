@@ -7,17 +7,17 @@ public class VentaDTO {
 	private Integer idVenta;
 	private Date fecha;
 	private String metodoPago;
-	private VendedorDTO vendedordto;
+	private VendedorDTO vendedor;
 
 	public VentaDTO() {
 	}
 
-	public VentaDTO(Integer idVenta, Date fecha, String metodoPago, VendedorDTO vendedordto) {
+	public VentaDTO(Integer idVenta, Date fecha, String metodoPago, VendedorDTO vendedor) {
 		super();
 		this.idVenta = idVenta;
 		this.fecha = fecha;
 		this.metodoPago = metodoPago;
-		this.vendedordto = vendedordto;
+		this.vendedor = vendedor;
 	}
 
 	public Integer getIdVenta() {
@@ -44,18 +44,12 @@ public class VentaDTO {
 		this.metodoPago = metodoPago;
 	}
 
-	public VendedorDTO getVendedordto() {
-		return vendedordto;
+	public VendedorDTO getVendedor() {
+		return vendedor;
 	}
 
-	public void setVendedordto(VendedorDTO vendedordto) {
-		this.vendedordto = vendedordto;
+	public void setVendedor(VendedorDTO vendedor) {
+		this.vendedor = vendedor;
 	}
 
-	@Override
-	public String toString() {
-		return "VentaDTO [idVenta=" + idVenta + ", fecha=" + fecha + ", metodoPago=" + metodoPago + ", vendedordto="
-				+ vendedordto + "]";
-	}
-	
 }

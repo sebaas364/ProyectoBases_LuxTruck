@@ -8,5 +8,5 @@ import co.edu.unbosque.backLuxtruck.model.Producto;
 
 public interface ProductoRepository extends CrudRepository<Producto, Integer> {
 	Optional<Producto> findByIdProducto(Integer idProducto);
-	Optional<Producto> findByList<Producto> findByNombre(String nombre);;
+	Optional<Producto> findByNombre(String nombre);
 }
